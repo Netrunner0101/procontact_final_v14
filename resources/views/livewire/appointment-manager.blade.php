@@ -38,16 +38,6 @@
         </div>
 
         <div class="filter-controls">
-            <select wire:model.live="statusFilter" class="filter-select">
-                <option value="">Tous les statuts</option>
-                <option value="Programmé">Programmé</option>
-                <option value="Confirmé">Confirmé</option>
-                <option value="En cours">En cours</option>
-                <option value="Terminé">Terminé</option>
-                <option value="Annulé">Annulé</option>
-                <option value="Reporté">Reporté</option>
-            </select>
-
             <select wire:model.live="contactFilter" class="filter-select">
                 <option value="">Tous les contacts</option>
                 @foreach($contacts as $contact)
@@ -126,6 +116,9 @@
                         </div>
 
                         <div class="appointment-actions">
+                            <button wire:click="resendEmail({{ $appointment->id }})" class="action-btn" title="Renvoyer email" style="background: #ffdfa0; color: #6d5624;">
+                                <i class="fas fa-envelope"></i>
+                            </button>
                             <button wire:click="openEditModal({{ $appointment->id }})" class="action-btn edit-btn" title="Modifier">
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -216,35 +209,10 @@
                             @error('date_heure') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
-                        <div class="form-group">
-                            <label for="duree" class="form-label">Durée (minutes) *</label>
-                            <input type="number" id="duree" wire:model="duree" class="form-input" min="15" max="480" required>
-                            @error('duree') <span class="error-message">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="statut" class="form-label">Statut *</label>
-                            <select id="statut" wire:model="statut" class="form-select" required>
-                                <option value="Programmé">Programmé</option>
-                                <option value="Confirmé">Confirmé</option>
-                                <option value="En cours">En cours</option>
-                                <option value="Terminé">Terminé</option>
-                                <option value="Annulé">Annulé</option>
-                                <option value="Reporté">Reporté</option>
-                            </select>
-                            @error('statut') <span class="error-message">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="lieu" class="form-label">Lieu</label>
-                            <input type="text" id="lieu" wire:model="lieu" class="form-input">
-                            @error('lieu') <span class="error-message">{{ $message }}</span> @enderror
-                        </div>
-
                         <div class="form-group full-width">
-                            <label for="notes" class="form-label">Notes</label>
-                            <textarea id="notes" wire:model="notes" class="form-textarea" rows="3"></textarea>
-                            @error('notes') <span class="error-message">{{ $message }}</span> @enderror
+                            <label for="description" class="form-label">Description</label>
+                            <textarea id="description" wire:model="description" class="form-textarea" rows="3"></textarea>
+                            @error('description') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
