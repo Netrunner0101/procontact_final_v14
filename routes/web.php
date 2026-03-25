@@ -16,8 +16,11 @@ use App\Http\Controllers\MockOAuthController;
 use App\Http\Controllers\PortalController;
 
 Route::get('/', function () {
-    return redirect()->route('dashboard');
-});
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    return view('welcome');
+})->name('home');
 
 // OAuth Test Route (for development)
 Route::get('/oauth-test', function () {
