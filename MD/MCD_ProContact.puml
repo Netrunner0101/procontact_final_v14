@@ -1,0 +1,173 @@
+@startuml MCD_ProContact
+!theme plain
+skinparam linetype ortho
+skinparam roundcorner 10
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+
+skinparam entity {
+    BackgroundColor #E8F4FD
+    BorderColor #2C3E50
+    FontColor #2C3E50
+    FontStyle bold
+    AttributeFontSize 11
+    AttributeFontColor #34495E
+}
+
+skinparam class {
+    HeaderBackgroundColor #3498DB
+    HeaderFontColor white
+}
+
+title <size:18>**Pro Contact -- Modele Conceptuel de Donnees (MCD)**</size>\n<size:12>Travail de Fin d'Etudes -- Lung Sze Ho Eric -- Ifosupwavre 2025</size>\nLaravel / PostgreSQL
+
+' ============================================
+' ENTITES
+' ============================================
+
+entity "ROLE" as role #D5E8D4 {
+    **id** : INT <<PK>>
+    --
+    nom : VARCHAR(255) <<UNIQUE>>
+    description : VARCHAR(255)
+}
+
+entity "UTILISATEUR" as user #DAEEF3 {
+    **id** : BIGINT <<PK>>
+    --
+    nom : VARCHAR(255)
+    prenom : VARCHAR(255)
+    email : VARCHAR(255) <<UNIQUE>>
+    telephone : VARCHAR(255)
+    rue : VARCHAR(255)
+    numero_rue : VARCHAR(255)
+    ville : VARCHAR(255)
+    code_postal : VARCHAR(255)
+    pays : VARCHAR(255)
+    password : VARCHAR(255)
+    google_id : VARCHAR(255)
+    apple_id : VARCHAR(255)
+    provider : VARCHAR(255)
+    avatar : VARCHAR(255)
+    layout_preference : VARCHAR(20)
+    last_login_at : TIMESTAMP
+}
+
+entity "STATUS" as status #F5E6CC {
+    **id** : BIGINT <<PK>>
+    --
+    status_client : VARCHAR(255)
+}
+
+entity "CONTACT" as contact #DAEEF3 {
+    **id** : BIGINT <<PK>>
+    --
+    nom : VARCHAR(255)
+    prenom : VARCHAR(255)
+    rue : VARCHAR(255)
+    numero : VARCHAR(255)
+    ville : VARCHAR(255)
+    code_postal : VARCHAR(255)
+    pays : VARCHAR(255)
+    state_client : VARCHAR(255)
+}
+
+entity "ACTIVITE" as activite #DAEEF3 {
+    **id** : BIGINT <<PK>>
+    --
+    nom : VARCHAR(255)
+    description : TEXT
+    numero_telephone : VARCHAR(255)
+    email : VARCHAR(255)
+    image : VARCHAR(255)
+}
+
+entity "RENDEZ_VOUS" as rdv #FFF2CC {
+    **id** : BIGINT <<PK>>
+    --
+    titre : VARCHAR(255)
+    description : TEXT
+    date_debut : DATE
+    date_fin : DATE
+    heure_debut : TIME
+    heure_fin : TIME
+}
+
+entity "NOTE" as note #FFF2CC {
+    **id** : BIGINT <<PK>>
+    --
+    titre : VARCHAR(255)
+    commentaire : TEXT
+    date_create : DATETIME
+    date_update : DATETIME
+}
+
+entity "RAPPEL" as rappel #FFF2CC {
+    **id** : BIGINT <<PK>>
+    --
+    date_rappel : DATETIME
+    frequence : VARCHAR(255)
+}
+
+entity "EMAIL" as email #E8DAEF {
+    **id** : BIGINT <<PK>>
+    --
+    email : VARCHAR(255)
+}
+
+entity "NUMERO_TELEPHONE" as tel #E8DAEF {
+    **id** : BIGINT <<PK>>
+    --
+    numero_telephone : VARCHAR(255)
+}
+
+entity "STATISTIQUE" as stat #F2DEDE {
+    **id** : BIGINT <<PK>>
+    --
+}
+
+entity "CONTACT_ACTIVITE" as pivot <<Pivot>> #E0E0E0 {
+    **id** : BIGINT <<PK>>
+    --
+    <<UNIQUE>> (contact_id, activite_id)
+}
+
+' ============================================
+' ASSOCIATIONS
+' ============================================
+
+role ||--o{ user : "posseder\n(1,1) / (1,N)"
+user ||--o{ contact : "creer\n(1,1) / (0,N)"
+user ||--o{ activite : "creer\n(1,1) / (0,N)"
+user ||--o{ rdv : "administrer\n(1,1) / (0,N)"
+user ||--o{ user : "administrer clients\n(0,1) / (0,N)"
+user }o--|| contact : "lier (contact_id)\n(0,1) / (0,N)"
+status ||--o{ contact : "avoir\n(0,1) / (0,N)"
+contact ||--o{ email : "posseder\n(1,1) / (0,N)"
+contact ||--o{ tel : "posseder\n(1,1) / (0,N)"
+contact ||--o{ rdv : "participer\n(0,N) / (1,1)"
+activite ||--o{ rdv : "concerner\n(0,N) / (1,1)"
+contact ||--o{ pivot : "(0,N)"
+activite ||--o{ pivot : "(0,N)"
+rdv ||--o{ note : "avoir\n(1,1) / (0,N)"
+rdv ||--o{ rappel : "avoir\n(1,1) / (0,N)"
+rdv ||--o{ stat : "generer\n(1,1) / (0,N)"
+activite ||--o{ stat : "(1,1)"
+contact ||--o{ stat : "(1,1)"
+
+' ============================================
+' LEGENDE
+' ============================================
+
+legend bottom right
+    |= Couleur |= Type |
+    | <#D5E8D4> | Table de reference |
+    | <#DAEEF3> | Entite principale |
+    | <#FFF2CC> | Donnees metier |
+    | <#E8DAEF> | Sous-entite (contact) |
+    | <#F2DEDE> | Statistiques |
+    | <#E0E0E0> | Table pivot (N:M) |
+endlegend
+
+@enduml
