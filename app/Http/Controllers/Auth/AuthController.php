@@ -92,18 +92,19 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $adminRole = Role::where('nom', Role::ADMIN)->firstOrFail();
+        $adminRole = Role::where('nom', Role::ADMIN)->first();
+
+        if (!$adminRole) {
+            return back()->withErrors(['email' => 'Le système n\'est pas encore configuré. Veuillez contacter l\'administrateur.']);
+        }
 
         $user = User::create([
             'nom' => $validated['nom'],
             'prenom' => $validated['prenom'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
+            'role_id' => $adminRole->id,
         ]);
-
-        // Entrepreneur gets admin role by default
-        $user->role_id = $adminRole->id;
-        $user->save();
 
         Auth::login($user);
 

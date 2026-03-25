@@ -86,6 +86,13 @@ class Dashboard extends Component
 
     public function render()
     {
-        return view('livewire.dashboard');
+        $activities = Activite::where('user_id', Auth::id())
+            ->withCount(['contacts', 'rendezVous'])
+            ->orderBy('nom')
+            ->get();
+
+        return view('livewire.dashboard', [
+            'activities' => $activities,
+        ]);
     }
 }

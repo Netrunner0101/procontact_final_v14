@@ -102,7 +102,7 @@ class AppointmentManager extends Component
 
     public function openEditModal($appointmentId)
     {
-        $appointment = RendezVous::findOrFail($appointmentId);
+        $appointment = RendezVous::where('user_id', Auth::id())->findOrFail($appointmentId);
         $this->selectedAppointment = $appointment;
         $this->fillForm($appointment);
         $this->showEditModal = true;
@@ -110,7 +110,7 @@ class AppointmentManager extends Component
 
     public function openDeleteModal($appointmentId)
     {
-        $this->selectedAppointment = RendezVous::findOrFail($appointmentId);
+        $this->selectedAppointment = RendezVous::where('user_id', Auth::id())->findOrFail($appointmentId);
         $this->showDeleteModal = true;
     }
 

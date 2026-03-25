@@ -60,19 +60,15 @@ class NoteController extends Controller
     {
         $validated = $request->validate([
             'titre' => 'required|string|max:255',
-            'contenu' => 'required|string',
-            'contact_id' => 'nullable|exists:contacts,id',
+            'commentaire' => 'required|string',
             'activite_id' => 'nullable|exists:activites,id',
             'rendez_vous_id' => 'nullable|exists:rendez_vous,id',
-            'priorite' => 'required|in:Basse,Normale,Haute,Urgente',
+            'is_shared_with_client' => 'boolean',
         ]);
 
         $validated['user_id'] = Auth::id();
-
-        // Verify ownership of related entities
-        if (!empty($validated['contact_id'])) {
-            Contact::where('user_id', Auth::id())->findOrFail($validated['contact_id']);
-        }
+        $validated['date_create'] = now();
+        $validated['date_update'] = now();
 
         if (!empty($validated['activite_id'])) {
             Activite::where('user_id', Auth::id())->findOrFail($validated['activite_id']);
@@ -125,17 +121,13 @@ class NoteController extends Controller
         
         $validated = $request->validate([
             'titre' => 'required|string|max:255',
-            'contenu' => 'required|string',
-            'contact_id' => 'nullable|exists:contacts,id',
+            'commentaire' => 'required|string',
             'activite_id' => 'nullable|exists:activites,id',
             'rendez_vous_id' => 'nullable|exists:rendez_vous,id',
-            'priorite' => 'required|in:Basse,Normale,Haute,Urgente',
+            'is_shared_with_client' => 'boolean',
         ]);
 
-        // Verify ownership of related entities
-        if (!empty($validated['contact_id'])) {
-            Contact::where('user_id', Auth::id())->findOrFail($validated['contact_id']);
-        }
+        $validated['date_update'] = now();
 
         if (!empty($validated['activite_id'])) {
             Activite::where('user_id', Auth::id())->findOrFail($validated['activite_id']);

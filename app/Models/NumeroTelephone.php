@@ -13,6 +13,7 @@ class NumeroTelephone extends Model
     protected $table = 'numero_telephones';
 
     protected $fillable = [
+        'user_id',
         'contact_id',
         'numero_telephone',
     ];

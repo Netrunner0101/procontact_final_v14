@@ -11,7 +11,7 @@
         @if($activities->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($activities as $activity)
-                    <a href="{{ route('activites.view', $activity->id) }}"
+                    <a href="{{ route('activites.show', $activity->id) }}"
                        class="activity-card block rounded-2xl overflow-hidden group"
                        wire:key="activity-{{ $activity->id }}"
                        style="background: white; box-shadow: 0 2px 8px rgba(27,28,26,0.03);">

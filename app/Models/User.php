@@ -37,7 +37,6 @@ class User extends Authenticatable
         'apple_id',
         'provider',
         'avatar',
-        'layout_preference',
         'role_id',
         'contact_id',
     ];
