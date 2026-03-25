@@ -236,6 +236,12 @@ document.addEventListener('DOMContentLoaded', function() {
             addContactModal.classList.remove('flex');
         }
     });
+
+    // Auto-open modal when arriving via #addContact anchor
+    if (window.location.hash === '#addContact') {
+        addContactModal.classList.remove('hidden');
+        addContactModal.classList.add('flex');
+    }
 });
 </script>
 @endsection

@@ -26,7 +26,7 @@ class ActiviteController extends Controller
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'description' => 'required|string',
-            'numero_telephone' => 'nullable|string|max:20',
+            'numero_telephone' => 'nullable|regex:/^[0-9]+$/|max:20',
             'email' => 'nullable|email|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -57,11 +57,11 @@ class ActiviteController extends Controller
     public function update(Request $request, Activite $activite)
     {
         $this->authorize('update', $activite);
-        
+
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'description' => 'required|string',
-            'numero_telephone' => 'nullable|string|max:20',
+            'numero_telephone' => 'nullable|regex:/^[0-9]+$/|max:20',
             'email' => 'nullable|email|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
