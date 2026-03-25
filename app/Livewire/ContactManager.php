@@ -25,26 +25,22 @@ class ContactManager extends Component
     // Form fields
     public $nom = '';
     public $prenom = '';
-    public $email = '';
-    public $telephone = '';
-    public $adresse = '';
+    public $rue = '';
+    public $numero = '';
     public $ville = '';
     public $code_postal = '';
     public $pays = 'France';
     public $status_id = '';
-    public $notes = '';
 
     protected $rules = [
         'nom' => 'required|string|max:255',
         'prenom' => 'required|string|max:255',
-        'email' => 'nullable|email|max:255',
-        'telephone' => 'nullable|string|max:20',
-        'adresse' => 'nullable|string|max:255',
+        'rue' => 'nullable|string|max:255',
+        'numero' => 'nullable|string|max:50',
         'ville' => 'nullable|string|max:100',
         'code_postal' => 'nullable|string|max:10',
         'pays' => 'nullable|string|max:100',
-        'status_id' => 'required|exists:statuses,id',
-        'notes' => 'nullable|string',
+        'status_id' => 'nullable|exists:statuses,id',
     ];
 
     public function mount()
@@ -85,7 +81,7 @@ class ContactManager extends Component
 
     public function openEditModal($contactId)
     {
-        $contact = Contact::findOrFail($contactId);
+        $contact = Contact::where('user_id', Auth::id())->findOrFail($contactId);
         $this->selectedContact = $contact;
         $this->fillForm($contact);
         $this->showEditModal = true;
@@ -93,7 +89,7 @@ class ContactManager extends Component
 
     public function openDeleteModal($contactId)
     {
-        $this->selectedContact = Contact::findOrFail($contactId);
+        $this->selectedContact = Contact::where('user_id', Auth::id())->findOrFail($contactId);
         $this->showDeleteModal = true;
     }
 
@@ -113,14 +109,12 @@ class ContactManager extends Component
         Contact::create([
             'nom' => $this->nom,
             'prenom' => $this->prenom,
-            'email' => $this->email,
-            'telephone' => $this->telephone,
-            'adresse' => $this->adresse,
+            'rue' => $this->rue,
+            'numero' => $this->numero,
             'ville' => $this->ville,
             'code_postal' => $this->code_postal,
             'pays' => $this->pays,
-            'status_id' => $this->status_id,
-            'notes' => $this->notes,
+            'status_id' => $this->status_id ?: null,
             'user_id' => Auth::id(),
         ]);
 
@@ -132,17 +126,20 @@ class ContactManager extends Component
     {
         $this->validate();
 
+        // Verify ownership
+        if ($this->selectedContact->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $this->selectedContact->update([
             'nom' => $this->nom,
             'prenom' => $this->prenom,
-            'email' => $this->email,
-            'telephone' => $this->telephone,
-            'adresse' => $this->adresse,
+            'rue' => $this->rue,
+            'numero' => $this->numero,
             'ville' => $this->ville,
             'code_postal' => $this->code_postal,
             'pays' => $this->pays,
-            'status_id' => $this->status_id,
-            'notes' => $this->notes,
+            'status_id' => $this->status_id ?: null,
         ]);
 
         $this->closeModals();
@@ -160,28 +157,24 @@ class ContactManager extends Component
     {
         $this->nom = '';
         $this->prenom = '';
-        $this->email = '';
-        $this->telephone = '';
-        $this->adresse = '';
+        $this->rue = '';
+        $this->numero = '';
         $this->ville = '';
         $this->code_postal = '';
         $this->pays = 'France';
         $this->status_id = '';
-        $this->notes = '';
     }
 
     private function fillForm($contact)
     {
         $this->nom = $contact->nom;
         $this->prenom = $contact->prenom;
-        $this->email = $contact->email;
-        $this->telephone = $contact->telephone;
-        $this->adresse = $contact->adresse;
+        $this->rue = $contact->rue;
+        $this->numero = $contact->numero;
         $this->ville = $contact->ville;
         $this->code_postal = $contact->code_postal;
         $this->pays = $contact->pays;
         $this->status_id = $contact->status_id;
-        $this->notes = $contact->notes;
     }
 
     public function render()

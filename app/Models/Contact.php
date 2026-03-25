@@ -83,11 +83,4 @@ class Contact extends Model
         return $this->rendezVous()->exists();
     }
 
-    /**
-     * Helper to check if a note is shared with this client.
-     */
-    public function isSharedWithClient(): bool
-    {
-        return (bool) ($this->is_shared_with_client ?? false);
-    }
 }

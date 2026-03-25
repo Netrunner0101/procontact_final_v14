@@ -107,11 +107,13 @@
                         </p>
                     @endif
 
+                    @if($contact->status)
                     <div class="contact-status">
-                        <span class="status-badge status-{{ strtolower(str_replace(' ', '-', $contact->status->nom)) }}">
-                            {{ $contact->status->nom }}
+                        <span class="status-badge status-{{ strtolower(str_replace(' ', '-', $contact->status->status_client)) }}">
+                            {{ $contact->status->status_client }}
                         </span>
                     </div>
+                    @endif
 
                     <p class="contact-date">
                         <i class="fas fa-calendar"></i>
@@ -179,21 +181,15 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" id="email" wire:model="email" class="form-input">
-                            @error('email') <span class="error-message">{{ $message }}</span> @enderror
+                            <label for="rue" class="form-label">Rue</label>
+                            <input type="text" id="rue" wire:model="rue" class="form-input">
+                            @error('rue') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="telephone" class="form-label">Téléphone</label>
-                            <input type="tel" id="telephone" wire:model="telephone" class="form-input">
-                            @error('telephone') <span class="error-message">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="adresse" class="form-label">Adresse</label>
-                            <input type="text" id="adresse" wire:model="adresse" class="form-input">
-                            @error('adresse') <span class="error-message">{{ $message }}</span> @enderror
+                            <label for="numero" class="form-label">Numéro</label>
+                            <input type="text" id="numero" wire:model="numero" class="form-input">
+                            @error('numero') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="form-group">
@@ -219,17 +215,12 @@
                             <select id="status_id" wire:model="status_id" class="form-select" required>
                                 <option value="">Sélectionner un statut</option>
                                 @foreach($statuses as $status)
-                                    <option value="{{ $status->id }}">{{ $status->nom }}</option>
+                                    <option value="{{ $status->id }}">{{ $status->status_client }}</option>
                                 @endforeach
                             </select>
                             @error('status_id') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
-                        <div class="form-group full-width">
-                            <label for="notes" class="form-label">Notes</label>
-                            <textarea id="notes" wire:model="notes" class="form-textarea" rows="3"></textarea>
-                            @error('notes') <span class="error-message">{{ $message }}</span> @enderror
-                        </div>
                     </div>
 
                     <div class="modal-actions">

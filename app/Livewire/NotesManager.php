@@ -75,7 +75,7 @@ class NotesManager extends Component
 
     public function openEditModal($noteId)
     {
-        $note = Note::findOrFail($noteId);
+        $note = Note::whereHas('rendezVous', fn($q) => $q->where('user_id', Auth::id()))->findOrFail($noteId);
         $this->selectedNote = $note;
         $this->fillForm($note);
         $this->showEditModal = true;
@@ -83,7 +83,7 @@ class NotesManager extends Component
 
     public function openDeleteModal($noteId)
     {
-        $this->selectedNote = Note::findOrFail($noteId);
+        $this->selectedNote = Note::whereHas('rendezVous', fn($q) => $q->where('user_id', Auth::id()))->findOrFail($noteId);
         $this->showDeleteModal = true;
     }
 

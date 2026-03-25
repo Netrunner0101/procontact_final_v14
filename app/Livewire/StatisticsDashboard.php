@@ -98,29 +98,41 @@ class StatisticsDashboard extends Component
 
     private function loadStatusDistribution()
     {
-        $query = RendezVous::select('statut', DB::raw('count(*) as count'))
-            ->where('user_id', Auth::id())
-            ->groupBy('statut');
-            
+        // Compute appointment status from dates (no statut column in DB)
+        $query = RendezVous::where('user_id', Auth::id());
+
         if ($this->selectedActivity) {
             $query->where('activite_id', $this->selectedActivity);
         }
-        
-        $this->statusDistribution = $query->get();
+
+        $upcoming = (clone $query)->where('date_debut', '>=', now()->toDateString())->count();
+        $past = (clone $query)->where('date_debut', '<', now()->toDateString())->count();
+        $today = (clone $query)->whereDate('date_debut', now()->toDateString())->count();
+
+        $this->statusDistribution = collect([
+            (object)['statut' => 'À venir', 'count' => $upcoming],
+            (object)['statut' => "Aujourd'hui", 'count' => $today],
+            (object)['statut' => 'Passé', 'count' => $past],
+        ])->filter(fn($item) => $item->count > 0)->values();
     }
 
     private function loadPriorityDistribution()
     {
-        $query = Note::select('priorite', DB::raw('count(*) as count'))
-            ->whereHas('rendezVous', function($q) {
-                $q->where('user_id', Auth::id());
-                if ($this->selectedActivity) {
-                    $q->where('activite_id', $this->selectedActivity);
-                }
-            })
-            ->groupBy('priorite');
-            
-        $this->priorityDistribution = $query->get();
+        // Compute note sharing distribution (no priorite column in DB)
+        $baseQuery = Note::whereHas('rendezVous', function($q) {
+            $q->where('user_id', Auth::id());
+            if ($this->selectedActivity) {
+                $q->where('activite_id', $this->selectedActivity);
+            }
+        });
+
+        $shared = (clone $baseQuery)->where('is_shared_with_client', true)->count();
+        $private = (clone $baseQuery)->where('is_shared_with_client', false)->count();
+
+        $this->priorityDistribution = collect([
+            (object)['priorite' => 'Partagée', 'count' => $shared],
+            (object)['priorite' => 'Privée', 'count' => $private],
+        ])->filter(fn($item) => $item->count > 0)->values();
     }
 
     public function exportData($type = 'global')
