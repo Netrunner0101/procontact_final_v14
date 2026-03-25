@@ -1,0 +1,79 @@
+@extends('layouts.app')
+
+@section('title', $contact->nom . ' ' . $contact->prenom . ' - Pro Contact')
+
+@section('content')
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold">{{ $contact->nom }} {{ $contact->prenom }}</h1>
+        <div class="flex gap-2">
+            <a href="{{ route('contacts.edit', $contact) }}" class="px-4 py-2 bg-blue-600 text-white rounded">Modifier</a>
+            <a href="{{ route('contacts.index') }}" class="px-4 py-2 border rounded">Retour</a>
+        </div>
+    </div>
+
+    @if(session('success'))
+        <div class="bg-green-100 text-green-800 p-3 rounded mb-4">{{ session('success') }}</div>
+    @endif
+
+    <div class="bg-white rounded-lg shadow p-6">
+        <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <dt class="font-semibold text-gray-600">Nom</dt>
+                <dd>{{ $contact->nom }}</dd>
+            </div>
+            <div>
+                <dt class="font-semibold text-gray-600">Prénom</dt>
+                <dd>{{ $contact->prenom }}</dd>
+            </div>
+            @if($contact->status)
+            <div>
+                <dt class="font-semibold text-gray-600">Statut</dt>
+                <dd>{{ $contact->status->status_client }}</dd>
+            </div>
+            @endif
+            @if($contact->rue)
+            <div>
+                <dt class="font-semibold text-gray-600">Adresse</dt>
+                <dd>{{ $contact->rue }} {{ $contact->numero }}, {{ $contact->code_postal }} {{ $contact->ville }}, {{ $contact->pays }}</dd>
+            </div>
+            @endif
+        </dl>
+
+        @if($contact->emails->count())
+        <div class="mt-4">
+            <h3 class="font-semibold text-gray-600">Emails</h3>
+            <ul>
+                @foreach($contact->emails as $email)
+                    <li>{{ $email->email }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
+        @if($contact->numeroTelephones->count())
+        <div class="mt-4">
+            <h3 class="font-semibold text-gray-600">Téléphones</h3>
+            <ul>
+                @foreach($contact->numeroTelephones as $phone)
+                    <li>{{ $phone->numero_telephone }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+    </div>
+
+    @if(isset($contact->rendezVous) && $contact->rendezVous->count())
+    <div class="mt-6">
+        <h2 class="text-xl font-bold mb-4">Rendez-vous</h2>
+        <div class="bg-white rounded-lg shadow">
+            @foreach($contact->rendezVous as $rdv)
+            <div class="p-4 border-b">
+                <strong>{{ $rdv->titre }}</strong> - {{ $rdv->date_debut?->format('d/m/Y') }}
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+</div>
+@endsection
