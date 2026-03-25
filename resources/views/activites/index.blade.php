@@ -74,7 +74,7 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="flex justify-between items-center">
+                        <div class="flex justify-between items-center mb-4">
                             <div class="flex space-x-2">
                                 <a href="{{ route('activites.edit', $activite) }}"
                                    class="text-white px-3 py-1 rounded text-sm transition duration-200" style="background: #8a6e2e;">
@@ -93,6 +93,28 @@
                             <span class="text-xs text-gray-500">
                                 {{ $activite->contacts->count() }} contacts
                             </span>
+                        </div>
+
+                        <!-- Quick Create Buttons -->
+                        <div class="flex gap-2 pt-4 border-t border-gray-100">
+                            <a href="{{ route('activites.show', $activite) }}#addContact"
+                               class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-white text-xs font-semibold rounded-lg transition duration-200 hover:opacity-90"
+                               style="background: linear-gradient(135deg, #843728, #c4816e);">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                                </svg>
+                                Ajouter Contact
+                            </a>
+                            <a href="{{ route('rendez-vous.create', ['activite_id' => $activite->id]) }}"
+                               class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold rounded-lg border-2 transition duration-200 hover:text-white"
+                               style="border-color: #843728; color: #843728;"
+                               onmouseover="this.style.background='linear-gradient(135deg, #843728, #c4816e)';this.style.color='white'"
+                               onmouseout="this.style.background='';this.style.color='#843728'">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                Nouveau RDV
+                            </a>
                         </div>
                     </div>
                 </div>
