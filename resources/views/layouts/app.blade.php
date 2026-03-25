@@ -49,6 +49,22 @@
                                 <i class="fas fa-briefcase"></i>
                                 <span>Activit&eacute;s</span>
                             </a>
+                            <a href="{{ route('contacts.index') }}" class="nav-link {{ request()->routeIs('contacts.*') ? 'nav-link-active' : '' }}">
+                                <i class="fas fa-users"></i>
+                                <span>Contacts</span>
+                            </a>
+                            <a href="{{ route('rendez-vous.index') }}" class="nav-link {{ request()->routeIs('rendez-vous.*') ? 'nav-link-active' : '' }}">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Rendez-vous</span>
+                            </a>
+                            <a href="{{ route('notes.index') }}" class="nav-link {{ request()->routeIs('notes.*') ? 'nav-link-active' : '' }}">
+                                <i class="fas fa-sticky-note"></i>
+                                <span>Notes</span>
+                            </a>
+                            <a href="{{ route('rappels.index') }}" class="nav-link {{ request()->routeIs('rappels.*') ? 'nav-link-active' : '' }}">
+                                <i class="fas fa-bell"></i>
+                                <span>Rappels</span>
+                            </a>
                         </div>
                     </div>
 
