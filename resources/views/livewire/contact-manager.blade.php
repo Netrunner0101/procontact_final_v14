@@ -30,10 +30,16 @@
         </div>
 
         <div class="filter-controls">
+            <select wire:model.live="clientStatusFilter" class="filter-select">
+                <option value="">Contacts & Clients</option>
+                <option value="client">Clients uniquement</option>
+                <option value="contact">Contacts uniquement</option>
+            </select>
+
             <select wire:model.live="statusFilter" class="filter-select">
-                <option value="">Tous les statuts</option>
+                <option value="">Tous les statuts CRM</option>
                 @foreach($statuses as $status)
-                    <option value="{{ $status->id }}">{{ $status->nom }}</option>
+                    <option value="{{ $status->id }}">{{ $status->status_client }}</option>
                 @endforeach
             </select>
 
@@ -71,19 +77,26 @@
                 </div>
 
                 <div class="contact-info">
-                    <h3 class="contact-name">{{ $contact->nom }} {{ $contact->prenom }}</h3>
+                    <div class="flex items-center gap-2 mb-1">
+                        <h3 class="contact-name" style="margin: 0;">{{ $contact->nom }} {{ $contact->prenom }}</h3>
+                        @if($contact->rendez_vous_count > 0)
+                            <span class="client-status-badge client-badge">Client</span>
+                        @else
+                            <span class="client-status-badge contact-badge">Contact</span>
+                        @endif
+                    </div>
 
-                    @if($contact->email)
+                    @if($contact->emails->isNotEmpty())
                         <p class="contact-detail">
                             <i class="fas fa-envelope"></i>
-                            <a href="mailto:{{ $contact->email }}">{{ $contact->email }}</a>
+                            <a href="mailto:{{ $contact->emails->first()->email }}">{{ $contact->emails->first()->email }}</a>
                         </p>
                     @endif
 
-                    @if($contact->telephone)
+                    @if($contact->numeroTelephones->isNotEmpty())
                         <p class="contact-detail">
                             <i class="fas fa-phone"></i>
-                            <a href="tel:{{ $contact->telephone }}">{{ $contact->telephone }}</a>
+                            <a href="tel:{{ $contact->numeroTelephones->first()->numero_telephone }}">{{ $contact->numeroTelephones->first()->numero_telephone }}</a>
                         </p>
                     @endif
 
@@ -421,6 +434,27 @@
     font-weight: 600;
     margin: 0 0 1rem 0;
     color: #1b1c1a;
+}
+
+.client-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.client-badge {
+    background: #c0f0b8;
+    color: #002204;
+}
+
+.contact-badge {
+    background: #f5f3f0;
+    color: #44483e;
 }
 
 .contact-detail {
