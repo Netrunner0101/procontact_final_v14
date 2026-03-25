@@ -1,0 +1,253 @@
+@startuml ClassDiagram_ProContact
+!theme plain
+skinparam linetype ortho
+skinparam roundcorner 10
+skinparam shadowing false
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 11
+skinparam classAttributeIconSize 0
+
+skinparam class {
+    BackgroundColor #FAFAFA
+    BorderColor #2C3E50
+    FontColor #2C3E50
+    FontStyle bold
+    HeaderBackgroundColor #3498DB
+    HeaderFontColor white
+    AttributeFontSize 10
+    StereotypeFontSize 10
+}
+
+skinparam package {
+    BackgroundColor #F8F9FA
+    BorderColor #BDC3C7
+    FontColor #2C3E50
+}
+
+title <size:18>**Pro Contact -- Diagramme de Classe UML**</size>\n<size:12>Travail de Fin d'Etudes -- Lung Sze Ho Eric -- Ifosupwavre 2025</size>\nLaravel 11 / Eloquent ORM
+
+' ============================================
+' CLASSES - Authentification & Roles
+' ============================================
+
+class Role <<Model>> #D5E8D4 {
+    - id : int
+    - nom : string
+    - description : string
+    __constantes__
+    + {static} ADMIN : string = "admin"
+    + {static} CLIENT : string = "client"
+    __relations__
+    + users() : HasMany<User>
+}
+
+class User <<Model>> #DAEEF3 {
+    - id : int
+    - role_id : int
+    - nom : string
+    - prenom : string
+    - email : string
+    - telephone : string
+    - rue : string
+    - numero_rue : string
+    - ville : string
+    - code_postal : string
+    - pays : string
+    - password : string
+    - google_id : string
+    - apple_id : string
+    - provider : string
+    - avatar : string
+    - admin_user_id : int
+    - contact_id : int
+    - layout_preference : string
+    - last_login_at : datetime
+    __relations__
+    + role() : BelongsTo<Role>
+    + contact() : BelongsTo<Contact>
+    + contacts() : HasMany<Contact>
+    + activites() : HasMany<Activite>
+    + rendezVous() : HasMany<RendezVous>
+    + admin() : BelongsTo<User>
+    + clients() : HasMany<User>
+    __methodes__
+    + isAdmin() : bool
+    + isClient() : bool
+    + visibleRendezVous() : Builder
+}
+
+' ============================================
+' CLASSES - Gestion des contacts
+' ============================================
+
+class Status <<Model>> #F5E6CC {
+    - id : int
+    - status_client : string
+    __relations__
+    + contacts() : HasMany<Contact>
+}
+
+class Contact <<Model>> #DAEEF3 {
+    - id : int
+    - user_id : int
+    - nom : string
+    - prenom : string
+    - rue : string
+    - numero : string
+    - ville : string
+    - code_postal : string
+    - pays : string
+    - state_client : string
+    - status_id : int
+    __relations__
+    + user() : BelongsTo<User>
+    + status() : BelongsTo<Status>
+    + rendezVous() : HasMany<RendezVous>
+    + emails() : HasMany<Email>
+    + numeroTelephones() : HasMany<NumeroTelephone>
+    + activites() : BelongsToMany<Activite>
+}
+
+class Email <<Model>> #E8DAEF {
+    - id : int
+    - contact_id : int
+    - email : string
+    __relations__
+    + contact() : BelongsTo<Contact>
+}
+
+class NumeroTelephone <<Model>> #E8DAEF {
+    - id : int
+    - contact_id : int
+    - numero_telephone : string
+    __relations__
+    + contact() : BelongsTo<Contact>
+}
+
+' ============================================
+' CLASSES - Activites & Rendez-vous
+' ============================================
+
+class Activite <<Model>> #DAEEF3 {
+    - id : int
+    - user_id : int
+    - nom : string
+    - description : string
+    - numero_telephone : string
+    - email : string
+    - image : string
+    __relations__
+    + user() : BelongsTo<User>
+    + contacts() : BelongsToMany<Contact>
+    + rendezVous() : HasMany<RendezVous>
+    + notes() : HasMany<Note>
+    + statistiques() : HasMany<Statistique>
+}
+
+class RendezVous <<Model>> #FFF2CC {
+    - id : int
+    - user_id : int
+    - contact_id : int
+    - activite_id : int
+    - titre : string
+    - description : string
+    - date_debut : date
+    - date_fin : date
+    - heure_debut : time
+    - heure_fin : time
+    __relations__
+    + user() : BelongsTo<User>
+    + contact() : BelongsTo<Contact>
+    + activite() : BelongsTo<Activite>
+    + notes() : HasMany<Note>
+    + rappels() : HasMany<Rappel>
+    + statistiques() : HasMany<Statistique>
+}
+
+class Note <<Model>> #FFF2CC {
+    - id : int
+    - user_id : int
+    - rendez_vous_id : int
+    - activite_id : int
+    - titre : string
+    - commentaire : string
+    - date_create : datetime
+    - date_update : datetime
+    __relations__
+    + rendezVous() : BelongsTo<RendezVous>
+    + activite() : BelongsTo<Activite>
+}
+
+class Rappel <<Model>> #FFF2CC {
+    - id : int
+    - user_id : int
+    - rendez_vous_id : int
+    - date_rappel : datetime
+    - frequence : string
+    __relations__
+    + rendezVous() : BelongsTo<RendezVous>
+}
+
+' ============================================
+' CLASSES - Statistiques
+' ============================================
+
+class Statistique <<Model>> #F2DEDE {
+    - id : int
+    - activite_id : int
+    - rendez_vous_id : int
+    - contact_id : int
+    __relations__
+    + activite() : BelongsTo<Activite>
+    + rendezVous() : BelongsTo<RendezVous>
+    + contact() : BelongsTo<Contact>
+}
+
+' ============================================
+' RELATIONS
+' ============================================
+
+Role "1" --o "0..*" User : role_id >
+User "1" --o "0..*" Contact : user_id >
+User "1" --o "0..*" Activite : user_id >
+User "1" --o "0..*" RendezVous : user_id >
+User "1" --o "0..*" User : admin_user_id >
+User "0..*" --o "0..1" Contact : contact_id >
+
+Status "1" --o "0..*" Contact : status_id >
+
+Contact "1" --o "0..*" Email : contact_id >
+Contact "1" --o "0..*" NumeroTelephone : contact_id >
+Contact "0..*" -- "0..*" Activite : contact_activite
+
+Contact "1" --o "0..*" RendezVous : contact_id >
+Activite "1" --o "0..*" RendezVous : activite_id >
+
+RendezVous "1" --o "0..*" Note : rendez_vous_id >
+RendezVous "1" --o "0..*" Rappel : rendez_vous_id >
+RendezVous "1" --o "0..*" Statistique : rendez_vous_id >
+Activite "1" --o "0..*" Statistique : activite_id >
+Contact "1" --o "0..*" Statistique : contact_id >
+
+' ============================================
+' LEGENDE
+' ============================================
+
+legend bottom right
+    |= Couleur |= Type de classe |
+    | <#D5E8D4> | Reference (Role) |
+    | <#DAEEF3> | Entite principale |
+    | <#F5E6CC> | Reference (Status) |
+    | <#FFF2CC> | Donnees metier (RDV) |
+    | <#E8DAEF> | Sous-entite (Contact) |
+    | <#F2DEDE> | Statistiques |
+    --
+    **Notation UML**
+    - : attribut prive
+    + : methode publique
+    {static} : constante de classe
+    --o : composition (FK)
+    -- : association (N:M)
+endlegend
+
+@enduml
