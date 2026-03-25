@@ -13,6 +13,7 @@ use App\Http\Controllers\ClientManagementController;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MockOAuthController;
+use App\Http\Controllers\PortalController;
 
 Route::get('/', function () {
     return redirect()->route('dashboard');
@@ -124,5 +125,12 @@ Route::middleware(['auth', 'client'])->prefix('client')->name('client.')->group(
 });
 
 
+
+// Client Portal — Magic-Link (public, no auth required)
+Route::prefix('portal')->name('portal.')->group(function () {
+    Route::get('/{token}', [PortalController::class, 'index'])->name('index');
+    Route::get('/{token}/appointment/{appointmentId}', [PortalController::class, 'showAppointment'])->name('appointment');
+    Route::post('/{token}/appointment/{appointmentId}/note', [PortalController::class, 'storeNote'])->name('storeNote');
+});
 
 require __DIR__.'/auth.php';

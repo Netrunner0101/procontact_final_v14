@@ -13,11 +13,11 @@ class NotesManager extends Component
     use WithPagination;
 
     public $search = '';
-    public $priorityFilter = '';
+    public $sharingFilter = '';
     public $appointmentFilter = '';
     public $sortBy = 'created_at';
     public $sortDirection = 'desc';
-    
+
     public $showCreateModal = false;
     public $showEditModal = false;
     public $showDeleteModal = false;
@@ -26,19 +26,19 @@ class NotesManager extends Component
     // Form fields
     public $rendez_vous_id = '';
     public $titre = '';
-    public $contenu = '';
-    public $priorite = 'Normale';
+    public $commentaire = '';
+    public $is_shared_with_client = false;
 
     protected $rules = [
         'rendez_vous_id' => 'required|exists:rendez_vous,id',
         'titre' => 'required|string|max:255',
-        'contenu' => 'required|string',
-        'priorite' => 'required|in:Basse,Normale,Haute,Urgente',
+        'commentaire' => 'required|string',
+        'is_shared_with_client' => 'boolean',
     ];
 
     public function mount()
     {
-        $this->priorityFilter = '';
+        $this->sharingFilter = '';
         $this->appointmentFilter = '';
     }
 
@@ -47,7 +47,7 @@ class NotesManager extends Component
         $this->resetPage();
     }
 
-    public function updatingPriorityFilter()
+    public function updatingSharingFilter()
     {
         $this->resetPage();
     }
@@ -101,10 +101,13 @@ class NotesManager extends Component
         $this->validate();
 
         Note::create([
+            'user_id' => Auth::id(),
             'rendez_vous_id' => $this->rendez_vous_id,
             'titre' => $this->titre,
-            'contenu' => $this->contenu,
-            'priorite' => $this->priorite,
+            'commentaire' => $this->commentaire,
+            'is_shared_with_client' => $this->is_shared_with_client,
+            'date_create' => now(),
+            'date_update' => now(),
         ]);
 
         $this->closeModals();
@@ -118,8 +121,9 @@ class NotesManager extends Component
         $this->selectedNote->update([
             'rendez_vous_id' => $this->rendez_vous_id,
             'titre' => $this->titre,
-            'contenu' => $this->contenu,
-            'priorite' => $this->priorite,
+            'commentaire' => $this->commentaire,
+            'is_shared_with_client' => $this->is_shared_with_client,
+            'date_update' => now(),
         ]);
 
         $this->closeModals();
@@ -137,16 +141,16 @@ class NotesManager extends Component
     {
         $this->rendez_vous_id = '';
         $this->titre = '';
-        $this->contenu = '';
-        $this->priorite = 'Normale';
+        $this->commentaire = '';
+        $this->is_shared_with_client = false;
     }
 
     private function fillForm($note)
     {
         $this->rendez_vous_id = $note->rendez_vous_id;
         $this->titre = $note->titre;
-        $this->contenu = $note->contenu;
-        $this->priorite = $note->priorite;
+        $this->commentaire = $note->commentaire;
+        $this->is_shared_with_client = $note->is_shared_with_client ?? false;
     }
 
     public function render()
@@ -158,15 +162,15 @@ class NotesManager extends Component
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('titre', 'like', '%' . $this->search . '%')
-                      ->orWhere('contenu', 'like', '%' . $this->search . '%')
+                      ->orWhere('commentaire', 'like', '%' . $this->search . '%')
                       ->orWhereHas('rendezVous.contact', function($subQ) {
                           $subQ->where('nom', 'like', '%' . $this->search . '%')
                                ->orWhere('prenom', 'like', '%' . $this->search . '%');
                       });
                 });
             })
-            ->when($this->priorityFilter, function ($query) {
-                $query->where('priorite', $this->priorityFilter);
+            ->when($this->sharingFilter !== '', function ($query) {
+                $query->where('is_shared_with_client', $this->sharingFilter === '1');
             })
             ->when($this->appointmentFilter, function ($query) {
                 $query->where('rendez_vous_id', $this->appointmentFilter);
@@ -176,7 +180,7 @@ class NotesManager extends Component
 
         $appointments = RendezVous::with('contact')
             ->where('user_id', Auth::id())
-            ->orderBy('date_heure', 'desc')
+            ->orderBy('date_debut', 'desc')
             ->get();
 
         return view('livewire.notes-manager', [

@@ -25,7 +25,7 @@ class ActiviteController extends Controller
     {
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'numero_telephone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -60,7 +60,7 @@ class ActiviteController extends Controller
         
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'description' => 'required|string',
             'numero_telephone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',

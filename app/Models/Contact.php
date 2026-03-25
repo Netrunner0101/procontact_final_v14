@@ -73,4 +73,21 @@ class Contact extends Model
     {
         return $this->belongsToMany(Activite::class, 'contact_activite');
     }
+
+    /**
+     * Check if the contact has any appointments (making them a "Client").
+     * Contact with no appointments = "Contact" status.
+     */
+    public function isClient(): bool
+    {
+        return $this->rendezVous()->exists();
+    }
+
+    /**
+     * Helper to check if a note is shared with this client.
+     */
+    public function isSharedWithClient(): bool
+    {
+        return (bool) ($this->is_shared_with_client ?? false);
+    }
 }

@@ -30,19 +30,17 @@
         </div>
 
         <div class="filter-controls">
-            <select wire:model.live="priorityFilter" class="filter-select">
-                <option value="">Toutes les priorités</option>
-                <option value="Basse">Basse</option>
-                <option value="Normale">Normale</option>
-                <option value="Haute">Haute</option>
-                <option value="Urgente">Urgente</option>
+            <select wire:model.live="sharingFilter" class="filter-select">
+                <option value="">Toutes les notes</option>
+                <option value="1">Partagées avec le client</option>
+                <option value="0">Non partagées</option>
             </select>
 
             <select wire:model.live="appointmentFilter" class="filter-select">
                 <option value="">Tous les rendez-vous</option>
                 @foreach($appointments as $appointment)
                     <option value="{{ $appointment->id }}">
-                        {{ $appointment->contact->nom }} {{ $appointment->contact->prenom }} - {{ $appointment->date_heure->format('d/m/Y') }}
+                        {{ $appointment->contact->nom }} {{ $appointment->contact->prenom }} - {{ $appointment->date_debut->format('d/m/Y') }}
                     </option>
                 @endforeach
             </select>
@@ -54,9 +52,9 @@
                         <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
                     @endif
                 </button>
-                <button wire:click="sortBy('priorite')" class="sort-btn {{ $sortBy === 'priorite' ? 'active' : '' }}">
-                    Priorité
-                    @if($sortBy === 'priorite')
+                <button wire:click="sortBy('titre')" class="sort-btn {{ $sortBy === 'titre' ? 'active' : '' }}">
+                    Titre
+                    @if($sortBy === 'titre')
                         <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
                     @endif
                 </button>
@@ -77,10 +75,16 @@
         @forelse($notes as $note)
             <div class="note-card" wire:key="note-{{ $note->id }}">
                 <div class="note-header">
-                    <div class="note-priority">
-                        <span class="priority-badge priority-{{ strtolower($note->priorite) }}">
-                            {{ $note->priorite }}
-                        </span>
+                    <div class="note-sharing">
+                        @if($note->is_shared_with_client)
+                            <span class="sharing-badge shared">
+                                <i class="fas fa-share-alt"></i> Partagée
+                            </span>
+                        @else
+                            <span class="sharing-badge private">
+                                <i class="fas fa-lock"></i> Privée
+                            </span>
+                        @endif
                     </div>
                     <div class="note-actions">
                         <button wire:click="openEditModal({{ $note->id }})" class="action-btn edit-btn" title="Modifier">
@@ -98,7 +102,7 @@
                     <div class="note-appointment">
                         <i class="fas fa-calendar"></i>
                         <span>{{ $note->rendezVous->contact->nom }} {{ $note->rendezVous->contact->prenom }}</span>
-                        <span class="appointment-date">{{ $note->rendezVous->date_heure->format('d/m/Y H:i') }}</span>
+                        <span class="appointment-date">{{ $note->rendezVous->date_debut->format('d/m/Y') }}</span>
                     </div>
 
                     <div class="note-activity">
@@ -107,7 +111,7 @@
                     </div>
 
                     <div class="note-text">
-                        {{ Str::limit($note->contenu, 150) }}
+                        {{ Str::limit($note->commentaire, 150) }}
                     </div>
 
                     <div class="note-footer">
@@ -160,7 +164,7 @@
                                 @foreach($appointments as $appointment)
                                     <option value="{{ $appointment->id }}">
                                         {{ $appointment->contact->nom }} {{ $appointment->contact->prenom }} -
-                                        {{ $appointment->date_heure->format('d/m/Y H:i') }} -
+                                        {{ $appointment->date_debut->format('d/m/Y') }} -
                                         {{ $appointment->activite->nom }}
                                     </option>
                                 @endforeach
@@ -169,14 +173,14 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="priorite" class="form-label">Priorité *</label>
-                            <select id="priorite" wire:model="priorite" class="form-select" required>
-                                <option value="Basse">Basse</option>
-                                <option value="Normale">Normale</option>
-                                <option value="Haute">Haute</option>
-                                <option value="Urgente">Urgente</option>
-                            </select>
-                            @error('priorite') <span class="error-message">{{ $message }}</span> @enderror
+                            <label class="form-label">Partager avec le client</label>
+                            <div class="sharing-toggle">
+                                <label class="toggle-label">
+                                    <input type="checkbox" wire:model="is_shared_with_client" class="toggle-input">
+                                    <span class="toggle-slider"></span>
+                                    <span class="toggle-text">{{ $is_shared_with_client ? 'Partagée' : 'Privée' }}</span>
+                                </label>
+                            </div>
                         </div>
 
                         <div class="form-group full-width">
@@ -186,9 +190,9 @@
                         </div>
 
                         <div class="form-group full-width">
-                            <label for="contenu" class="form-label">Contenu *</label>
-                            <textarea id="contenu" wire:model="contenu" class="form-textarea" rows="6" required></textarea>
-                            @error('contenu') <span class="error-message">{{ $message }}</span> @enderror
+                            <label for="commentaire" class="form-label">Commentaire *</label>
+                            <textarea id="commentaire" wire:model="commentaire" class="form-textarea" rows="6" required></textarea>
+                            @error('commentaire') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
@@ -383,18 +387,42 @@
     border-bottom: none;
 }
 
-.priority-badge {
+.sharing-badge {
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
     font-size: 0.75rem;
     font-weight: 600;
-    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
 }
 
-.priority-basse { background: #f5f3f0; color: #44483e; }
-.priority-normale { background: #fef5f3; color: #6d2a1d; }
-.priority-haute { background: #fffbf0; color: #6d5624; }
-.priority-urgente { background: #fff5f5; color: #9c1414; }
+.sharing-badge.shared { background: #c0f0b8; color: #065f46; }
+.sharing-badge.private { background: #f5f3f0; color: #44483e; }
+
+.sharing-toggle {
+    display: flex;
+    align-items: center;
+    padding-top: 0.5rem;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.toggle-input {
+    width: 1.25rem;
+    height: 1.25rem;
+    accent-color: #3a6a3a;
+}
+
+.toggle-text {
+    font-size: 0.9rem;
+    color: #374151;
+}
 
 .note-actions {
     display: flex;
@@ -502,7 +530,7 @@
     color: #374151;
 }
 
-/* Modal styles (reuse from other components) */
+/* Modal styles */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -602,11 +630,6 @@
     outline: none;
     border-color: #8a6e2e;
     box-shadow: 0 0 0 3px rgba(138, 110, 46, 0.1);
-}
-
-.view-btn {
-    background: #faf6ef;
-    color: #6d5624;
 }
 
 .error-message {

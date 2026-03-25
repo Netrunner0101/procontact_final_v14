@@ -7,22 +7,24 @@ use Livewire\WithPagination;
 use App\Models\RendezVous;
 use App\Models\Contact;
 use App\Models\Activite;
+use App\Mail\RendezVousNotification;
+use App\Services\PortalTokenService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class AppointmentManager extends Component
 {
     use WithPagination;
 
     public $search = '';
-    public $statusFilter = '';
     public $contactFilter = '';
     public $activiteFilter = '';
     public $dateFilter = '';
     public $sortBy = 'date_debut';
     public $sortDirection = 'desc';
     public $viewMode = 'list'; // list, calendar
-    
+
     public $showCreateModal = false;
     public $showEditModal = false;
     public $showDeleteModal = false;
@@ -37,10 +39,6 @@ class AppointmentManager extends Component
     public $heure_fin = '';
     public $titre = '';
     public $description = '';
-    public $duree = 60;
-    public $statut = 'Programmé';
-    public $notes = '';
-    public $lieu = '';
 
     protected $rules = [
         'contact_id' => 'required|exists:contacts,id',
@@ -51,9 +49,6 @@ class AppointmentManager extends Component
         'heure_fin' => 'nullable|date_format:H:i|after:heure_debut',
         'titre' => 'required|string|max:255',
         'description' => 'nullable|string',
-        'statut' => 'required|in:Programmé,Confirmé,En cours,Terminé,Annulé,Reporté',
-        'notes' => 'nullable|string',
-        'lieu' => 'nullable|string|max:255',
     ];
 
     public function mount()
@@ -65,11 +60,6 @@ class AppointmentManager extends Component
     }
 
     public function updatingSearch()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingStatusFilter()
     {
         $this->resetPage();
     }
@@ -137,7 +127,7 @@ class AppointmentManager extends Component
     {
         $this->validate();
 
-        RendezVous::create([
+        $rendezVous = RendezVous::create([
             'contact_id' => $this->contact_id,
             'activite_id' => $this->activite_id,
             'titre' => $this->titre,
@@ -149,8 +139,41 @@ class AppointmentManager extends Component
             'user_id' => Auth::id(),
         ]);
 
+        // Generate portal token for the contact if not exists, then send email
+        $this->sendAppointmentEmail($rendezVous);
+
         $this->closeModals();
-        session()->flash('success', 'Rendez-vous créé avec succès!');
+        session()->flash('success', 'Rendez-vous créé avec succès! Un email a été envoyé au client.');
+    }
+
+    public function resendEmail($appointmentId)
+    {
+        $rendezVous = RendezVous::where('user_id', Auth::id())->findOrFail($appointmentId);
+        $this->sendAppointmentEmail($rendezVous);
+        session()->flash('success', 'Email renvoyé avec succès!');
+    }
+
+    private function sendAppointmentEmail(RendezVous $rendezVous)
+    {
+        $contact = $rendezVous->contact()->with('emails')->first();
+
+        // Generate portal token if not exists
+        if (!$contact->portal_token) {
+            $tokenService = app(PortalTokenService::class);
+            $tokenService->generate($contact);
+            $contact->refresh();
+        }
+
+        // Send email to the contact's first email address
+        $contactEmail = $contact->emails->first();
+        if ($contactEmail) {
+            try {
+                Mail::to($contactEmail->email)->send(new RendezVousNotification($rendezVous));
+            } catch (\Exception $e) {
+                // Log the error but don't fail the appointment creation
+                \Log::warning('Failed to send appointment email: ' . $e->getMessage());
+            }
+        }
     }
 
     public function updateAppointment()
@@ -179,13 +202,6 @@ class AppointmentManager extends Component
         session()->flash('success', 'Rendez-vous supprimé avec succès!');
     }
 
-    public function updateStatus($appointmentId, $status)
-    {
-        $appointment = RendezVous::where('user_id', Auth::id())->findOrFail($appointmentId);
-        $appointment->update(['statut' => $status]);
-        session()->flash('success', 'Statut mis à jour avec succès!');
-    }
-
     private function resetForm()
     {
         $this->contact_id = '';
@@ -196,10 +212,6 @@ class AppointmentManager extends Component
         $this->date_fin = '';
         $this->heure_debut = '09:00';
         $this->heure_fin = '10:00';
-        $this->duree = 60;
-        $this->statut = 'Programmé';
-        $this->notes = '';
-        $this->lieu = '';
     }
 
     private function fillForm($appointment)
@@ -223,9 +235,6 @@ class AppointmentManager extends Component
                     $q->where('nom', 'like', '%' . $this->search . '%')
                       ->orWhere('prenom', 'like', '%' . $this->search . '%');
                 });
-            })
-            ->when($this->statusFilter, function ($query) {
-                $query->where('statut', $this->statusFilter);
             })
             ->when($this->contactFilter, function ($query) {
                 $query->where('contact_id', $this->contactFilter);

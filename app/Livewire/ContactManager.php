@@ -14,6 +14,7 @@ class ContactManager extends Component
 
     public $search = '';
     public $statusFilter = '';
+    public $clientStatusFilter = ''; // Contact/Client auto-status filter
     public $sortBy = 'created_at';
     public $sortDirection = 'desc';
     public $showCreateModal = false;
@@ -57,6 +58,11 @@ class ContactManager extends Component
     }
 
     public function updatingStatusFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingClientStatusFilter()
     {
         $this->resetPage();
     }
@@ -180,18 +186,30 @@ class ContactManager extends Component
 
     public function render()
     {
-        $contacts = Contact::with('status')
+        $contacts = Contact::with(['status', 'emails', 'numeroTelephones'])
+            ->withCount('rendezVous')
             ->where('user_id', Auth::id())
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('nom', 'like', '%' . $this->search . '%')
                       ->orWhere('prenom', 'like', '%' . $this->search . '%')
-                      ->orWhere('email', 'like', '%' . $this->search . '%')
-                      ->orWhere('telephone', 'like', '%' . $this->search . '%');
+                      ->orWhereHas('emails', function ($eq) {
+                          $eq->where('email', 'like', '%' . $this->search . '%');
+                      })
+                      ->orWhereHas('numeroTelephones', function ($pq) {
+                          $pq->where('numero_telephone', 'like', '%' . $this->search . '%');
+                      });
                 });
             })
             ->when($this->statusFilter, function ($query) {
                 $query->where('status_id', $this->statusFilter);
+            })
+            ->when($this->clientStatusFilter !== '', function ($query) {
+                if ($this->clientStatusFilter === 'client') {
+                    $query->has('rendezVous');
+                } elseif ($this->clientStatusFilter === 'contact') {
+                    $query->doesntHave('rendezVous');
+                }
             })
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(10);

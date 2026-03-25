@@ -40,6 +40,8 @@ class ContactController extends Controller
             'pays' => 'nullable|string|max:255',
             'state_client' => 'nullable|string|max:255',
             'status_id' => 'nullable|exists:statuses,id',
+        ], [
+            'emails.*.email' => "L'adresse email n'est pas valide.",
         ]);
 
         $validated['user_id'] = Auth::id();
@@ -47,12 +49,12 @@ class ContactController extends Controller
 
         // Save emails
         foreach ($validated['emails'] as $email) {
-            $contact->emails()->create(['email' => $email]);
+            $contact->emails()->create(['email' => $email, 'user_id' => Auth::id()]);
         }
 
         // Save phone numbers
         foreach ($validated['phones'] as $phone) {
-            $contact->numeroTelephones()->create(['numero_telephone' => $phone]);
+            $contact->numeroTelephones()->create(['numero_telephone' => $phone, 'user_id' => Auth::id()]);
         }
 
         return redirect()->route('contacts.index')->with('success', 'Contact créé avec succès');
@@ -68,6 +70,7 @@ class ContactController extends Controller
     public function edit(Contact $contact)
     {
         $this->authorize('update', $contact);
+        $contact->load(['emails', 'numeroTelephones']);
         $statuses = Status::all();
         return view('contacts.edit', compact('contact', 'statuses'));
     }
@@ -75,10 +78,14 @@ class ContactController extends Controller
     public function update(Request $request, Contact $contact)
     {
         $this->authorize('update', $contact);
-        
+
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
+            'emails' => 'required|array|min:1',
+            'emails.*' => 'required|email|max:255',
+            'phones' => 'required|array|min:1',
+            'phones.*' => 'required|string|max:20',
             'rue' => 'nullable|string|max:255',
             'numero' => 'nullable|string|max:50',
             'ville' => 'nullable|string|max:255',
@@ -86,9 +93,24 @@ class ContactController extends Controller
             'pays' => 'nullable|string|max:255',
             'state_client' => 'nullable|string|max:255',
             'status_id' => 'nullable|exists:statuses,id',
+        ], [
+            'emails.*.email' => "L'adresse email n'est pas valide.",
         ]);
 
         $contact->update($validated);
+
+        // Sync emails: delete old ones and create new
+        $contact->emails()->delete();
+        foreach ($validated['emails'] as $email) {
+            $contact->emails()->create(['email' => $email, 'user_id' => Auth::id()]);
+        }
+
+        // Sync phones: delete old ones and create new
+        $contact->numeroTelephones()->delete();
+        foreach ($validated['phones'] as $phone) {
+            $contact->numeroTelephones()->create(['numero_telephone' => $phone, 'user_id' => Auth::id()]);
+        }
+
         return redirect()->route('contacts.show', $contact)->with('success', 'Contact mis à jour');
     }
 

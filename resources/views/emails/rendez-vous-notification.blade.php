@@ -14,7 +14,7 @@
             padding: 20px;
         }
         .header {
-            background-color: #8B5CF6;
+            background-color: #843728;
             color: white;
             padding: 20px;
             text-align: center;
@@ -37,11 +37,11 @@
             margin-bottom: 10px;
             padding: 10px;
             background-color: white;
-            border-left: 4px solid #8B5CF6;
+            border-left: 4px solid #843728;
         }
         .detail-label {
             font-weight: bold;
-            color: #8B5CF6;
+            color: #843728;
         }
         .highlight {
             background-color: #EDE9FE;
@@ -63,7 +63,7 @@
         <p>Nous vous confirmons votre rendez-vous :</p>
 
         <div class="highlight">
-            <h2 style="margin-top: 0; color: #8B5CF6;">{{ $rendezVous->titre }}</h2>
+            <h2 style="margin-top: 0; color: #843728;">{{ $rendezVous->titre }}</h2>
             @if($rendezVous->description)
                 <p><strong>Description :</strong> {{ $rendezVous->description }}</p>
             @endif
@@ -106,6 +106,16 @@
                 <span class="detail-label">Email :</span>
                 {{ $activite->email }}
             </div>
+        @endif
+
+        @if($contact->portal_token)
+        <div style="margin-top: 20px; padding: 20px; background-color: #EDE9FE; border-radius: 8px; text-align: center;">
+            <p style="margin: 0 0 15px 0; font-weight: bold;">Accédez à votre espace client</p>
+            <a href="{{ url('/portal/' . $contact->portal_token) }}" style="display: inline-block; padding: 12px 24px; background-color: #843728; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                Voir mes rendez-vous
+            </a>
+            <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">Ce lien est personnel. Ne le partagez pas.</p>
+        </div>
         @endif
 
         <div style="margin-top: 20px; padding: 15px; background-color: #FEF3C7; border-radius: 5px;">

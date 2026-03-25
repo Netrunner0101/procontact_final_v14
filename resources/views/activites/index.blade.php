@@ -9,7 +9,7 @@
             <h1 class="text-3xl font-bold text-gray-900">Dashboard des Activités</h1>
             <p class="text-gray-600 mt-2">Gérez vos activités professionnelles</p>
         </div>
-        <a href="{{ route('activites.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition duration-200">
+        <a href="{{ route('activites.create') }}" class="text-white px-6 py-2 rounded-lg transition duration-200" style="background: linear-gradient(135deg, #843728, #c4816e);">
             Créer Nouvelle Activité
         </a>
     </div>
@@ -19,7 +19,7 @@
             @foreach($activites as $activite)
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
                     <!-- Activity Image/Icon -->
-                    <div class="h-48 bg-gradient-to-br from-blue-500 to-purple-600 relative">
+                    <div class="h-48 relative" style="background: linear-gradient(135deg, #843728, #c4816e);">
                         @if($activite->image)
                             <img src="{{ Storage::url($activite->image) }}" alt="{{ $activite->nom }}" 
                                  class="w-full h-full object-cover">
@@ -76,15 +76,15 @@
                         <!-- Action Buttons -->
                         <div class="flex justify-between items-center">
                             <div class="flex space-x-2">
-                                <a href="{{ route('activites.edit', $activite) }}" 
-                                   class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition duration-200">
+                                <a href="{{ route('activites.edit', $activite) }}"
+                                   class="text-white px-3 py-1 rounded text-sm transition duration-200" style="background: #8a6e2e;">
                                     Modifier
                                 </a>
                                 <form action="{{ route('activites.destroy', $activite) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" 
-                                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition duration-200"
+                                    <button type="submit"
+                                            class="text-white px-3 py-1 rounded text-sm transition duration-200" style="background: #ba1a1a;"
                                             onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette activité ?')">
                                         Supprimer
                                     </button>
@@ -112,8 +112,8 @@
             </div>
             <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune activité</h3>
             <p class="text-gray-600 mb-4">Commencez par créer votre première activité professionnelle.</p>
-            <a href="{{ route('activites.create') }}" 
-               class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition duration-200">
+            <a href="{{ route('activites.create') }}"
+               class="text-white px-6 py-2 rounded-lg transition duration-200" style="background: linear-gradient(135deg, #843728, #c4816e);">
                 Créer une Activité
             </a>
         </div>
