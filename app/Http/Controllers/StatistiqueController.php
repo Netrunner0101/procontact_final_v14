@@ -10,6 +10,7 @@ use App\Models\Note;
 use App\Models\Statistique;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -18,161 +19,170 @@ class StatistiqueController extends Controller
     public function index()
     {
         $userId = Auth::id();
-        
-        // Global Statistics
-        $totalContacts = Contact::where('user_id', $userId)->count();
-        $totalActivites = Activite::where('user_id', $userId)->count();
-        $totalRendezVous = RendezVous::where('user_id', $userId)->count();
-        $totalRappels = Rappel::whereHas('rendezVous', function($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->count();
-        $totalNotes = Note::where('user_id', $userId)->count();
-        
-        // Monthly Statistics (Last 12 months)
-        $monthlyStats = [];
-        for ($i = 11; $i >= 0; $i--) {
-            $date = Carbon::now()->subMonths($i);
-            $monthKey = $date->format('Y-m');
-            $monthLabel = $date->format('M Y');
-            
-            $monthlyStats[] = [
-                'month' => $monthLabel,
-                'contacts' => Contact::where('user_id', $userId)
-                    ->whereYear('created_at', $date->year)
-                    ->whereMonth('created_at', $date->month)
-                    ->count(),
-                'rendez_vous' => RendezVous::where('user_id', $userId)
-                    ->whereYear('created_at', $date->year)
-                    ->whereMonth('created_at', $date->month)
-                    ->count(),
-                'notes' => Note::where('user_id', $userId)
-                    ->whereYear('created_at', $date->year)
-                    ->whereMonth('created_at', $date->month)
-                    ->count(),
+        $cacheKey = "stats_index_{$userId}";
+
+        $data = Cache::remember($cacheKey, 300, function () use ($userId) {
+            // Global Statistics - 5 queries
+            $totalContacts = Contact::where('user_id', $userId)->count();
+            $totalActivites = Activite::where('user_id', $userId)->count();
+            $totalRendezVous = RendezVous::where('user_id', $userId)->count();
+            $totalRappels = Rappel::join('rendez_vous', 'rappels.rendez_vous_id', '=', 'rendez_vous.id')
+                ->where('rendez_vous.user_id', $userId)
+                ->count();
+            $totalNotes = Note::where('user_id', $userId)->count();
+
+            // Monthly Statistics - 3 grouped queries instead of 36
+            $startDate = Carbon::now()->subMonths(12)->startOfMonth();
+
+            $contactsByMonth = Contact::where('user_id', $userId)
+                ->where('created_at', '>=', $startDate)
+                ->selectRaw("to_char(created_at, 'YYYY-MM') as month, count(*) as count")
+                ->groupBy('month')->pluck('count', 'month');
+
+            $rdvByMonth = RendezVous::where('user_id', $userId)
+                ->where('created_at', '>=', $startDate)
+                ->selectRaw("to_char(created_at, 'YYYY-MM') as month, count(*) as count")
+                ->groupBy('month')->pluck('count', 'month');
+
+            $notesByMonth = Note::where('user_id', $userId)
+                ->where('created_at', '>=', $startDate)
+                ->selectRaw("to_char(created_at, 'YYYY-MM') as month, count(*) as count")
+                ->groupBy('month')->pluck('count', 'month');
+
+            $monthlyStats = [];
+            for ($i = 11; $i >= 0; $i--) {
+                $date = Carbon::now()->subMonths($i);
+                $key = $date->format('Y-m');
+                $monthlyStats[] = [
+                    'month' => $date->format('M Y'),
+                    'contacts' => $contactsByMonth[$key] ?? 0,
+                    'rendez_vous' => $rdvByMonth[$key] ?? 0,
+                    'notes' => $notesByMonth[$key] ?? 0,
+                ];
+            }
+
+            // Activity Statistics
+            $activiteStats = Activite::where('user_id', $userId)
+                ->withCount(['rendezVous', 'contacts', 'notes'])
+                ->orderBy('rendez_vous_count', 'desc')
+                ->get();
+
+            // Recent Trends - reuse grouped data
+            $thisMonth = Carbon::now()->format('Y-m');
+            $lastMonth = Carbon::now()->subMonth()->format('Y-m');
+            $recentTrends = [
+                'contacts_this_month' => $contactsByMonth[$thisMonth] ?? 0,
+                'contacts_last_month' => $contactsByMonth[$lastMonth] ?? 0,
+                'rendez_vous_this_month' => $rdvByMonth[$thisMonth] ?? 0,
+                'rendez_vous_last_month' => $rdvByMonth[$lastMonth] ?? 0,
             ];
-        }
-        
-        // Activity Statistics
-        $activiteStats = Activite::where('user_id', $userId)
-            ->withCount(['rendezVous', 'contacts', 'notes'])
-            ->orderBy('rendez_vous_count', 'desc')
-            ->get();
-        
-        // Recent Activity Trends
-        $recentTrends = [
-            'contacts_this_month' => Contact::where('user_id', $userId)
-                ->whereMonth('created_at', Carbon::now()->month)
-                ->whereYear('created_at', Carbon::now()->year)
-                ->count(),
-            'contacts_last_month' => Contact::where('user_id', $userId)
-                ->whereMonth('created_at', Carbon::now()->subMonth()->month)
-                ->whereYear('created_at', Carbon::now()->subMonth()->year)
-                ->count(),
-            'rendez_vous_this_month' => RendezVous::where('user_id', $userId)
-                ->whereMonth('created_at', Carbon::now()->month)
-                ->whereYear('created_at', Carbon::now()->year)
-                ->count(),
-            'rendez_vous_last_month' => RendezVous::where('user_id', $userId)
-                ->whereMonth('created_at', Carbon::now()->subMonth()->month)
-                ->whereYear('created_at', Carbon::now()->subMonth()->year)
-                ->count(),
-        ];
-        
-        // Upcoming vs Past Appointments
-        $appointmentStats = [
-            'upcoming' => RendezVous::where('user_id', $userId)
-                ->where('date_debut', '>=', Carbon::today())
-                ->count(),
-            'past' => RendezVous::where('user_id', $userId)
-                ->where('date_debut', '<', Carbon::today())
-                ->count(),
-            'today' => RendezVous::where('user_id', $userId)
-                ->whereDate('date_debut', Carbon::today())
-                ->count(),
-        ];
-        
-        // Priority Distribution for Notes
-        $notePriorities = Note::where('user_id', $userId)
-            ->select('priorite', DB::raw('count(*) as count'))
-            ->groupBy('priorite')
-            ->pluck('count', 'priorite')
-            ->toArray();
-        
-        return view('statistiques.index', compact(
-            'totalContacts', 'totalActivites', 'totalRendezVous', 'totalRappels', 'totalNotes',
-            'monthlyStats', 'activiteStats', 'recentTrends', 'appointmentStats', 'notePriorities'
-        ));
+
+            // Upcoming vs Past Appointments - 1 query with conditional counts
+            $appointmentStats = RendezVous::where('user_id', $userId)
+                ->selectRaw("
+                    count(*) filter (where date_debut >= ?) as upcoming,
+                    count(*) filter (where date_debut < ?) as past,
+                    count(*) filter (where date_debut::date = ?) as today
+                ", [Carbon::today(), Carbon::today(), Carbon::today()])
+                ->first();
+
+            $appointmentStatsArray = [
+                'upcoming' => $appointmentStats->upcoming ?? 0,
+                'past' => $appointmentStats->past ?? 0,
+                'today' => $appointmentStats->today ?? 0,
+            ];
+
+            // Note sharing distribution
+            $notePriorities = Note::where('user_id', $userId)
+                ->whereNotNull('is_shared_with_client')
+                ->selectRaw("case when is_shared_with_client then 'shared' else 'private' end as priorite, count(*) as count")
+                ->groupByRaw("case when is_shared_with_client then 'shared' else 'private' end")
+                ->pluck('count', 'priorite')
+                ->toArray();
+
+            return compact(
+                'totalContacts', 'totalActivites', 'totalRendezVous', 'totalRappels', 'totalNotes',
+                'monthlyStats', 'activiteStats', 'recentTrends', 'notePriorities'
+            ) + ['appointmentStats' => $appointmentStatsArray];
+        });
+
+        return view('statistiques.index', $data);
     }
     
     public function activite(Activite $activite)
     {
-        // Verify ownership
         if ($activite->user_id !== Auth::id()) {
             abort(403);
         }
-        
-        $userId = Auth::id();
-        
-        // Activity-specific statistics
-        $stats = [
-            'total_contacts' => $activite->contacts()->count(),
-            'total_rendez_vous' => $activite->rendezVous()->count(),
-            'total_notes' => $activite->notes()->count(),
-            'total_rappels' => Rappel::whereHas('rendezVous', function($query) use ($activite) {
-                $query->where('activite_id', $activite->id);
-            })->count(),
-        ];
-        
-        // Monthly trends for this activity (Last 6 months)
-        $monthlyTrends = [];
-        for ($i = 5; $i >= 0; $i--) {
-            $date = Carbon::now()->subMonths($i);
-            $monthLabel = $date->format('M Y');
-            
-            $monthlyTrends[] = [
-                'month' => $monthLabel,
-                'rendez_vous' => $activite->rendezVous()
-                    ->whereYear('created_at', $date->year)
-                    ->whereMonth('created_at', $date->month)
-                    ->count(),
-                'notes' => $activite->notes()
-                    ->whereYear('created_at', $date->year)
-                    ->whereMonth('created_at', $date->month)
+
+        $cacheKey = "stats_activite_{$activite->id}";
+
+        $data = Cache::remember($cacheKey, 300, function () use ($activite) {
+            // Activity-specific statistics - use join for rappels instead of whereHas
+            $stats = [
+                'total_contacts' => $activite->contacts()->count(),
+                'total_rendez_vous' => $activite->rendezVous()->count(),
+                'total_notes' => $activite->notes()->count(),
+                'total_rappels' => Rappel::join('rendez_vous', 'rappels.rendez_vous_id', '=', 'rendez_vous.id')
+                    ->where('rendez_vous.activite_id', $activite->id)
                     ->count(),
             ];
-        }
-        
-        // Top contacts for this activity
-        $topContacts = $activite->contacts()
-            ->withCount('rendezVous')
-            ->orderBy('rendez_vous_count', 'desc')
-            ->limit(5)
-            ->get();
-        
-        // Recent appointments
-        $recentAppointments = $activite->rendezVous()
-            ->with('contact')
-            ->orderBy('date_debut', 'desc')
-            ->limit(10)
-            ->get();
-        
-        // Appointment status distribution
-        $appointmentStatus = [
-            'upcoming' => $activite->rendezVous()
-                ->where('date_debut', '>=', Carbon::today())
-                ->count(),
-            'past' => $activite->rendezVous()
-                ->where('date_debut', '<', Carbon::today())
-                ->count(),
-            'today' => $activite->rendezVous()
-                ->whereDate('date_debut', Carbon::today())
-                ->count(),
-        ];
-        
-        return view('statistiques.activite', compact(
-            'activite', 'stats', 'monthlyTrends', 'topContacts', 
-            'recentAppointments', 'appointmentStatus'
-        ));
+
+            // Monthly trends - 2 grouped queries instead of 12
+            $startDate = Carbon::now()->subMonths(6)->startOfMonth();
+
+            $rdvByMonth = $activite->rendezVous()
+                ->where('created_at', '>=', $startDate)
+                ->selectRaw("to_char(created_at, 'YYYY-MM') as month, count(*) as count")
+                ->groupBy('month')->pluck('count', 'month');
+
+            $notesByMonth = $activite->notes()
+                ->where('created_at', '>=', $startDate)
+                ->selectRaw("to_char(created_at, 'YYYY-MM') as month, count(*) as count")
+                ->groupBy('month')->pluck('count', 'month');
+
+            $monthlyTrends = [];
+            for ($i = 5; $i >= 0; $i--) {
+                $date = Carbon::now()->subMonths($i);
+                $key = $date->format('Y-m');
+                $monthlyTrends[] = [
+                    'month' => $date->format('M Y'),
+                    'rendez_vous' => $rdvByMonth[$key] ?? 0,
+                    'notes' => $notesByMonth[$key] ?? 0,
+                ];
+            }
+
+            $topContacts = $activite->contacts()
+                ->withCount('rendezVous')
+                ->orderBy('rendez_vous_count', 'desc')
+                ->limit(5)
+                ->get();
+
+            $recentAppointments = $activite->rendezVous()
+                ->with('contact')
+                ->orderBy('date_debut', 'desc')
+                ->limit(10)
+                ->get();
+
+            // Appointment status - 1 query with conditional counts
+            $apptStats = $activite->rendezVous()
+                ->selectRaw("
+                    count(*) filter (where date_debut >= ?) as upcoming,
+                    count(*) filter (where date_debut < ?) as past,
+                    count(*) filter (where date_debut::date = ?) as today
+                ", [Carbon::today(), Carbon::today(), Carbon::today()])
+                ->first();
+
+            $appointmentStatus = [
+                'upcoming' => $apptStats->upcoming ?? 0,
+                'past' => $apptStats->past ?? 0,
+                'today' => $apptStats->today ?? 0,
+            ];
+
+            return compact('stats', 'monthlyTrends', 'topContacts', 'recentAppointments', 'appointmentStatus');
+        });
+
+        return view('statistiques.activite', array_merge(['activite' => $activite], $data));
     }
     
     public function exportGlobal()

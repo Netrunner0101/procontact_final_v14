@@ -15,6 +15,11 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * Always eager-load the role relationship to avoid N+1 on isAdmin()/isClient().
+     */
+    protected $with = ['role'];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>

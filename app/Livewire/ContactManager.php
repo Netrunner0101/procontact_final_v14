@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\Contact;
 use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class ContactManager extends Component
 {
@@ -207,7 +208,7 @@ class ContactManager extends Component
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(10);
 
-        $statuses = Status::all();
+        $statuses = Cache::remember('statuses', 3600, fn () => Status::all());
 
         return view('livewire.contact-manager', [
             'contacts' => $contacts,

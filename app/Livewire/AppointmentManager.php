@@ -7,11 +7,9 @@ use Livewire\WithPagination;
 use App\Models\RendezVous;
 use App\Models\Contact;
 use App\Models\Activite;
-use App\Mail\RendezVousNotification;
-use App\Services\PortalTokenService;
+use App\Jobs\SendAppointmentEmail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
 
 class AppointmentManager extends Component
 {
@@ -29,6 +27,8 @@ class AppointmentManager extends Component
     public $showEditModal = false;
     public $showDeleteModal = false;
     public $selectedAppointment = null;
+    public $contactsList = [];
+    public $activitesList = [];
 
     // Form fields
     public $contact_id = '';
@@ -57,6 +57,19 @@ class AppointmentManager extends Component
         $this->date_debut = now()->addDay()->format('Y-m-d');
         $this->heure_debut = '09:00';
         $this->heure_fin = '10:00';
+        $this->loadDropdownData();
+    }
+
+    private function loadDropdownData()
+    {
+        $this->contactsList = Contact::where('user_id', Auth::id())
+            ->select('id', 'nom', 'prenom')
+            ->orderBy('nom')
+            ->get();
+        $this->activitesList = Activite::where('user_id', Auth::id())
+            ->select('id', 'nom')
+            ->orderBy('nom')
+            ->get();
     }
 
     public function updatingSearch()
@@ -155,25 +168,7 @@ class AppointmentManager extends Component
 
     private function sendAppointmentEmail(RendezVous $rendezVous)
     {
-        $contact = $rendezVous->contact()->with('emails')->first();
-
-        // Generate portal token if not exists
-        if (!$contact->portal_token) {
-            $tokenService = app(PortalTokenService::class);
-            $tokenService->generate($contact);
-            $contact->refresh();
-        }
-
-        // Send email to the contact's first email address
-        $contactEmail = $contact->emails->first();
-        if ($contactEmail) {
-            try {
-                Mail::to($contactEmail->email)->send(new RendezVousNotification($rendezVous));
-            } catch (\Exception $e) {
-                // Log the error but don't fail the appointment creation
-                \Log::warning('Failed to send appointment email: ' . $e->getMessage());
-            }
-        }
+        SendAppointmentEmail::dispatch($rendezVous);
     }
 
     public function updateAppointment()
@@ -265,13 +260,10 @@ class AppointmentManager extends Component
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(12);
 
-        $contacts = Contact::where('user_id', Auth::id())->orderBy('nom')->get();
-        $activites = Activite::where('user_id', Auth::id())->orderBy('nom')->get();
-
         return view('livewire.appointment-manager', [
             'appointments' => $appointments,
-            'contacts' => $contacts,
-            'activites' => $activites,
+            'contacts' => $this->contactsList,
+            'activites' => $this->activitesList,
         ]);
     }
 }

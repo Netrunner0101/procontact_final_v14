@@ -16,7 +16,6 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="font-sans antialiased" style="background: #fbf9f6; min-height: 100vh;">
     <div class="min-h-screen">
