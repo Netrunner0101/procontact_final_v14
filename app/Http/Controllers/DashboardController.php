@@ -16,26 +16,26 @@ class DashboardController extends Controller
     public function index()
     {
         $userId = Auth::id();
-        
+
         // Statistics
         $totalContacts = Contact::where('user_id', $userId)->count();
         $totalActivites = Activite::where('user_id', $userId)->count();
         $totalRendezVous = RendezVous::where('user_id', $userId)->count();
-        $totalRappels = Rappel::whereHas('rendezVous', function($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->count();
+        $totalRappels = Rappel::join('rendez_vous', 'rappels.rendez_vous_id', '=', 'rendez_vous.id')
+            ->where('rendez_vous.user_id', $userId)
+            ->count();
         $totalNotes = Note::where('user_id', $userId)->count();
-        
-        // Upcoming reminders
+
+        // Upcoming reminders - join instead of whereHas
         $upcomingRappels = Rappel::with(['rendezVous.contact', 'rendezVous.activite'])
-            ->whereHas('rendezVous', function($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
-            ->where('date_rappel', '>=', Carbon::now())
-            ->orderBy('date_rappel')
+            ->join('rendez_vous', 'rappels.rendez_vous_id', '=', 'rendez_vous.id')
+            ->where('rendez_vous.user_id', $userId)
+            ->where('rappels.date_rappel', '>=', Carbon::now())
+            ->orderBy('rappels.date_rappel')
+            ->select('rappels.*')
             ->limit(5)
             ->get();
-        
+
         // Upcoming appointments
         $upcomingRendezVous = RendezVous::with(['contact', 'activite'])
             ->where('user_id', $userId)
@@ -44,13 +44,13 @@ class DashboardController extends Controller
             ->orderBy('heure_debut')
             ->limit(5)
             ->get();
-        
+
         // Recent contacts
         $recentContacts = Contact::where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
-            
+
         // Recent notes
         $recentNotes = Note::with(['contact', 'activite', 'rendezVous'])
             ->where('user_id', $userId)
@@ -60,7 +60,7 @@ class DashboardController extends Controller
 
         return view('dashboard', compact(
             'totalContacts',
-            'totalActivites', 
+            'totalActivites',
             'totalRendezVous',
             'totalRappels',
             'totalNotes',

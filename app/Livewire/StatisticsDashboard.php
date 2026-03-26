@@ -10,6 +10,7 @@ use App\Models\Rappel;
 use App\Models\Activite;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class StatisticsDashboard extends Component
@@ -48,40 +49,41 @@ class StatisticsDashboard extends Component
     private function loadMonthlyStats()
     {
         $months = (int)$this->dateRange;
-        $startDate = now()->subMonths($months);
-        
-        $monthlyData = [];
-        for ($i = $months - 1; $i >= 0; $i--) {
-            $date = now()->subMonths($i);
-            $monthKey = $date->format('Y-m');
-            $monthName = $date->format('M Y');
-            
-            $contacts = Contact::where('user_id', Auth::id())
-                ->whereYear('created_at', $date->year)
-                ->whereMonth('created_at', $date->month)
-                ->count();
-                
-            $appointments = RendezVous::where('user_id', Auth::id())
-                ->whereYear('created_at', $date->year)
-                ->whereMonth('created_at', $date->month)
-                ->count();
-                
-            $notes = Note::whereHas('rendezVous', function($query) use ($date) {
-                $query->where('user_id', Auth::id());
-            })
-            ->whereYear('created_at', $date->year)
-            ->whereMonth('created_at', $date->month)
-            ->count();
-            
-            $monthlyData[] = [
-                'month' => $monthName,
-                'contacts' => $contacts,
-                'appointments' => $appointments,
-                'notes' => $notes,
-            ];
-        }
-        
-        $this->monthlyStats = $monthlyData;
+        $userId = Auth::id();
+        $cacheKey = "livewire_monthly_stats_{$userId}_{$months}";
+
+        $this->monthlyStats = Cache::remember($cacheKey, 300, function () use ($months, $userId) {
+            $startDate = now()->subMonths($months)->startOfMonth();
+
+            $contactsByMonth = Contact::where('user_id', $userId)
+                ->where('created_at', '>=', $startDate)
+                ->selectRaw("to_char(created_at, 'YYYY-MM') as month, count(*) as count")
+                ->groupBy('month')->pluck('count', 'month');
+
+            $rdvByMonth = RendezVous::where('user_id', $userId)
+                ->where('created_at', '>=', $startDate)
+                ->selectRaw("to_char(created_at, 'YYYY-MM') as month, count(*) as count")
+                ->groupBy('month')->pluck('count', 'month');
+
+            $notesByMonth = Note::where('user_id', $userId)
+                ->where('created_at', '>=', $startDate)
+                ->selectRaw("to_char(created_at, 'YYYY-MM') as month, count(*) as count")
+                ->groupBy('month')->pluck('count', 'month');
+
+            $monthlyData = [];
+            for ($i = $months - 1; $i >= 0; $i--) {
+                $date = now()->subMonths($i);
+                $key = $date->format('Y-m');
+                $monthlyData[] = [
+                    'month' => $date->format('M Y'),
+                    'contacts' => $contactsByMonth[$key] ?? 0,
+                    'appointments' => $rdvByMonth[$key] ?? 0,
+                    'notes' => $notesByMonth[$key] ?? 0,
+                ];
+            }
+
+            return $monthlyData;
+        });
     }
 
     private function loadActivityStats()
@@ -98,21 +100,23 @@ class StatisticsDashboard extends Component
 
     private function loadStatusDistribution()
     {
-        // Compute appointment status from dates (no statut column in DB)
         $query = RendezVous::where('user_id', Auth::id());
 
         if ($this->selectedActivity) {
             $query->where('activite_id', $this->selectedActivity);
         }
 
-        $upcoming = (clone $query)->where('date_debut', '>=', now()->toDateString())->count();
-        $past = (clone $query)->where('date_debut', '<', now()->toDateString())->count();
-        $today = (clone $query)->whereDate('date_debut', now()->toDateString())->count();
+        $today = now()->toDateString();
+        $stats = $query->selectRaw("
+            count(*) filter (where date_debut >= ?) as upcoming,
+            count(*) filter (where date_debut < ?) as past,
+            count(*) filter (where date_debut::date = ?) as today
+        ", [$today, $today, $today])->first();
 
         $this->statusDistribution = collect([
-            (object)['statut' => 'À venir', 'count' => $upcoming],
-            (object)['statut' => "Aujourd'hui", 'count' => $today],
-            (object)['statut' => 'Passé', 'count' => $past],
+            (object)['statut' => 'À venir', 'count' => $stats->upcoming ?? 0],
+            (object)['statut' => "Aujourd'hui", 'count' => $stats->today ?? 0],
+            (object)['statut' => 'Passé', 'count' => $stats->past ?? 0],
         ])->filter(fn($item) => $item->count > 0)->values();
     }
 

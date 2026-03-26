@@ -30,7 +30,7 @@
                 <i class="fas fa-search"></i>
                 <input
                     type="text"
-                    wire:model.live="search"
+                    wire:model.live.debounce.300ms="search"
                     placeholder="Rechercher par nom de contact..."
                     class="search-input"
                 >

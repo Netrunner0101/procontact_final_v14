@@ -5,8 +5,7 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
-/* Import Google Fonts - The Sophisticated Architect Typography */
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
+/* Google Fonts loaded via <link> in layout head for non-blocking rendering */
 
 @theme {
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;

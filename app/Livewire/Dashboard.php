@@ -17,6 +17,7 @@ class Dashboard extends Component
     public $upcomingAppointments = [];
     public $recentContacts = [];
     public $upcomingReminders = [];
+    public $activities = [];
     public $lastLogin;
 
     public function mount()
@@ -25,23 +26,22 @@ class Dashboard extends Component
         $this->loadUpcomingAppointments();
         $this->loadRecentContacts();
         $this->loadUpcomingReminders();
+        $this->loadActivities();
         $this->lastLogin = Auth::user()->last_login_at;
     }
 
     public function loadStats()
     {
-        $user = Auth::user();
-        
+        $userId = Auth::id();
+
         $this->stats = [
-            'contacts' => Contact::where('user_id', $user->id)->count(),
-            'appointments' => RendezVous::where('user_id', $user->id)->count(),
-            'notes' => Note::whereHas('rendezVous', function($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })->count(),
-            'reminders' => Rappel::whereHas('rendezVous', function($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })->count(),
-            'activities' => Activite::where('user_id', $user->id)->count(),
+            'contacts' => Contact::where('user_id', $userId)->count(),
+            'appointments' => RendezVous::where('user_id', $userId)->count(),
+            'notes' => Note::where('user_id', $userId)->count(),
+            'reminders' => Rappel::join('rendez_vous', 'rappels.rendez_vous_id', '=', 'rendez_vous.id')
+                ->where('rendez_vous.user_id', $userId)
+                ->count(),
+            'activities' => Activite::where('user_id', $userId)->count(),
         ];
     }
 
@@ -67,12 +67,20 @@ class Dashboard extends Component
     public function loadUpcomingReminders()
     {
         $this->upcomingReminders = Rappel::with(['rendezVous.contact'])
-            ->whereHas('rendezVous', function($query) {
-                $query->where('user_id', Auth::id());
-            })
-            ->where('date_rappel', '>=', now())
-            ->orderBy('date_rappel')
+            ->join('rendez_vous', 'rappels.rendez_vous_id', '=', 'rendez_vous.id')
+            ->where('rendez_vous.user_id', Auth::id())
+            ->where('rappels.date_rappel', '>=', now())
+            ->orderBy('rappels.date_rappel')
+            ->select('rappels.*')
             ->limit(5)
+            ->get();
+    }
+
+    public function loadActivities()
+    {
+        $this->activities = Activite::where('user_id', Auth::id())
+            ->withCount(['contacts', 'rendezVous'])
+            ->orderBy('nom')
             ->get();
     }
 
@@ -82,17 +90,13 @@ class Dashboard extends Component
         $this->loadUpcomingAppointments();
         $this->loadRecentContacts();
         $this->loadUpcomingReminders();
+        $this->loadActivities();
     }
 
     public function render()
     {
-        $activities = Activite::where('user_id', Auth::id())
-            ->withCount(['contacts', 'rendezVous'])
-            ->orderBy('nom')
-            ->get();
-
         return view('livewire.dashboard', [
-            'activities' => $activities,
+            'activities' => $this->activities,
         ]);
     }
 }
