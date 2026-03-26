@@ -7,8 +7,7 @@ use App\Models\Contact;
 use App\Models\Activite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\RendezVousNotification;
+use App\Jobs\SendAppointmentEmail;
 
 class RendezVousController extends Controller
 {
@@ -46,20 +45,10 @@ class RendezVousController extends Controller
         $validated['user_id'] = Auth::id();
         $rendezVous = RendezVous::create($validated);
 
-        // Send email notification if requested
+        // Queue email notification if requested
         if ($request->has('send_email') && $request->send_email) {
-            $contact = Contact::with('emails')->find($validated['contact_id']);
-            if ($contact->emails->count() > 0) {
-                try {
-                    Mail::to($contact->emails->first()->email)
-                        ->send(new RendezVousNotification($rendezVous));
-                    $message = 'Rendez-vous créé avec succès et email envoyé au client';
-                } catch (\Exception $e) {
-                    $message = 'Rendez-vous créé avec succès mais erreur lors de l\'envoi de l\'email';
-                }
-            } else {
-                $message = 'Rendez-vous créé avec succès mais aucun email disponible pour le contact';
-            }
+            SendAppointmentEmail::dispatch($rendezVous);
+            $message = 'Rendez-vous créé avec succès et email en cours d\'envoi';
         } else {
             $message = 'Rendez-vous créé avec succès';
         }
@@ -111,33 +100,23 @@ class RendezVousController extends Controller
     public function email(Request $request, RendezVous $rendezVous)
     {
         $this->authorize('view', $rendezVous);
-        
+
         $validated = $request->validate([
             'recipient_email' => 'required|email',
             'cc_emails' => 'nullable|string',
         ]);
 
-        try {
-            $mail = Mail::to($validated['recipient_email']);
-            
-            // Add CC recipients if provided
-            if (!empty($validated['cc_emails'])) {
-                $ccEmails = array_map('trim', explode(',', $validated['cc_emails']));
-                $ccEmails = array_filter($ccEmails, function($email) {
-                    return filter_var($email, FILTER_VALIDATE_EMAIL);
-                });
-                if (!empty($ccEmails)) {
-                    $mail->cc($ccEmails);
-                }
-            }
-            
-            $mail->send(new RendezVousNotification($rendezVous));
-            
-            return redirect()->route('rendez-vous.show', $rendezVous)
-                ->with('success', 'Email envoyé avec succès');
-        } catch (\Exception $e) {
-            return redirect()->route('rendez-vous.show', $rendezVous)
-                ->with('error', 'Erreur lors de l\'envoi de l\'email: ' . $e->getMessage());
+        $ccEmails = [];
+        if (!empty($validated['cc_emails'])) {
+            $ccEmails = array_filter(
+                array_map('trim', explode(',', $validated['cc_emails'])),
+                fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL)
+            );
         }
+
+        SendAppointmentEmail::dispatch($rendezVous, $validated['recipient_email'], $ccEmails);
+
+        return redirect()->route('rendez-vous.show', $rendezVous)
+            ->with('success', 'Email en cours d\'envoi');
     }
 }

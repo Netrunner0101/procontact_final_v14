@@ -22,6 +22,7 @@ class NotesManager extends Component
     public $showEditModal = false;
     public $showDeleteModal = false;
     public $selectedNote = null;
+    public $appointmentsList = [];
 
     // Form fields
     public $rendez_vous_id = '';
@@ -40,6 +41,11 @@ class NotesManager extends Component
     {
         $this->sharingFilter = '';
         $this->appointmentFilter = '';
+        $this->appointmentsList = RendezVous::with('contact')
+            ->where('user_id', Auth::id())
+            ->select('id', 'titre', 'contact_id', 'date_debut', 'user_id')
+            ->orderBy('date_debut', 'desc')
+            ->get();
     }
 
     public function updatingSearch()
@@ -178,14 +184,9 @@ class NotesManager extends Component
             ->orderBy($this->sortBy, $this->sortDirection)
             ->paginate(12);
 
-        $appointments = RendezVous::with('contact')
-            ->where('user_id', Auth::id())
-            ->orderBy('date_debut', 'desc')
-            ->get();
-
         return view('livewire.notes-manager', [
             'notes' => $notes,
-            'appointments' => $appointments,
+            'appointments' => $this->appointmentsList,
         ]);
     }
 }
