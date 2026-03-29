@@ -27,8 +27,8 @@
             <h1 class="text-2xl font-bold" style="color: #1b1c1a;">Pro Contact</h1>
             <div class="flex items-center gap-3">
                 <div class="flex gap-2">
-                    <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'en' ? 'bg-white text-gray-900 font-bold shadow-sm' : 'text-white/70 hover:text-white' }} transition-colors">EN</a>
-                    <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-white text-gray-900 font-bold shadow-sm' : 'text-white/70 hover:text-white' }} transition-colors">FR</a>
+                    <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'en' ? 'bg-white text-gray-900 font-bold shadow-sm' : 'text-gray-500 hover:text-gray-900' }} transition-colors">EN</a>
+                    <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-white text-gray-900 font-bold shadow-sm' : 'text-gray-500 hover:text-gray-900' }} transition-colors">FR</a>
                 </div>
             </div>
             {{-- Waitlist mode: auth buttons hidden temporarily
