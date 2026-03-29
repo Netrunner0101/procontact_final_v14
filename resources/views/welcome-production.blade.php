@@ -25,12 +25,10 @@
     <nav class="fixed top-0 w-full z-50" style="background: rgba(251,249,246,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(197,200,185,0.2);">
         <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
             <h1 class="text-2xl font-bold" style="color: #1b1c1a;">Pro Contact</h1>
-            {{-- Waitlist mode: auth buttons hidden temporarily
             <div class="flex items-center gap-3">
                 <a href="{{ route('login') }}" class="px-5 py-2 rounded-md text-sm btn-secondary">Connexion</a>
                 <a href="{{ route('register') }}" class="px-5 py-2 rounded-md text-sm btn-primary">S'inscrire</a>
             </div>
-            --}}
         </div>
     </nav>
 
@@ -43,8 +41,13 @@
             <p class="text-lg md:text-xl max-w-2xl mx-auto mb-10" style="color: #44483e;">
                 Pro Contact simplifie la gestion de vos contacts, rendez-vous et activités. Tout ce dont vous avez besoin, au même endroit.
             </p>
-            <div class="max-w-xl mx-auto">
-                <iframe data-tally-src="https://tally.so/embed/2EL9Je?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" loading="lazy" width="100%" height="722" frameborder="0" marginheight="0" marginwidth="0" title="Pro Contact"></iframe>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="{{ route('register') }}" class="px-8 py-3 rounded-md text-base btn-primary">
+                    Commencer gratuitement
+                </a>
+                <a href="{{ route('login') }}" class="px-8 py-3 rounded-md text-base btn-secondary">
+                    Se connecter
+                </a>
             </div>
         </div>
     </section>
@@ -91,8 +94,16 @@
         </div>
     </section>
 
-
-    <script>var d=document,w="https://tally.so/widgets/embed.js",v=function(){"undefined"!=typeof Tally?Tally.loadEmbeds():d.querySelectorAll("iframe[data-tally-src]:not([src])").forEach((function(e){e.src=e.dataset.tallySrc}))};if("undefined"!=typeof Tally)v();else if(d.querySelector('script[src="'+w+'"]')==null){var s=d.createElement("script");s.src=w,s.onload=v,s.onerror=v,d.body.appendChild(s);}</script>
+    <!-- CTA Section -->
+    <section class="py-20 px-6">
+        <div class="max-w-3xl mx-auto text-center rounded-2xl p-12" style="background: #ffffff; box-shadow: 0 20px 40px rgba(27,28,26,0.05);">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4" style="color: #1b1c1a;">Prêt à commencer ?</h2>
+            <p class="text-lg mb-8" style="color: #44483e;">Créez votre compte et commencez à gérer vos contacts professionnels dès aujourd'hui.</p>
+            <a href="{{ route('register') }}" class="inline-block px-8 py-3 rounded-md text-base btn-primary">
+                Créer mon compte
+            </a>
+        </div>
+    </section>
 
     <!-- Footer -->
     <footer class="py-8 px-6" style="border-top: 1px solid rgba(197,200,185,0.2);">
