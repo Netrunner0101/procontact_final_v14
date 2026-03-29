@@ -408,19 +408,65 @@
     </section>
 
     <!-- ============================================
-         EDITABLE: CTA Section
-         Change: heading, description, button text
+         EDITABLE: Pricing Section
+         Change: section title, toggle labels, plan names, prices, features, CTA buttons
          ============================================ -->
-    <section class="py-20 px-6">
-        <div class="max-w-3xl mx-auto text-center rounded-2xl p-12" style="background: var(--surface-container-lowest); box-shadow: var(--shadow-xl);">
-            <!-- EDITABLE: CTA Heading -->
-            <h2 class="text-3xl md:text-4xl font-bold mb-4" style="color: var(--on-surface);">{{ __('Ready to get started?') }}</h2>
-            <!-- EDITABLE: CTA Description -->
-            <p class="text-lg mb-8" style="color: var(--on-surface-variant);">{{ __('Create your account and start managing your professional contacts today.') }}</p>
-            <!-- EDITABLE: CTA Button -->
-            <a href="{{ route('register') }}" class="inline-block px-8 py-3 rounded-md text-base btn-primary">
-                {{ __('Create my account') }}
-            </a>
+    <section id="pricing" class="py-24 px-6" style="background: var(--surface-container-low);" x-data="{ yearly: true }">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <!-- EDITABLE: Section Heading -->
+                <h2 class="text-4xl font-bold mb-4 tracking-tight" style="font-family: 'Manrope', sans-serif;">{{ __('Simple, honest pricing') }}</h2>
+                <!-- EDITABLE: Billing Toggle -->
+                <div class="flex items-center justify-center gap-4 mt-8">
+                    <span class="font-semibold" :class="yearly ? '' : 'opacity-100'" :style="yearly ? 'color: var(--on-surface-variant)' : 'color: var(--on-surface)'">{{ __('Monthly') }}</span>
+                    <button @click="yearly = !yearly" class="w-14 h-7 rounded-full relative p-1 transition-all" :style="yearly ? 'background: rgba(132,55,40,0.2)' : 'background: rgba(132,55,40,0.2)'">
+                        <div class="w-5 h-5 rounded-full transition-all" :class="yearly ? 'ml-auto' : 'ml-0'" style="background: var(--primary);"></div>
+                    </button>
+                    <span class="font-semibold" :style="yearly ? 'color: var(--primary)' : 'color: var(--on-surface-variant)'">
+                        {{ __('Yearly') }}
+                        <span class="text-xs px-2 py-0.5 rounded-full ml-1" style="background: var(--tertiary-container); color: var(--on-tertiary-container);">-20%</span>
+                    </span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <!-- EDITABLE: Plan 1 - Free Trial -->
+                <div class="p-10 rounded-3xl" style="background: var(--surface); border: 1px solid rgba(197,200,185,0.2);">
+                    <!-- EDITABLE: Plan name -->
+                    <h3 class="text-xl font-bold mb-2">{{ __('Free Trial') }}</h3>
+                    <!-- EDITABLE: Price -->
+                    <div class="text-4xl font-extrabold mb-6" style="font-family: 'Manrope', sans-serif;">€0 <span class="text-sm font-normal" style="color: var(--on-surface-variant);">/ {{ __('14 days') }}</span></div>
+                    <!-- EDITABLE: Plan description -->
+                    <p class="mb-8" style="color: var(--on-surface-variant);">{{ __('Full access to explore every feature. No credit card required.') }}</p>
+                    <!-- EDITABLE: Plan features -->
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Unlimited contacts') }}</li>
+                        <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Mobile app access') }}</li>
+                        <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Email support') }}</li>
+                    </ul>
+                    <!-- EDITABLE: Plan CTA -->
+                    <a href="{{ route('register') }}" class="block w-full py-4 rounded-full font-bold text-center transition-all" style="border: 2px solid var(--primary); color: var(--primary);">{{ __('Get Started') }}</a>
+                </div>
+                <!-- EDITABLE: Plan 2 - Pro Plan -->
+                <div class="p-10 rounded-3xl relative" style="background: var(--surface-container-lowest); border: 2px solid var(--primary); box-shadow: var(--shadow-xl);">
+                    <!-- EDITABLE: Popular badge -->
+                    <div class="absolute top-0 right-10 -translate-y-1/2 px-4 py-1 rounded-full text-xs font-bold uppercase" style="background: var(--primary); color: var(--on-primary);">{{ __('Most Popular') }}</div>
+                    <h3 class="text-xl font-bold mb-2">{{ __('Pro Plan') }}</h3>
+                    <!-- EDITABLE: Price (changes with toggle) -->
+                    <div class="text-4xl font-extrabold mb-6" style="font-family: 'Manrope', sans-serif;">
+                        <span x-show="!yearly">€19</span>
+                        <span x-show="yearly" x-cloak>€15</span>
+                        <span class="text-sm font-normal" style="color: var(--on-surface-variant);">/ {{ __('month') }}</span>
+                    </div>
+                    <p class="mb-8" style="color: var(--on-surface-variant);">{{ __('The complete toolbox for professionals ready to grow.') }}</p>
+                    <ul class="space-y-4 mb-10">
+                        <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Everything in Trial') }}</li>
+                        <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Client portal access') }}</li>
+                        <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Advanced reporting & Export') }}</li>
+                        <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Priority human support') }}</li>
+                    </ul>
+                    <a href="{{ route('register') }}" class="block w-full py-4 rounded-full font-bold text-center btn-primary shadow-lg transition-all">{{ __('Go Pro') }}</a>
+                </div>
+            </div>
         </div>
     </section>
 
