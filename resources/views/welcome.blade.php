@@ -18,31 +18,43 @@
          Change: brand name, nav links, CTA button text
          ============================================ -->
     <nav class="fixed top-0 w-full z-50" x-data="{ mobileOpen: false }">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-            <!-- EDITABLE: Brand Name -->
-            <h1 class="text-2xl font-bold" style="color: var(--on-surface);">Pro Contact</h1>
+        <div class="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
+            <!-- EDITABLE: Brand Name & Logo -->
+            <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold" style="background: var(--primary); color: var(--on-primary);">P</span>
+                <span class="text-xl font-bold tracking-tight" style="color: var(--on-surface);">{{ __('ProContact CRM') }}</span>
+            </div>
 
-            <!-- Desktop Nav -->
-            <div class="hidden sm:flex items-center gap-3">
+            <!-- EDITABLE: Desktop Nav Links -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#features" class="text-sm font-semibold transition-colors" style="color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 2px;">{{ __('Product') }}</a>
+                <a href="#personas" class="text-sm font-medium transition-colors hover:opacity-80" style="color: var(--on-surface-variant);">{{ __('Solutions') }}</a>
+                <a href="#pricing" class="text-sm font-medium transition-colors hover:opacity-80" style="color: var(--on-surface-variant);">{{ __('Pricing') }}</a>
+                <a href="#founder-story" class="text-sm font-medium transition-colors hover:opacity-80" style="color: var(--on-surface-variant);">{{ __('Company') }}</a>
+            </div>
+
+            <!-- Desktop Right Side -->
+            <div class="hidden md:flex items-center gap-4">
                 <!-- EDITABLE: Language Switcher -->
-                <div class="flex gap-2">
-                    <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'en' ? 'bg-white font-bold shadow-sm' : 'hover:opacity-80' }} transition-colors" style="color: var(--on-surface);">EN</a>
-                    <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-white font-bold shadow-sm' : 'hover:opacity-80' }} transition-colors" style="color: var(--on-surface);">FR</a>
+                <div class="flex gap-1">
+                    <a href="{{ route('lang.switch', 'en') }}" class="px-2.5 py-1 text-sm rounded-md {{ app()->getLocale() === 'en' ? 'bg-white font-bold shadow-sm' : 'hover:opacity-80' }} transition-colors" style="color: var(--on-surface);">EN</a>
+                    <span style="color: var(--outline-variant);">|</span>
+                    <a href="{{ route('lang.switch', 'fr') }}" class="px-2.5 py-1 text-sm rounded-md {{ app()->getLocale() === 'fr' ? 'bg-white font-bold shadow-sm' : 'hover:opacity-80' }} transition-colors" style="color: var(--on-surface);">FR</a>
                 </div>
-                <!-- EDITABLE: Nav Buttons -->
-                <a href="{{ route('login') }}" class="px-5 py-2 rounded-md text-sm btn-secondary">{{ __('Login') }}</a>
-                <a href="{{ route('register') }}" class="px-5 py-2 rounded-md text-sm btn-primary">{{ __('Sign Up') }}</a>
+                <!-- EDITABLE: Nav Action Buttons -->
+                <a href="{{ route('login') }}" class="text-sm font-medium transition-colors hover:opacity-80" style="color: var(--on-surface-variant);">{{ __('Login') }}</a>
+                <a href="{{ route('register') }}" class="px-6 py-2.5 rounded-full text-sm btn-primary font-semibold shadow-md">{{ __('Get Started') }}</a>
             </div>
 
             <!-- Mobile Hamburger -->
-            <button @click="mobileOpen = !mobileOpen" class="sm:hidden p-2 rounded-lg" style="color: var(--outline);">
+            <button @click="mobileOpen = !mobileOpen" class="md:hidden p-2 rounded-lg" style="color: var(--outline);">
                 <span class="material-symbols-outlined" x-show="!mobileOpen">menu</span>
                 <span class="material-symbols-outlined" x-show="mobileOpen" x-cloak>close</span>
             </button>
         </div>
 
         <!-- Mobile Dropdown -->
-        <div class="sm:hidden px-4 pb-4"
+        <div class="md:hidden px-4 pb-4"
              x-show="mobileOpen"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 -translate-y-2"
@@ -51,14 +63,23 @@
              x-transition:leave-start="opacity-100 translate-y-0"
              x-transition:leave-end="opacity-0 -translate-y-2"
              x-cloak
-             @click.away="mobileOpen = false">
-            <div class="flex gap-2 mb-3">
+             @click.away="mobileOpen = false"
+             style="background: var(--surface-container-lowest); border-radius: var(--radius-xl); margin: 0 0.5rem; box-shadow: var(--shadow-lg);">
+            <!-- EDITABLE: Mobile Nav Links -->
+            <div class="flex flex-col gap-1 py-3 px-2">
+                <a href="#features" class="px-4 py-2.5 rounded-lg text-sm font-semibold" style="color: var(--primary);" @click="mobileOpen = false">{{ __('Product') }}</a>
+                <a href="#personas" class="px-4 py-2.5 rounded-lg text-sm font-medium" style="color: var(--on-surface-variant);" @click="mobileOpen = false">{{ __('Solutions') }}</a>
+                <a href="#pricing" class="px-4 py-2.5 rounded-lg text-sm font-medium" style="color: var(--on-surface-variant);" @click="mobileOpen = false">{{ __('Pricing') }}</a>
+                <a href="#founder-story" class="px-4 py-2.5 rounded-lg text-sm font-medium" style="color: var(--on-surface-variant);" @click="mobileOpen = false">{{ __('Company') }}</a>
+            </div>
+            <div style="border-top: 1px solid var(--outline-variant); opacity: 0.3;" class="mx-4"></div>
+            <div class="flex gap-2 px-4 py-3">
                 <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'en' ? 'bg-white font-bold shadow-sm' : '' }} transition-colors" style="color: var(--on-surface);">EN</a>
                 <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-white font-bold shadow-sm' : '' }} transition-colors" style="color: var(--on-surface);">FR</a>
             </div>
-            <div class="flex flex-col gap-2">
-                <a href="{{ route('login') }}" class="w-full text-center px-5 py-2.5 rounded-md text-sm btn-secondary">{{ __('Login') }}</a>
-                <a href="{{ route('register') }}" class="w-full text-center px-5 py-2.5 rounded-md text-sm btn-primary">{{ __('Sign Up') }}</a>
+            <div class="flex flex-col gap-2 px-4 pb-3">
+                <a href="{{ route('login') }}" class="w-full text-center px-5 py-2.5 rounded-full text-sm btn-secondary">{{ __('Login') }}</a>
+                <a href="{{ route('register') }}" class="w-full text-center px-5 py-2.5 rounded-full text-sm btn-primary">{{ __('Get Started') }}</a>
             </div>
         </div>
     </nav>
@@ -93,7 +114,7 @@
          EDITABLE: Features Section
          Change: section title, feature cards (icon, title, description)
          ============================================ -->
-    <section class="py-20 px-6">
+    <section id="features" class="py-20 px-6">
         <div class="max-w-6xl mx-auto">
             <!-- EDITABLE: Section Heading -->
             <div class="text-center mb-16">
