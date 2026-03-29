@@ -41,7 +41,13 @@
                     <span style="color: var(--outline-variant);">|</span>
                     <a href="{{ route('lang.switch', 'fr') }}" class="px-2.5 py-1 text-sm rounded-md {{ app()->getLocale() === 'fr' ? 'bg-white font-bold shadow-sm' : 'hover:opacity-80' }} transition-colors" style="color: var(--on-surface);">FR</a>
                 </div>
-                <!-- EDITABLE: Nav Action Buttons -->
+                <!-- EDITABLE: Nav Action Buttons
+                     RELEASE MODE: Show Login + Get Started (current)
+                     WAITING LIST MODE: Replace with single "Join Waitlist" button
+                     To switch: comment out the two lines below, uncomment the waitlist line -->
+                {{-- WAITING LIST MODE: Uncomment the line below --}}
+                {{-- <a href="#waitlist" class="px-6 py-2.5 rounded-full text-sm btn-primary font-semibold shadow-md">{{ __('Join the Waitlist') }}</a> --}}
+                {{-- RELEASE MODE (active): --}}
                 <a href="{{ route('login') }}" class="text-sm font-medium transition-colors hover:opacity-80" style="color: var(--on-surface-variant);">{{ __('Login') }}</a>
                 <a href="{{ route('register') }}" class="px-6 py-2.5 rounded-full text-sm btn-primary font-semibold shadow-md">{{ __('Get Started') }}</a>
             </div>
@@ -77,7 +83,11 @@
                 <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'en' ? 'bg-white font-bold shadow-sm' : '' }} transition-colors" style="color: var(--on-surface);">EN</a>
                 <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-white font-bold shadow-sm' : '' }} transition-colors" style="color: var(--on-surface);">FR</a>
             </div>
+            <!-- RELEASE MODE / WAITING LIST MODE: Same toggle as desktop nav -->
             <div class="flex flex-col gap-2 px-4 pb-3">
+                {{-- WAITING LIST MODE: Uncomment the line below --}}
+                {{-- <a href="#waitlist" class="w-full text-center px-5 py-2.5 rounded-full text-sm btn-primary">{{ __('Join the Waitlist') }}</a> --}}
+                {{-- RELEASE MODE (active): --}}
                 <a href="{{ route('login') }}" class="w-full text-center px-5 py-2.5 rounded-full text-sm btn-secondary">{{ __('Login') }}</a>
                 <a href="{{ route('register') }}" class="w-full text-center px-5 py-2.5 rounded-full text-sm btn-primary">{{ __('Get Started') }}</a>
             </div>
@@ -113,8 +123,19 @@
                     {{ __('ProContact is the Belgian-made CRM that actually gets used. Built for solo-preneurs who value time over complex spreadsheets.') }}
                 </p>
 
-                <!-- EDITABLE: CTA Buttons -->
+                <!-- EDITABLE: CTA Buttons
+                     RELEASE MODE: "Try ProContact free" + "See how it works" (current)
+                     WAITING LIST MODE: "Join the Waitlist" + "See how it works"
+                     To switch: comment out the register link, uncomment the waitlist link -->
                 <div class="flex flex-col sm:flex-row gap-4">
+                    {{-- WAITING LIST MODE: Uncomment the block below --}}
+                    {{--
+                    <a href="#waitlist" class="px-8 py-4 rounded-full text-lg font-bold btn-primary shadow-lg flex items-center justify-center gap-2">
+                        {{ __('Join the Waitlist') }}
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </a>
+                    --}}
+                    {{-- RELEASE MODE (active): --}}
                     <a href="{{ route('register') }}" class="px-8 py-4 rounded-full text-lg font-bold btn-primary shadow-lg flex items-center justify-center gap-2">
                         {{ __('Try ProContact free for 14 days') }}
                         <span class="material-symbols-outlined">arrow_forward</span>
@@ -169,7 +190,9 @@
             <div class="flex items-center gap-3 text-sm font-semibold" style="color: var(--on-surface-variant);">
                 <span class="material-symbols-outlined" style="color: var(--primary);">lock</span> {{ __('GDPR compliant') }}
             </div>
-            <!-- EDITABLE: Trust Badge 3 -->
+            <!-- EDITABLE: Trust Badge 3
+                 RELEASE MODE: "Join 50+ beta users" or update to actual user count (current)
+                 WAITING LIST MODE: Change to "Join 200+ on the waitlist" or similar -->
             <div class="flex items-center gap-3 text-sm font-semibold" style="color: var(--on-surface-variant);">
                 <span class="material-symbols-outlined" style="color: var(--tertiary);">star</span> {{ __('Join 50+ beta users') }}
             </div>
@@ -410,6 +433,10 @@
     <!-- ============================================
          EDITABLE: Pricing Section
          Change: section title, toggle labels, plan names, prices, features, CTA buttons
+         RELEASE MODE: Full pricing with plans and toggle (current)
+         WAITING LIST MODE: You may want to hide this entire section or replace
+         with a simple "Pricing coming soon" teaser. To hide: wrap the section
+         in {{-- and --}} Blade comments, or add a @if(config('app.release_mode')) check.
          ============================================ -->
     <section id="pricing" class="py-24 px-6" style="background: var(--surface-container-low);" x-data="{ yearly: true }">
         <div class="max-w-7xl mx-auto">
@@ -443,7 +470,8 @@
                         <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Mobile app access') }}</li>
                         <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Email support') }}</li>
                     </ul>
-                    <!-- EDITABLE: Plan CTA -->
+                    <!-- EDITABLE: Plan CTA
+                         WAITING LIST MODE: Change to "Join the Waitlist" with href="#waitlist" -->
                     <a href="{{ route('register') }}" class="block w-full py-4 rounded-full font-bold text-center transition-all" style="border: 2px solid var(--primary); color: var(--primary);">{{ __('Get Started') }}</a>
                 </div>
                 <!-- EDITABLE: Plan 2 - Pro Plan -->
@@ -464,6 +492,7 @@
                         <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Advanced reporting & Export') }}</li>
                         <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Priority human support') }}</li>
                     </ul>
+                    <!-- WAITING LIST MODE: Change to "Join the Waitlist" with href="#waitlist" -->
                     <a href="{{ route('register') }}" class="block w-full py-4 rounded-full font-bold text-center btn-primary shadow-lg transition-all">{{ __('Go Pro') }}</a>
                 </div>
             </div>
@@ -516,6 +545,8 @@
     <!-- ============================================
          EDITABLE: Final CTA Banner
          Change: heading, description, CTA buttons, subtext
+         RELEASE MODE: "Start your free trial" + "Book a demo" (current)
+         WAITING LIST MODE: Replace CTAs with "Join the Waitlist" + email input form
          ============================================ -->
     <section class="py-24 px-8">
         <div class="max-w-7xl mx-auto rounded-[3rem] p-12 lg:p-24 text-center relative overflow-hidden" style="background: linear-gradient(135deg, #843728, #a24e3d); color: var(--on-primary); box-shadow: var(--shadow-xl);">
@@ -529,6 +560,11 @@
                 <p class="text-xl opacity-90 mb-12">{{ __('Join hundreds of Belgian professionals who have reclaimed their time and organized their business with ProContact.') }}</p>
                 <!-- EDITABLE: CTA Buttons -->
                 <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    {{-- WAITING LIST MODE: Uncomment the block below, comment out the two release links --}}
+                    {{--
+                    <a href="#waitlist" class="px-10 py-5 rounded-full font-bold text-xl transition-all shadow-xl hover:scale-105" style="background: var(--surface); color: var(--primary);">{{ __('Join the Waitlist') }}</a>
+                    --}}
+                    {{-- RELEASE MODE (active): --}}
                     <a href="{{ route('register') }}" class="px-10 py-5 rounded-full font-bold text-xl transition-all shadow-xl hover:scale-105" style="background: var(--surface); color: var(--primary);">{{ __('Start your free trial') }}</a>
                     <a href="#" class="px-10 py-5 rounded-full font-bold text-xl transition-all border-2 border-white hover:bg-white/10" style="color: var(--on-primary);">{{ __('Book a demo') }}</a>
                 </div>
