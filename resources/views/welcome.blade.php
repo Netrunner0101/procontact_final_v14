@@ -25,10 +25,12 @@
     <nav class="fixed top-0 w-full z-50" style="background: rgba(251,249,246,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(197,200,185,0.2);">
         <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
             <h1 class="text-2xl font-bold" style="color: #1b1c1a;">Pro Contact</h1>
+            {{-- Waitlist mode: auth buttons hidden temporarily
             <div class="flex items-center gap-3">
                 <a href="{{ route('login') }}" class="px-5 py-2 rounded-md text-sm btn-secondary">Connexion</a>
                 <a href="{{ route('register') }}" class="px-5 py-2 rounded-md text-sm btn-primary">S'inscrire</a>
             </div>
+            --}}
         </div>
     </nav>
 
@@ -41,6 +43,7 @@
             <p class="text-lg md:text-xl max-w-2xl mx-auto mb-10" style="color: #44483e;">
                 Pro Contact simplifie la gestion de vos contacts, rendez-vous et activités. Tout ce dont vous avez besoin, au même endroit.
             </p>
+            {{-- Waitlist mode: hero CTA buttons hidden temporarily
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="{{ route('register') }}" class="px-8 py-3 rounded-md text-base btn-primary">
                     Commencer gratuitement
@@ -49,6 +52,7 @@
                     Se connecter
                 </a>
             </div>
+            --}}
         </div>
     </section>
 
@@ -94,6 +98,7 @@
         </div>
     </section>
 
+    {{-- Waitlist mode: CTA section hidden temporarily
     <!-- CTA Section -->
     <section class="py-20 px-6">
         <div class="max-w-3xl mx-auto text-center rounded-2xl p-12" style="background: #ffffff; box-shadow: 0 20px 40px rgba(27,28,26,0.05);">
@@ -104,6 +109,7 @@
             </a>
         </div>
     </section>
+    --}}
 
     <!-- Footer -->
     <footer class="py-8 px-6" style="border-top: 1px solid rgba(197,200,185,0.2);">
