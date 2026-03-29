@@ -25,7 +25,7 @@
     <div class="min-h-screen">
         <!-- Glass Navigation Bar -->
         <nav class="sticky top-0 z-50" style="background: rgba(255,255,255,0.70); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(197,200,185,0.10);">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" x-data="{ mobileOpen: false }">
                 <div class="flex justify-between h-16">
                     <div class="flex items-center">
                         <!-- Logo -->
@@ -38,7 +38,7 @@
                             </a>
                         </div>
 
-                        <!-- Navigation Links -->
+                        <!-- Navigation Links (Desktop) -->
                         <div class="hidden lg:flex lg:ml-10 lg:space-x-1">
                             <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'nav-link-active' : '' }}">
                                 <i class="fas fa-tachometer-alt"></i>
@@ -67,8 +67,8 @@
                         </div>
                     </div>
 
-                    <!-- Language Switcher & Settings Dropdown -->
-                    <div class="hidden sm:flex sm:items-center sm:ml-6">
+                    <!-- Language Switcher & Settings Dropdown (Desktop) -->
+                    <div class="hidden lg:flex lg:items-center lg:ml-6">
                         <!-- Language Switcher -->
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" class="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg hover:bg-white/10 transition-colors">
@@ -123,6 +123,98 @@
                                 </a>
                             @endauth
                         </div>
+                    </div>
+
+                    <!-- Mobile Hamburger Button -->
+                    <div class="flex items-center lg:hidden">
+                        <button @click="mobileOpen = !mobileOpen" class="inline-flex items-center justify-center p-2 rounded-lg transition-colors duration-200" style="color: #75786c;" onmouseover="this.style.background='rgba(245,243,240,0.8)';this.style.color='#1b1c1a'" onmouseout="this.style.background='';this.style.color='#75786c'">
+                            <i class="fas fa-bars text-lg" x-show="!mobileOpen"></i>
+                            <i class="fas fa-times text-lg" x-show="mobileOpen" x-cloak></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Navigation Drawer -->
+                <div class="lg:hidden"
+                     x-show="mobileOpen"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 -translate-y-2"
+                     x-cloak
+                     @click.away="mobileOpen = false">
+                    <div class="pb-4 space-y-1">
+                        <!-- Navigation Links -->
+                        <a href="{{ route('dashboard') }}" class="mobile-nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                            <i class="fas fa-tachometer-alt w-5 text-center"></i>
+                            <span>{{ __('Dashboard') }}</span>
+                        </a>
+                        <a href="{{ route('activites.index') }}" class="mobile-nav-link {{ request()->routeIs('activites.*') ? 'active' : '' }}">
+                            <i class="fas fa-briefcase w-5 text-center"></i>
+                            <span>{{ __('Activities') }}</span>
+                        </a>
+                        <a href="{{ route('contacts.index') }}" class="mobile-nav-link {{ request()->routeIs('contacts.*') ? 'active' : '' }}">
+                            <i class="fas fa-users w-5 text-center"></i>
+                            <span>{{ __('Contacts') }}</span>
+                        </a>
+                        <a href="{{ route('rendez-vous.index') }}" class="mobile-nav-link {{ request()->routeIs('rendez-vous.*') ? 'active' : '' }}">
+                            <i class="fas fa-calendar-alt w-5 text-center"></i>
+                            <span>{{ __('Appointments') }}</span>
+                        </a>
+                        <a href="{{ route('notes.index') }}" class="mobile-nav-link {{ request()->routeIs('notes.*') ? 'active' : '' }}">
+                            <i class="fas fa-sticky-note w-5 text-center"></i>
+                            <span>{{ __('Notes') }}</span>
+                        </a>
+                        <a href="{{ route('rappels.index') }}" class="mobile-nav-link {{ request()->routeIs('rappels.*') ? 'active' : '' }}">
+                            <i class="fas fa-bell w-5 text-center"></i>
+                            <span>{{ __('Reminders') }}</span>
+                        </a>
+
+                        <!-- Divider -->
+                        <div class="my-2" style="border-top: 1px solid rgba(197,200,185,0.2);"></div>
+
+                        <!-- Language Switcher -->
+                        <div class="flex items-center gap-2 px-3 py-2">
+                            <i class="fas fa-globe w-5 text-center" style="color: #75786c;"></i>
+                            <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg transition-colors {{ app()->getLocale() === 'en' ? 'font-bold' : '' }}" style="color: {{ app()->getLocale() === 'en' ? '#843728' : '#75786c' }}; {{ app()->getLocale() === 'en' ? 'background: rgba(255,219,209,0.3);' : '' }}">EN</a>
+                            <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg transition-colors {{ app()->getLocale() === 'fr' ? 'font-bold' : '' }}" style="color: {{ app()->getLocale() === 'fr' ? '#843728' : '#75786c' }}; {{ app()->getLocale() === 'fr' ? 'background: rgba(255,219,209,0.3);' : '' }}">FR</a>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="my-2" style="border-top: 1px solid rgba(197,200,185,0.2);"></div>
+
+                        <!-- User Section -->
+                        @auth
+                            <div class="px-3 py-2">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-9 h-9 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, #843728, #c4816e);">
+                                        <i class="fas fa-user text-white text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-semibold" style="color: #1b1c1a;">{{ Auth::user()->prenom }} {{ Auth::user()->nom }}</div>
+                                        <div class="text-xs" style="color: #75786c;">{{ Auth::user()->email }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a href="{{ route('profile.show') }}" class="mobile-nav-link">
+                                <i class="fas fa-user-cog w-5 text-center"></i>
+                                <span>{{ __('My Profile') }}</span>
+                            </a>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="mobile-nav-link w-full" style="color: #ba1a1a;">
+                                    <i class="fas fa-sign-out-alt w-5 text-center"></i>
+                                    <span>{{ __('Log out') }}</span>
+                                </button>
+                            </form>
+                        @else
+                            <a href="{{ route('login') }}" class="mobile-nav-link">
+                                <i class="fas fa-sign-in-alt w-5 text-center"></i>
+                                <span>{{ __('Log in') }}</span>
+                            </a>
+                        @endauth
                     </div>
                 </div>
             </div>
@@ -190,16 +282,32 @@
             border-radius: 50%;
         }
 
-        /* Mobile Navigation */
-        @media (max-width: 1024px) {
-            .nav-link span {
-                display: none;
-            }
-            .nav-link {
-                padding: 0.5rem;
-                justify-content: center;
-            }
+        /* Mobile Navigation Drawer Links */
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            color: #75786c;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            width: 100%;
+            border: none;
+            background: none;
+            cursor: pointer;
+            text-align: left;
         }
+
+        .mobile-nav-link:hover,
+        .mobile-nav-link.active {
+            color: #843728;
+            background: rgba(255, 219, 209, 0.3);
+        }
+
+        [x-cloak] { display: none !important; }
 
         /* Enhanced Animations */
         .fade-in-up {
