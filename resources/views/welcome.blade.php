@@ -86,26 +86,71 @@
 
     <!-- ============================================
          EDITABLE: Hero Section
-         Change: headline, subheadline, description, CTA buttons
+         Change: badge text, headline, French subtitle, description, CTA buttons
          ============================================ -->
-    <section class="pt-32 pb-20 px-6">
-        <div class="max-w-4xl mx-auto text-center">
-            <!-- EDITABLE: Main Headline -->
-            <h2 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6" style="font-family: 'Manrope', sans-serif; color: var(--on-surface);">
-                {{ __('Manage your contacts') }}<br><span class="text-gradient">{{ __('professionally') }}</span> {{ __('efficiently') }}
-            </h2>
-            <!-- EDITABLE: Subheadline / Description -->
-            <p class="text-lg md:text-xl max-w-2xl mx-auto mb-10" style="color: var(--on-surface-variant);">
-                {{ __('Pro Contact simplifies the management of your contacts, appointments and activities. Everything you need, in one place.') }}
-            </p>
-            <!-- EDITABLE: CTA Buttons -->
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="{{ route('register') }}" class="px-8 py-3 rounded-md text-base btn-primary">
-                    {{ __('Get started for free') }}
-                </a>
-                <a href="{{ route('login') }}" class="px-8 py-3 rounded-md text-base btn-secondary">
-                    {{ __('Log in') }}
-                </a>
+    <section class="pt-28 pb-20 lg:pb-28 px-6" style="background: var(--surface);">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+            <!-- Left Column: Text Content -->
+            <div class="lg:col-span-7">
+                <!-- EDITABLE: Top Badge -->
+                <span class="inline-block py-1.5 px-4 rounded-full text-xs font-bold uppercase tracking-wider mb-6" style="background: var(--primary-container); color: var(--on-primary-container);">
+                    {{ __('The client tool for independent professionals') }}
+                </span>
+
+                <!-- EDITABLE: Main Headline -->
+                <h2 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold leading-[1.1] tracking-tight mb-4" style="font-family: 'Manrope', sans-serif; color: var(--on-surface);">
+                    {{ __('All your clients.') }}<br>
+                    <span style="color: var(--primary);">{{ __('One place. Zero chaos.') }}</span>
+                </h2>
+
+                <!-- EDITABLE: French Subtitle (shown below headline) -->
+                <p class="text-2xl sm:text-3xl font-medium mb-8 opacity-60" style="font-family: 'Manrope', sans-serif; color: var(--on-surface-variant);">
+                    {{ __('Tous vos clients. Un seul endroit. Zéro chaos.') }}
+                </p>
+
+                <!-- EDITABLE: Description -->
+                <p class="text-lg lg:text-xl mb-10 max-w-xl leading-relaxed" style="color: var(--on-surface-variant);">
+                    {{ __('ProContact is the Belgian-made CRM that actually gets used. Built for solo-preneurs who value time over complex spreadsheets.') }}
+                </p>
+
+                <!-- EDITABLE: CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="{{ route('register') }}" class="px-8 py-4 rounded-full text-lg font-bold btn-primary shadow-lg flex items-center justify-center gap-2">
+                        {{ __('Try ProContact free for 14 days') }}
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </a>
+                    <a href="#how-it-works" class="px-8 py-4 rounded-full text-lg font-bold btn-secondary flex items-center justify-center" style="border: 2px solid var(--outline-variant);">
+                        {{ __('See how it works') }}
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Column: App Preview -->
+            <div class="lg:col-span-5 relative">
+                <div class="relative z-10 rounded-3xl overflow-hidden shadow-2xl" style="border: 8px solid rgba(27,28,26,0.05);">
+                    <!-- EDITABLE: Hero Image (replace src with your app screenshot) -->
+                    <div class="w-full aspect-[9/16] flex items-center justify-center" style="background: linear-gradient(135deg, var(--surface-container-low), var(--surface-container-high));">
+                        <div class="text-center px-8">
+                            <span class="material-symbols-outlined text-6xl mb-4" style="color: var(--primary); opacity: 0.5;">smartphone</span>
+                            <p class="text-sm font-medium" style="color: var(--on-surface-variant);">{{ __('App Preview') }}</p>
+                        </div>
+                    </div>
+
+                    <!-- EDITABLE: Floating Contact Card Overlay -->
+                    <div class="absolute bottom-12 left-6 right-6 p-4 rounded-2xl flex items-center gap-4" style="background: rgba(255,255,255,0.90); backdrop-filter: blur(12px); box-shadow: var(--shadow-xl); border: 1px solid rgba(197,200,185,0.2);">
+                        <!-- EDITABLE: Contact initials, name, label -->
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm" style="background: var(--tertiary-container); color: var(--on-tertiary-container);">TJ</div>
+                        <div>
+                            <div class="font-bold text-sm" style="color: var(--on-surface);">Thomas Janssen</div>
+                            <div class="text-xs uppercase tracking-tight" style="color: var(--on-surface-variant);">{{ __('Last Contact: Yesterday') }}</div>
+                        </div>
+                        <div class="ml-auto">
+                            <span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase" style="background: var(--secondary-container); color: var(--on-secondary-container);">{{ __('Prospect') }}</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Decorative background glow -->
+                <div class="absolute -top-12 -right-12 w-64 h-64 rounded-full blur-3xl -z-10" style="background: rgba(132,55,40,0.05);"></div>
             </div>
         </div>
     </section>
