@@ -54,7 +54,7 @@ class RappelController extends Controller
         Rappel::create($validated);
 
         return redirect()->route('rendez-vous.show', $rendezVous)
-            ->with('success', 'Rappel créé avec succès');
+            ->with('success', __('Reminder created successfully'));
     }
 
     public function show(Rappel $rappel)
@@ -103,7 +103,7 @@ class RappelController extends Controller
         $rappel->update($validated);
 
         return redirect()->route('rappels.show', $rappel)
-            ->with('success', 'Rappel mis à jour avec succès');
+            ->with('success', __('Reminder updated successfully'));
     }
 
     public function destroy(Rappel $rappel)
@@ -117,6 +117,6 @@ class RappelController extends Controller
         $rappel->delete();
         
         return redirect()->route('rendez-vous.show', $rendezVous)
-            ->with('success', 'Rappel supprimé avec succès');
+            ->with('success', __('Reminder deleted successfully'));
     }
 }

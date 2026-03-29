@@ -42,13 +42,13 @@ class AuthController extends Controller
                 if ($user) {
                     $this->initiatePasswordReset($user);
                     return back()->withErrors([
-                        'email' => 'Trop de tentatives échouées. Un email de réinitialisation a été envoyé.',
+                        'email' => __('Too many failed attempts. A password reset email has been sent.'),
                     ]);
                 }
             }
             
             throw ValidationException::withMessages([
-                'email' => "Trop de tentatives. Réessayez dans {$seconds} secondes.",
+                'email' => __('Too many attempts. Please try again in :seconds seconds.', ['seconds' => $seconds]),
             ]);
         }
 
@@ -74,7 +74,7 @@ class AuthController extends Controller
         RateLimiter::hit($key, 300); // 5 minutes decay
         
         return back()->withErrors([
-            'email' => 'Les informations d\'identification ne correspondent pas.',
+            'email' => __('The provided credentials do not match.'),
         ])->onlyInput('email');
     }
 
@@ -95,7 +95,7 @@ class AuthController extends Controller
         $adminRole = Role::where('nom', Role::ADMIN)->first();
 
         if (!$adminRole) {
-            return back()->withErrors(['email' => 'Le système n\'est pas encore configuré. Veuillez contacter l\'administrateur.']);
+            return back()->withErrors(['email' => __('The system is not yet configured. Please contact the administrator.')]);
         }
 
         $user = User::create([
@@ -136,7 +136,7 @@ class AuthController extends Controller
             $this->initiatePasswordReset($user);
         }
         
-        return back()->with('status', 'Si votre email existe, vous recevrez un lien de réinitialisation.');
+        return back()->with('status', __('If your email exists, you will receive a reset link.'));
     }
     
     public function showResetPassword($token)
@@ -159,7 +159,7 @@ class AuthController extends Controller
         
         if (!$user) {
             return back()->withErrors([
-                'email' => 'Ce lien de réinitialisation est invalide ou expiré.',
+                'email' => __('This reset link is invalid or has expired.'),
             ]);
         }
         
@@ -172,7 +172,7 @@ class AuthController extends Controller
         // Clear any rate limiting
         RateLimiter::clear('login.' . $user->email);
         
-        return redirect()->route('login')->with('status', 'Votre mot de passe a été réinitialisé avec succès.');
+        return redirect()->route('login')->with('status', __('Your password has been reset successfully.'));
     }
     
     private function initiatePasswordReset(User $user)

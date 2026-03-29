@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Pro Contact') }} - Espace Client</title>
+    <title>{{ config('app.name', 'Pro Contact') }} - {{ __('Client Area') }}</title>
 
     <!-- Fonts — Manrope + Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,7 +32,7 @@
                                 </div>
                                 <div>
                                     <h1 class="text-xl font-bold text-gradient" style="font-family: 'Manrope', sans-serif;">Pro Contact</h1>
-                                    <span class="text-xs font-medium" style="color: #843728;">Espace Client</span>
+                                    <span class="text-xs font-medium" style="color: #843728;">{{ __('Client Area') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -41,17 +41,29 @@
                         <div class="hidden lg:flex lg:ml-10 lg:space-x-1">
                             <a href="{{ route('client.dashboard') }}" class="client-nav-link {{ request()->routeIs('client.dashboard') ? 'client-nav-link-active' : '' }}">
                                 <i class="fas fa-tachometer-alt"></i>
-                                <span>Tableau de bord</span>
+                                <span>{{ __('Dashboard') }}</span>
                             </a>
                             <a href="{{ route('client.appointments') }}" class="client-nav-link {{ request()->routeIs('client.appointments*') ? 'client-nav-link-active' : '' }}">
                                 <i class="fas fa-calendar-check"></i>
-                                <span>Mes rendez-vous</span>
+                                <span>{{ __('My appointments') }}</span>
                             </a>
                         </div>
                     </div>
 
-                    <!-- Settings Dropdown -->
+                    <!-- Language Switcher & Settings Dropdown -->
                     <div class="hidden sm:flex sm:items-center sm:ml-6">
+                        <!-- Language Switcher -->
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg hover:bg-white/10 transition-colors">
+                                <span>{{ app()->getLocale() === 'fr' ? 'FR' : 'EN' }}</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                                <a href="{{ route('lang.switch', 'en') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 {{ app()->getLocale() === 'en' ? 'font-bold' : '' }}">English</a>
+                                <a href="{{ route('lang.switch', 'fr') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 {{ app()->getLocale() === 'fr' ? 'font-bold' : '' }}">Français</a>
+                            </div>
+                        </div>
+
                         <div class="ml-3 relative">
                             @auth
                                 <div class="relative inline-block text-left">
@@ -66,12 +78,12 @@
                                         <div class="px-4 py-2 text-sm" style="background: #e9e6e3; border-radius: 0.75rem 0.75rem 0 0;">
                                             <div class="font-medium" style="color: #1b1c1a;">{{ Auth::user()->prenom }} {{ Auth::user()->nom }}</div>
                                             <div style="color: #44483e;">{{ Auth::user()->email }}</div>
-                                            <div class="text-xs mt-1" style="color: #843728;">Espace Client</div>
+                                            <div class="text-xs mt-1" style="color: #843728;">{{ __('Client Area') }}</div>
                                         </div>
                                         <form method="POST" action="{{ route('logout') }}" class="block">
                                             @csrf
                                             <button type="submit" class="block w-full text-left px-4 py-2 text-sm transition-colors" style="color: #44483e;" onmouseover="this.style.background='#ffdad6';this.style.color='#410002'" onmouseout="this.style.background='';this.style.color='#44483e'">
-                                                Se d&eacute;connecter
+                                                {{ __('Log out') }}
                                             </button>
                                         </form>
                                     </div>
@@ -252,7 +264,7 @@
                     if (submitBtn) {
                         submitBtn.disabled = true;
                         const originalText = submitBtn.textContent || submitBtn.value;
-                        submitBtn.innerHTML = '<div class="spinner inline-block mr-2"></div>Chargement...';
+                        submitBtn.innerHTML = '<div class="spinner inline-block mr-2"></div>{{ __("Loading...") }}';
                         setTimeout(() => {
                             submitBtn.disabled = false;
                             submitBtn.textContent = originalText;

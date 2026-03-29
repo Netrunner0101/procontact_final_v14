@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Activités - Pro Contact')
+@section('title', __('Activities') . ' - Pro Contact')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Dashboard des Activités</h1>
-            <p class="text-gray-600 mt-2">Gérez vos activités professionnelles</p>
+            <h1 class="text-3xl font-bold text-gray-900">{{ __('Activities Dashboard') }}</h1>
+            <p class="text-gray-600 mt-2">{{ __('Manage your professional activities') }}</p>
         </div>
         <a href="{{ route('activites.create') }}" class="text-white px-6 py-2 rounded-lg transition duration-200" style="background: linear-gradient(135deg, #843728, #c4816e);">
-            Créer Nouvelle Activité
+            {{ __('Create New Activity') }}
         </a>
     </div>
 
@@ -78,20 +78,20 @@
                             <div class="flex space-x-2">
                                 <a href="{{ route('activites.edit', $activite) }}"
                                    class="text-white px-3 py-1 rounded text-sm transition duration-200" style="background: #8a6e2e;">
-                                    Modifier
+                                    {{ __('Edit') }}
                                 </a>
                                 <form action="{{ route('activites.destroy', $activite) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
                                             class="text-white px-3 py-1 rounded text-sm transition duration-200" style="background: #ba1a1a;"
-                                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette activité ?')">
-                                        Supprimer
+                                            onclick="return confirm('{{ __('Are you sure you want to delete this activity?') }}')">
+                                        {{ __('Delete') }}
                                     </button>
                                 </form>
                             </div>
                             <span class="text-xs text-gray-500">
-                                {{ $activite->contacts->count() }} contacts
+                                {{ __(':count contacts', ['count' => $activite->contacts->count()]) }}
                             </span>
                         </div>
 
@@ -103,7 +103,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                                 </svg>
-                                Ajouter Contact
+                                {{ __('Add Contact') }}
                             </a>
                             <a href="{{ route('rendez-vous.create', ['activite_id' => $activite->id]) }}"
                                class="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold rounded-lg border-2 transition duration-200 hover:text-white"
@@ -113,7 +113,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
-                                Nouveau RDV
+                                {{ __('New Appointment') }}
                             </a>
                         </div>
                     </div>
@@ -132,11 +132,11 @@
                           d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                 </svg>
             </div>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune activité</h3>
-            <p class="text-gray-600 mb-4">Commencez par créer votre première activité professionnelle.</p>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('No activities') }}</h3>
+            <p class="text-gray-600 mb-4">{{ __('Start by creating your first professional activity.') }}</p>
             <a href="{{ route('activites.create') }}"
                class="text-white px-6 py-2 rounded-lg transition duration-200" style="background: linear-gradient(135deg, #843728, #c4816e);">
-                Créer une Activité
+                {{ __('Create an Activity') }}
             </a>
         </div>
     @endif

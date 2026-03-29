@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Nouvelle Activité - Pro Contact')
+@section('title', __('New Activity') . ' - Pro Contact')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto">
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Nouvelle Activité</h1>
-            <p class="text-gray-600 mt-2">Créer une nouvelle activité professionnelle</p>
+            <h1 class="text-3xl font-bold text-gray-900">{{ __('New Activity') }}</h1>
+            <p class="text-gray-600 mt-2">{{ __('Create a new professional activity') }}</p>
         </div>
 
         <div class="bg-white rounded-lg shadow p-6">
@@ -16,7 +16,7 @@
                 
                 <!-- Required Fields -->
                 <div class="mb-6">
-                    <label for="nom" class="block text-sm font-medium text-gray-700 mb-2">Nom de l'activité *</label>
+                    <label for="nom" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Activity name') }} *</label>
                     <input type="text" id="nom" name="nom" value="{{ old('nom') }}" required
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('nom') border-red-500 @enderror">
                     @error('nom')
@@ -25,7 +25,7 @@
                 </div>
 
                 <div class="mb-6">
-                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Description') }} *</label>
                     <textarea id="description" name="description" rows="4" required
                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('description') border-red-500 @enderror">{{ old('description') }}</textarea>
                     @error('description')
@@ -36,10 +36,10 @@
                 <!-- Optional Fields -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                        <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="exemple@email.com"
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Email') }}</label>
+                        <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="{{ __('example@email.com') }}"
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 @error('email') border-red-500 @enderror">
-                        <p class="text-gray-500 text-xs mt-1">Optionnel. Doit être une adresse email valide.</p>
+                        <p class="text-gray-500 text-xs mt-1">{{ __('Optional. Must be a valid email address.') }}</p>
                         @error('email')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror

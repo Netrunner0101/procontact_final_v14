@@ -42,7 +42,7 @@ class ProfileController extends Controller
             'numero_rue', 'ville', 'code_postal', 'pays'
         ]));
         
-        return back()->with('success', 'Profil mis à jour avec succès.');
+        return back()->with('success', __('Profile updated successfully.'));
     }
 
     /**
@@ -58,13 +58,13 @@ class ProfileController extends Controller
         $user = Auth::user();
         
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Le mot de passe actuel est incorrect.']);
+            return back()->withErrors(['current_password' => __('The current password is incorrect.')]);
         }
         
         $user->update([
             'password' => Hash::make($request->password)
         ]);
         
-        return back()->with('success', 'Mot de passe mis à jour avec succès.');
+        return back()->with('success', __('Password updated successfully.'));
     }
 }

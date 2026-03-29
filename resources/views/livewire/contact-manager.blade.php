@@ -4,13 +4,13 @@
         <div class="header-content">
             <h1 class="page-title">
                 <i class="fas fa-users"></i>
-                Gestion des Contacts
+                {{ __('Contact Management') }}
             </h1>
-            <p class="page-subtitle">Gérez tous vos contacts en un seul endroit</p>
+            <p class="page-subtitle">{{ __('Manage all your contacts in one place') }}</p>
         </div>
         <div class="header-actions">
             <button wire:click="openCreateModal" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Nouveau Contact
+                <i class="fas fa-plus"></i> {{ __('New Contact') }}
             </button>
         </div>
     </div>
@@ -23,7 +23,7 @@
                 <input
                     type="text"
                     wire:model.live.debounce.300ms="search"
-                    placeholder="Rechercher par nom, email ou téléphone..."
+                    placeholder="{{ __('Search by name, email or phone...') }}"
                     class="search-input"
                 >
             </div>
@@ -31,13 +31,13 @@
 
         <div class="filter-controls">
             <select wire:model.live="clientStatusFilter" class="filter-select">
-                <option value="">Contacts & Clients</option>
-                <option value="client">Clients uniquement</option>
-                <option value="contact">Contacts uniquement</option>
+                <option value="">{{ __('Contacts & Clients') }}</option>
+                <option value="client">{{ __('Clients only') }}</option>
+                <option value="contact">{{ __('Contacts only') }}</option>
             </select>
 
             <select wire:model.live="statusFilter" class="filter-select">
-                <option value="">Tous les statuts CRM</option>
+                <option value="">{{ __('All CRM statuses') }}</option>
                 @foreach($statuses as $status)
                     <option value="{{ $status->id }}">{{ $status->status_client }}</option>
                 @endforeach
@@ -45,13 +45,13 @@
 
             <div class="sort-controls">
                 <button wire:click="sortBy('nom')" class="sort-btn {{ $sortBy === 'nom' ? 'active' : '' }}">
-                    Nom
+                    {{ __('Name') }}
                     @if($sortBy === 'nom')
                         <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
                     @endif
                 </button>
                 <button wire:click="sortBy('created_at')" class="sort-btn {{ $sortBy === 'created_at' ? 'active' : '' }}">
-                    Date
+                    {{ __('Date') }}
                     @if($sortBy === 'created_at')
                         <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
                     @endif
@@ -80,9 +80,9 @@
                     <div class="flex items-center gap-2 mb-1">
                         <h3 class="contact-name" style="margin: 0;">{{ $contact->nom }} {{ $contact->prenom }}</h3>
                         @if($contact->rendez_vous_count > 0)
-                            <span class="client-status-badge client-badge">Client</span>
+                            <span class="client-status-badge client-badge">{{ __('Client') }}</span>
                         @else
-                            <span class="client-status-badge contact-badge">Contact</span>
+                            <span class="client-status-badge contact-badge">{{ __('Contact') }}</span>
                         @endif
                     </div>
 
@@ -117,18 +117,18 @@
 
                     <p class="contact-date">
                         <i class="fas fa-calendar"></i>
-                        Ajouté le {{ $contact->created_at->format('d/m/Y') }}
+                        {{ __('Added on :date', ['date' => $contact->created_at->format('d/m/Y')]) }}
                     </p>
                 </div>
 
                 <div class="contact-actions">
-                    <button wire:click="openEditModal({{ $contact->id }})" class="action-btn edit-btn" title="Modifier">
+                    <button wire:click="openEditModal({{ $contact->id }})" class="action-btn edit-btn" title="{{ __('Edit') }}">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <a href="{{ route('contacts.show', $contact) }}" class="action-btn view-btn" title="Voir">
+                    <a href="{{ route('contacts.show', $contact) }}" class="action-btn view-btn" title="{{ __('View') }}">
                         <i class="fas fa-eye"></i>
                     </a>
-                    <button wire:click="openDeleteModal({{ $contact->id }})" class="action-btn delete-btn" title="Supprimer">
+                    <button wire:click="openDeleteModal({{ $contact->id }})" class="action-btn delete-btn" title="{{ __('Delete') }}">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -136,10 +136,10 @@
         @empty
             <div class="empty-state">
                 <i class="fas fa-users"></i>
-                <h3>Aucun contact trouvé</h3>
-                <p>Commencez par créer votre premier contact</p>
+                <h3>{{ __('No contacts found') }}</h3>
+                <p>{{ __('Start by creating your first contact') }}</p>
                 <button wire:click="openCreateModal" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Créer un contact
+                    <i class="fas fa-plus"></i> {{ __('Create a contact') }}
                 </button>
             </div>
         @endforelse
@@ -159,7 +159,7 @@
                 <div class="modal-header">
                     <h2 class="modal-title">
                         <i class="fas fa-{{ $showCreateModal ? 'plus' : 'edit' }}"></i>
-                        {{ $showCreateModal ? 'Nouveau Contact' : 'Modifier Contact' }}
+                        {{ $showCreateModal ? __('New Contact') : __('Edit Contact') }}
                     </h2>
                     <button wire:click="closeModals" class="modal-close">
                         <i class="fas fa-times"></i>
@@ -169,51 +169,51 @@
                 <form wire:submit.prevent="{{ $showCreateModal ? 'createContact' : 'updateContact' }}" class="modal-form">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="nom" class="form-label">Nom *</label>
+                            <label for="nom" class="form-label">{{ __('Last Name') }} *</label>
                             <input type="text" id="nom" wire:model="nom" class="form-input" required>
                             @error('nom') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="prenom" class="form-label">Prénom *</label>
+                            <label for="prenom" class="form-label">{{ __('First Name') }} *</label>
                             <input type="text" id="prenom" wire:model="prenom" class="form-input" required>
                             @error('prenom') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="rue" class="form-label">Rue</label>
+                            <label for="rue" class="form-label">{{ __('Street') }}</label>
                             <input type="text" id="rue" wire:model="rue" class="form-input">
                             @error('rue') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="numero" class="form-label">Numéro</label>
+                            <label for="numero" class="form-label">{{ __('Number') }}</label>
                             <input type="text" id="numero" wire:model="numero" class="form-input">
                             @error('numero') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="ville" class="form-label">Ville</label>
+                            <label for="ville" class="form-label">{{ __('City') }}</label>
                             <input type="text" id="ville" wire:model="ville" class="form-input">
                             @error('ville') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="code_postal" class="form-label">Code Postal</label>
+                            <label for="code_postal" class="form-label">{{ __('Postal Code') }}</label>
                             <input type="text" id="code_postal" wire:model="code_postal" class="form-input">
                             @error('code_postal') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="pays" class="form-label">Pays</label>
+                            <label for="pays" class="form-label">{{ __('Country') }}</label>
                             <input type="text" id="pays" wire:model="pays" class="form-input">
                             @error('pays') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="status_id" class="form-label">Statut *</label>
+                            <label for="status_id" class="form-label">{{ __('Status') }} *</label>
                             <select id="status_id" wire:model="status_id" class="form-select" required>
-                                <option value="">Sélectionner un statut</option>
+                                <option value="">{{ __('Select a status') }}</option>
                                 @foreach($statuses as $status)
                                     <option value="{{ $status->id }}">{{ $status->status_client }}</option>
                                 @endforeach
@@ -225,11 +225,11 @@
 
                     <div class="modal-actions">
                         <button type="button" wire:click="closeModals" class="btn btn-secondary">
-                            Annuler
+                            {{ __('Cancel') }}
                         </button>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>
-                            {{ $showCreateModal ? 'Créer' : 'Mettre à jour' }}
+                            {{ $showCreateModal ? __('Create') : __('Update') }}
                         </button>
                     </div>
                 </form>
@@ -244,7 +244,7 @@
                 <div class="modal-header">
                     <h2 class="modal-title">
                         <i class="fas fa-trash text-red-500"></i>
-                        Supprimer Contact
+                        {{ __('Delete Contact') }}
                     </h2>
                     <button wire:click="closeModals" class="modal-close">
                         <i class="fas fa-times"></i>
@@ -252,17 +252,17 @@
                 </div>
 
                 <div class="modal-body">
-                    <p>Êtes-vous sûr de vouloir supprimer le contact <strong>{{ $selectedContact->nom }} {{ $selectedContact->prenom }}</strong> ?</p>
-                    <p class="text-sm text-gray-600">Cette action est irréversible.</p>
+                    <p>{{ __('Are you sure you want to delete the contact :name?', ['name' => $selectedContact->nom . ' ' . $selectedContact->prenom]) }}</p>
+                    <p class="text-sm text-gray-600">{{ __('This action is irreversible.') }}</p>
                 </div>
 
                 <div class="modal-actions">
                     <button wire:click="closeModals" class="btn btn-secondary">
-                        Annuler
+                        {{ __('Cancel') }}
                     </button>
                     <button wire:click="deleteContact" class="btn btn-danger">
                         <i class="fas fa-trash"></i>
-                        Supprimer
+                        {{ __('Delete') }}
                     </button>
                 </div>
             </div>

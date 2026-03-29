@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Inscription - Pro Contact</title>
+    <title>{{ __('Registration') }} - Pro Contact</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -22,11 +22,17 @@
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="fixed top-4 right-4 z-50 flex gap-2">
+        <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'en' ? 'bg-white text-gray-900 font-bold' : 'text-white/70 hover:text-white' }} transition-colors">EN</a>
+        <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-white text-gray-900 font-bold' : 'text-white/70 hover:text-white' }} transition-colors">FR</a>
+    </div>
+
     <div class="min-h-screen flex items-center justify-center px-4 py-8">
         <div class="max-w-md w-full auth-card p-8">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-bold" style="color: #1b1c1a;">Pro Contact</h1>
-                <p class="mt-2" style="color: #44483e;">Cr&eacute;ez votre compte</p>
+                <p class="mt-2" style="color: #44483e;">{{ __('Create your account') }}</p>
             </div>
 
             @if (session('status'))
@@ -39,7 +45,7 @@
                 @csrf
 
                 <div class="mb-4">
-                    <label for="nom" class="block text-sm font-medium mb-2" style="color: #44483e;">Nom</label>
+                    <label for="nom" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Last name') }}</label>
                     <input type="text" id="nom" name="nom" value="{{ old('nom') }}" required
                            class="w-full px-3 py-2 auth-input @error('nom') border-red-500 @enderror">
                     @error('nom')
@@ -48,7 +54,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="prenom" class="block text-sm font-medium mb-2" style="color: #44483e;">Pr&eacute;nom</label>
+                    <label for="prenom" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('First name') }}</label>
                     <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" required
                            class="w-full px-3 py-2 auth-input @error('prenom') border-red-500 @enderror">
                     @error('prenom')

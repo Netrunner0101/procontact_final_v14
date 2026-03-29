@@ -38,7 +38,7 @@ class ActiviteController extends Controller
         $validated['user_id'] = Auth::id();
         Activite::create($validated);
 
-        return redirect()->route('activites.index')->with('success', 'Activité créée avec succès');
+        return redirect()->route('activites.index')->with('success', __('Activity created successfully'));
     }
 
     public function show(Activite $activite)
@@ -74,7 +74,7 @@ class ActiviteController extends Controller
         }
 
         $activite->update($validated);
-        return redirect()->route('activites.show', $activite)->with('success', 'Activité mise à jour');
+        return redirect()->route('activites.show', $activite)->with('success', __('Activity updated successfully'));
     }
 
     public function destroy(Activite $activite)
@@ -84,7 +84,7 @@ class ActiviteController extends Controller
             Storage::disk('public')->delete($activite->image);
         }
         $activite->delete();
-        return redirect()->route('activites.index')->with('success', 'Activité supprimée');
+        return redirect()->route('activites.index')->with('success', __('Activity deleted successfully'));
     }
 
     public function attachContact(Request $request, Activite $activite)
@@ -105,7 +105,7 @@ class ActiviteController extends Controller
         $activite->contacts()->syncWithoutDetaching([$contact->id]);
         
         return redirect()->route('activites.show', $activite)
-            ->with('success', 'Contact ajouté à l\'activité avec succès');
+            ->with('success', __('Contact added to the activity successfully'));
     }
 
     public function detachContact(Activite $activite, Contact $contact)
@@ -115,6 +115,6 @@ class ActiviteController extends Controller
         $activite->contacts()->detach($contact->id);
         
         return redirect()->route('activites.show', $activite)
-            ->with('success', 'Contact retiré de l\'activité avec succès');
+            ->with('success', __('Contact removed from the activity successfully'));
     }
 }

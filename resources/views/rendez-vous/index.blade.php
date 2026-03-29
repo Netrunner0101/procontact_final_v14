@@ -1,16 +1,16 @@
 @extends('layouts.app')
 
-@section('title', 'Rendez-vous - Pro Contact')
+@section('title', __('Appointments') . ' - Pro Contact')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Rendez-vous</h1>
-            <p class="text-gray-600 mt-2">Gérez vos rendez-vous clients</p>
+            <h1 class="text-3xl font-bold text-gray-900">{{ __('Appointments') }}</h1>
+            <p class="text-gray-600 mt-2">{{ __('Manage your client appointments') }}</p>
         </div>
         <a href="{{ route('rendez-vous.create') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition duration-200">
-            Nouveau Rendez-vous
+            {{ __('New Appointment') }}
         </a>
     </div>
 
@@ -20,22 +20,22 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Titre
+                            {{ __('Title') }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Client
+                            {{ __('Client') }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Activité
+                            {{ __('Activity') }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Date & Heure
+                            {{ __('Date & Time') }}
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
+                            {{ __('Status') }}
                         </th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
+                            {{ __('Actions') }}
                         </th>
                     </tr>
                 </thead>
@@ -62,7 +62,7 @@
                                 @php
                                     $now = now();
                                     $rdvDateTime = $rdv->date_debut->setTimeFromTimeString($rdv->heure_debut->format('H:i:s'));
-                                    $status = $rdvDateTime->isPast() ? 'Terminé' : ($rdvDateTime->isToday() ? 'Aujourd\'hui' : 'À venir');
+                                    $status = $rdvDateTime->isPast() ? __('Completed') : ($rdvDateTime->isToday() ? __('Today') : __('Upcoming'));
                                     $statusColor = $rdvDateTime->isPast() ? 'bg-gray-100 text-gray-800' : ($rdvDateTime->isToday() ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800');
                                 @endphp
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColor }}">
@@ -70,13 +70,13 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="{{ route('rendez-vous.show', $rdv) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Détails</a>
-                                <a href="{{ route('rendez-vous.edit', $rdv) }}" class="text-green-600 hover:text-green-900 mr-3">Modifier</a>
+                                <a href="{{ route('rendez-vous.show', $rdv) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">{{ __('Details') }}</a>
+                                <a href="{{ route('rendez-vous.edit', $rdv) }}" class="text-green-600 hover:text-green-900 mr-3">{{ __('Edit') }}</a>
                                 <form action="{{ route('rendez-vous.destroy', $rdv) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce rendez-vous ?')">
-                                        Supprimer
+                                    <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('{{ __('Are you sure you want to delete this appointment?') }}')">
+                                        {{ __('Delete') }}
                                     </button>
                                 </form>
                             </td>
@@ -96,10 +96,10 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
             </div>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun rendez-vous</h3>
-            <p class="text-gray-600 mb-4">Commencez par créer votre premier rendez-vous.</p>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('No appointments') }}</h3>
+            <p class="text-gray-600 mb-4">{{ __('Start by creating your first appointment.') }}</p>
             <a href="{{ route('rendez-vous.create') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition duration-200">
-                Créer un Rendez-vous
+                {{ __('Create an Appointment') }}
             </a>
         </div>
     @endif
