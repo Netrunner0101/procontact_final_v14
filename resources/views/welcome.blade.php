@@ -542,9 +542,27 @@
          EDITABLE: Footer
          Change: copyright text, links
          ============================================ -->
-    <footer class="py-8 px-6" style="border-top: 1px solid rgba(197,200,185,0.2);">
-        <div class="max-w-6xl mx-auto text-center">
-            <p class="text-sm" style="color: var(--outline);">&copy; {{ date('Y') }} Pro Contact. {{ __('All rights reserved.') }}</p>
+    <footer class="py-12 px-8" style="background: var(--surface-container-low); border-top: 1px solid rgba(197,200,185,0.1);">
+        <div class="max-w-7xl mx-auto">
+            <!-- EDITABLE: Footer Top Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:flex lg:justify-between items-center pt-8">
+                <div class="mb-8 lg:mb-0">
+                    <!-- EDITABLE: Footer Brand -->
+                    <div class="text-lg font-black mb-2" style="color: var(--on-surface);">{{ __('ProContact CRM') }}</div>
+                    <p class="text-sm" style="color: var(--outline);">{{ __('Built for the modern professional.') }}</p>
+                </div>
+                <!-- EDITABLE: Footer Links -->
+                <div class="flex flex-wrap gap-8 lg:gap-12 text-sm font-medium uppercase tracking-wide">
+                    <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Privacy Policy') }}</a>
+                    <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Terms of Service') }}</a>
+                    <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Cookie Settings') }}</a>
+                    <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Contact Support') }}</a>
+                </div>
+            </div>
+            <!-- EDITABLE: Footer Copyright -->
+            <div class="mt-12 text-center lg:text-left text-sm" style="color: var(--outline-variant);">
+                &copy; {{ date('Y') }} ProContact CRM. {{ __('Made with precision in Belgium.') }}
+            </div>
         </div>
     </footer>
 </body>
