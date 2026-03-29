@@ -1,18 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Notes - Pro Contact')
+@section('title', __('Notes') . ' - Pro Contact')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Notes</h1>
-            <p class="text-gray-600 mt-2">Gérez vos notes personnelles</p>
+            <h1 class="text-3xl font-bold text-gray-900">{{ __('Notes') }}</h1>
+            <p class="text-gray-600 mt-2">{{ __('Manage your personal notes') }}</p>
         </div>
-        <a href="{{ route('notes.create') }}" 
+        <a href="{{ route('notes.create') }}"
            class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg transition duration-200">
-            Nouvelle Note
+            {{ __('New Note') }}
         </a>
     </div>
 
@@ -26,7 +26,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Total</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Total') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $notes->total() }}</p>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Urgentes</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Urgent') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">
                         {{ $notes->where('priorite', 'Urgente')->count() }}
                     </p>
@@ -56,7 +56,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Haute priorité</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('High priority') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">
                         {{ $notes->where('priorite', 'Haute')->count() }}
                     </p>
@@ -72,7 +72,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Aujourd'hui</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Today') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">
                         {{ $notes->filter(function($note) { return $note->created_at->isToday(); })->count() }}
                     </p>
@@ -95,7 +95,7 @@
                                             {{ $note->titre }}
                                         </a>
                                     </h3>
-                                    
+
                                     <!-- Priority Badge -->
                                     @php
                                         $priorityColors = [
@@ -109,9 +109,9 @@
                                         {{ $note->priorite }}
                                     </span>
                                 </div>
-                                
+
                                 <p class="text-gray-600 mb-3">{{ Str::limit($note->contenu, 150) }}</p>
-                                
+
                                 <!-- Associated Items -->
                                 <div class="flex flex-wrap gap-2 mb-3">
                                     @if($note->contact)
@@ -122,7 +122,7 @@
                                             {{ $note->contact->prenom }} {{ $note->contact->nom }}
                                         </span>
                                     @endif
-                                    
+
                                     @if($note->activite)
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,7 +131,7 @@
                                             {{ $note->activite->nom }}
                                         </span>
                                     @endif
-                                    
+
                                     @if($note->rendezVous)
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,31 +141,31 @@
                                         </span>
                                     @endif
                                 </div>
-                                
+
                                 <div class="text-sm text-gray-500">
-                                    Créée le {{ $note->created_at->format('d/m/Y à H:i') }}
+                                    {{ __('Created on') }} {{ $note->created_at->format('d/m/Y à H:i') }}
                                     @if($note->updated_at != $note->created_at)
-                                        • Modifiée le {{ $note->updated_at->format('d/m/Y à H:i') }}
+                                        • {{ __('Modified on') }} {{ $note->updated_at->format('d/m/Y à H:i') }}
                                     @endif
                                 </div>
                             </div>
-                            
+
                             <div class="flex space-x-2 ml-4">
-                                <a href="{{ route('notes.show', $note) }}" 
+                                <a href="{{ route('notes.show', $note) }}"
                                    class="text-indigo-600 hover:text-indigo-900 text-sm">
-                                    Voir
+                                    {{ __('View') }}
                                 </a>
-                                <a href="{{ route('notes.edit', $note) }}" 
+                                <a href="{{ route('notes.edit', $note) }}"
                                    class="text-blue-600 hover:text-blue-900 text-sm">
-                                    Modifier
+                                    {{ __('Edit') }}
                                 </a>
                                 <form action="{{ route('notes.destroy', $note) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" 
+                                    <button type="submit"
                                             class="text-red-600 hover:text-red-900 text-sm"
-                                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette note ?')">
-                                        Supprimer
+                                            onclick="return confirm('{{ __('Are you sure you want to delete this note?') }}')">
+                                        {{ __('Delete') }}
                                     </button>
                                 </form>
                             </div>
@@ -183,12 +183,12 @@
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune note</h3>
-                <p class="mt-1 text-sm text-gray-500">Commencez par créer votre première note.</p>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('No notes') }}</h3>
+                <p class="mt-1 text-sm text-gray-500">{{ __('Start by creating your first note.') }}</p>
                 <div class="mt-6">
-                    <a href="{{ route('notes.create') }}" 
+                    <a href="{{ route('notes.create') }}"
                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                        Nouvelle Note
+                        {{ __('New Note') }}
                     </a>
                 </div>
             </div>

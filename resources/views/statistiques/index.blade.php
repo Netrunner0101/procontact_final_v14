@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Statistiques - Pro Contact')
+@section('title', __('Statistics - Pro Contact'))
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Statistiques</h1>
-            <p class="text-gray-600 mt-2">Tableau de bord et analyses de votre activité</p>
+            <h1 class="text-3xl font-bold text-gray-900">{{ __('Statistics') }}</h1>
+            <p class="text-gray-600 mt-2">{{ __('Dashboard and analysis of your activity') }}</p>
         </div>
         <div class="flex space-x-3">
             <a href="{{ route('statistiques.export.global') }}" 
                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200">
-                📊 Exporter Rapport Global
+                {{ __('Export Global Report') }}
             </a>
         </div>
     </div>
@@ -28,7 +28,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Contacts</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Contacts') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $totalContacts }}</p>
                 </div>
             </div>
@@ -42,7 +42,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Activités</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Activities') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $totalActivites }}</p>
                 </div>
             </div>
@@ -56,7 +56,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Rendez-vous</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Appointments') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $totalRendezVous }}</p>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Rappels</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Reminders') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $totalRappels }}</p>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Notes</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Notes') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $totalNotes }}</p>
                 </div>
             </div>
@@ -94,7 +94,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <!-- Monthly Trends Chart -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Tendances mensuelles (12 derniers mois)</h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Monthly trends (last 12 months)') }}</h2>
             <div class="h-64">
                 <canvas id="monthlyTrendsChart"></canvas>
             </div>
@@ -102,11 +102,11 @@
 
         <!-- Recent Activity Trends -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Tendances récentes</h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Recent trends') }}</h2>
             <div class="space-y-4">
                 <div class="flex justify-between items-center p-4 bg-blue-50 rounded-lg">
                     <div>
-                        <p class="text-sm font-medium text-blue-900">Contacts ce mois</p>
+                        <p class="text-sm font-medium text-blue-900">{{ __('Contacts this month') }}</p>
                         <p class="text-2xl font-bold text-blue-600">{{ $recentTrends['contacts_this_month'] }}</p>
                     </div>
                     <div class="text-right">
@@ -118,13 +118,13 @@
                         <span class="text-sm {{ $contactChange >= 0 ? 'text-green-600' : 'text-red-600' }}">
                             {{ $contactChange >= 0 ? '+' : '' }}{{ number_format($contactChange, 1) }}%
                         </span>
-                        <p class="text-xs text-gray-500">vs mois dernier</p>
+                        <p class="text-xs text-gray-500">{{ __('vs last month') }}</p>
                     </div>
                 </div>
 
                 <div class="flex justify-between items-center p-4 bg-purple-50 rounded-lg">
                     <div>
-                        <p class="text-sm font-medium text-purple-900">Rendez-vous ce mois</p>
+                        <p class="text-sm font-medium text-purple-900">{{ __('Appointments this month') }}</p>
                         <p class="text-2xl font-bold text-purple-600">{{ $recentTrends['rendez_vous_this_month'] }}</p>
                     </div>
                     <div class="text-right">
@@ -136,7 +136,7 @@
                         <span class="text-sm {{ $rdvChange >= 0 ? 'text-green-600' : 'text-red-600' }}">
                             {{ $rdvChange >= 0 ? '+' : '' }}{{ number_format($rdvChange, 1) }}%
                         </span>
-                        <p class="text-xs text-gray-500">vs mois dernier</p>
+                        <p class="text-xs text-gray-500">{{ __('vs last month') }}</p>
                     </div>
                 </div>
             </div>
@@ -146,26 +146,26 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <!-- Appointment Status Distribution -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Répartition des rendez-vous</h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Appointment distribution') }}</h2>
             <div class="space-y-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <div class="w-4 h-4 bg-green-500 rounded mr-3"></div>
-                        <span class="text-gray-700">À venir</span>
+                        <span class="text-gray-700">{{ __('Upcoming') }}</span>
                     </div>
                     <span class="font-semibold text-gray-900">{{ $appointmentStats['upcoming'] }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <div class="w-4 h-4 bg-yellow-500 rounded mr-3"></div>
-                        <span class="text-gray-700">Aujourd'hui</span>
+                        <span class="text-gray-700">{{ __('Today') }}</span>
                     </div>
                     <span class="font-semibold text-gray-900">{{ $appointmentStats['today'] }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <div class="w-4 h-4 bg-gray-500 rounded mr-3"></div>
-                        <span class="text-gray-700">Passés</span>
+                        <span class="text-gray-700">{{ __('Past') }}</span>
                     </div>
                     <span class="font-semibold text-gray-900">{{ $appointmentStats['past'] }}</span>
                 </div>
@@ -177,9 +177,9 @@
 
         <!-- Note Priorities Distribution -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Répartition des priorités (Notes)</h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Priority distribution (Notes)') }}</h2>
             <div class="space-y-4">
-                @foreach(['Urgente' => 'red', 'Haute' => 'orange', 'Normale' => 'blue', 'Basse' => 'gray'] as $priority => $color)
+                @foreach([__('Urgent') => 'red', __('High') => 'orange', __('Normal') => 'blue', __('Low') => 'gray'] as $priority => $color)
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
                             <div class="w-4 h-4 bg-{{ $color }}-500 rounded mr-3"></div>
@@ -198,7 +198,7 @@
     <!-- Activity Performance -->
     <div class="bg-white rounded-lg shadow mb-8">
         <div class="p-6 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Performance par activité</h2>
+            <h2 class="text-xl font-semibold text-gray-900">{{ __('Performance by activity') }}</h2>
         </div>
         <div class="p-6">
             @if($activiteStats->count() > 0)
@@ -206,11 +206,11 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activité</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacts</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rendez-vous</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Activity') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Contacts') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Appointments') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Notes') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -247,8 +247,8 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <a href="{{ route('statistiques.activite', $activite) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Détails</a>
-                                        <a href="{{ route('statistiques.export.activite', $activite) }}" class="text-green-600 hover:text-green-900">Exporter</a>
+                                        <a href="{{ route('statistiques.activite', $activite) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">{{ __('Details') }}</a>
+                                        <a href="{{ route('statistiques.export.activite', $activite) }}" class="text-green-600 hover:text-green-900">{{ __('Export') }}</a>
                                     </td>
                                 </tr>
                             @endforeach
@@ -256,7 +256,7 @@
                     </table>
                 </div>
             @else
-                <p class="text-gray-500 text-center py-8">Aucune activité trouvée</p>
+                <p class="text-gray-500 text-center py-8">{{ __('No activities found') }}</p>
             @endif
         </div>
     </div>
@@ -275,21 +275,21 @@ document.addEventListener('DOMContentLoaded', function() {
             labels: monthlyData.map(item => item.month),
             datasets: [
                 {
-                    label: 'Contacts',
+                    label: '{{ __('Contacts') }}',
                     data: monthlyData.map(item => item.contacts),
                     borderColor: 'rgb(59, 130, 246)',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
                     tension: 0.4
                 },
                 {
-                    label: 'Rendez-vous',
+                    label: '{{ __('Appointments') }}',
                     data: monthlyData.map(item => item.rendez_vous),
                     borderColor: 'rgb(147, 51, 234)',
                     backgroundColor: 'rgba(147, 51, 234, 0.1)',
                     tension: 0.4
                 },
                 {
-                    label: 'Notes',
+                    label: '{{ __('Notes') }}',
                     data: monthlyData.map(item => item.notes),
                     borderColor: 'rgb(99, 102, 241)',
                     backgroundColor: 'rgba(99, 102, 241, 0.1)',
@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(appointmentCtx, {
         type: 'doughnut',
         data: {
-            labels: ['À venir', 'Aujourd\'hui', 'Passés'],
+            labels: ['{{ __('Upcoming') }}', '{{ __('Today') }}', '{{ __('Past') }}'],
             datasets: [{
                 data: [appointmentData.upcoming, appointmentData.today, appointmentData.past],
                 backgroundColor: ['#10b981', '#f59e0b', '#6b7280']
@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(priorityCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Urgente', 'Haute', 'Normale', 'Basse'],
+            labels: ['{{ __('Urgent') }}', '{{ __('High') }}', '{{ __('Normal') }}', '{{ __('Low') }}'],
             datasets: [{
                 data: [
                     priorityData['Urgente'] || 0,

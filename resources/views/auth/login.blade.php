@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Connexion - Pro Contact</title>
+    <title>{{ __('Login') }} - Pro Contact</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -22,11 +22,17 @@
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="fixed top-4 right-4 z-50 flex gap-2">
+        <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'en' ? 'bg-white text-gray-900 font-bold' : 'text-white/70 hover:text-white' }} transition-colors">EN</a>
+        <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-white text-gray-900 font-bold' : 'text-white/70 hover:text-white' }} transition-colors">FR</a>
+    </div>
+
     <div class="min-h-screen flex items-center justify-center px-4">
         <div class="max-w-md w-full auth-card p-8">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-bold" style="color: #1b1c1a;">Pro Contact</h1>
-                <p class="mt-2" style="color: #44483e;">Connectez-vous &agrave; votre compte</p>
+                <p class="mt-2" style="color: #44483e;">{{ __('Sign in to your account') }}</p>
             </div>
 
             @if (session('status'))
@@ -39,7 +45,7 @@
                 @csrf
 
                 <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium mb-2" style="color: #44483e;">Email</label>
+                    <label for="email" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Email') }}</label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" required
                            class="w-full px-3 py-2 auth-input @error('email') border-red-500 @enderror">
                     @error('email')
@@ -48,7 +54,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="password" class="block text-sm font-medium mb-2" style="color: #44483e;">Mot de passe</label>
+                    <label for="password" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Password') }}</label>
                     <input type="password" id="password" name="password" required
                            class="w-full px-3 py-2 auth-input @error('password') border-red-500 @enderror">
                     @error('password')
@@ -60,18 +66,18 @@
                     <div class="flex items-center">
                         <input type="checkbox" id="remember" name="remember" class="h-4 w-4 rounded" style="accent-color: #843728;">
                         <label for="remember" class="ml-2 block text-sm" style="color: #44483e;">
-                            Se souvenir de moi
+                            {{ __('Remember me') }}
                         </label>
                     </div>
                     <div class="text-sm">
                         <a href="{{ route('password.request') }}" style="color: #843728;" class="hover:opacity-80">
-                            Mot de passe oubli&eacute; ?
+                            {{ __('Forgot your password?') }}
                         </a>
                     </div>
                 </div>
 
                 <button type="submit" class="w-full auth-btn py-2 px-4">
-                    Se connecter
+                    {{ __('Log in') }}
                 </button>
             </form>
 
@@ -82,7 +88,7 @@
                         <div class="w-full border-t divider-line"></div>
                     </div>
                     <div class="relative flex justify-center text-sm">
-                        <span class="px-2" style="background: #ffffff; color: #75786c;">Ou continuer avec</span>
+                        <span class="px-2" style="background: #ffffff; color: #75786c;">{{ __('Or continue with') }}</span>
                     </div>
                 </div>
             </div>
@@ -96,21 +102,21 @@
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
-                    Continuer avec Google (Test)
+                    {{ __('Continue with Google (Test)') }}
                 </a>
 
                 <a href="{{ route('auth.apple') }}" class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition duration-200" style="background: #1b1c1a; border-radius: 0.375rem;">
                     <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12.017 0C8.396 0 8.025.044 8.025.044c0 0-.396 2.24 1.537 4.477C11.497 6.76 13.5 6.76 13.5 6.76s2.003 0 3.938-2.24C19.371 2.284 18.975.044 18.975.044S18.604 0 15.983 0h-3.966zm2.523 7.847c-1.277 0-2.297.02-2.297.02-.277 0-.5.223-.5.5v8.133c0 .277.223.5.5.5h4.594c.277 0 .5-.223.5-.5V8.367c0-.277-.223-.5-.5-.5h-2.297z"/>
                     </svg>
-                    Continuer avec Apple
+                    {{ __('Continue with Apple') }}
                 </a>
             </div>
 
             <div class="text-center mt-6">
                 <p style="color: #44483e;">
-                    Pas de compte ?
-                    <a href="{{ route('register') }}" style="color: #843728; font-weight: 600;" class="hover:opacity-80">S'inscrire</a>
+                    {{ __("Don't have an account?") }}
+                    <a href="{{ route('register') }}" style="color: #843728; font-weight: 600;" class="hover:opacity-80">{{ __('Sign up') }}</a>
                 </p>
             </div>
         </div>

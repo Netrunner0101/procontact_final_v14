@@ -5,8 +5,8 @@
     <div class="max-w-4xl mx-auto">
         <!-- Header -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Mon Profil</h1>
-            <p class="text-gray-600">Gérez vos informations personnelles et paramètres de sécurité</p>
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ __('My Profile') }}</h1>
+            <p class="text-gray-600">{{ __('Manage your personal information and security settings') }}</p>
         </div>
 
         <!-- Success Message -->
@@ -24,7 +24,7 @@
                     <div class="card-header">
                         <h2 class="text-xl font-semibold text-gray-900">
                             <i class="fas fa-user mr-2"></i>
-                            Informations Personnelles
+                            {{ __('Personal Information') }}
                         </h2>
                     </div>
                     <div class="card-body">
@@ -35,7 +35,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Nom -->
                                 <div>
-                                    <label for="nom" class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                                    <label for="nom" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Last Name') }}</label>
                                     <input type="text" id="nom" name="nom" value="{{ old('nom', $user->nom) }}" 
                                            class="form-input @error('nom') border-red-500 @enderror" required>
                                     @error('nom')
@@ -45,7 +45,7 @@
 
                                 <!-- Prénom -->
                                 <div>
-                                    <label for="prenom" class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                                    <label for="prenom" class="block text-sm font-medium text-gray-700 mb-2">{{ __('First Name') }}</label>
                                     <input type="text" id="prenom" name="prenom" value="{{ old('prenom', $user->prenom) }}" 
                                            class="form-input @error('prenom') border-red-500 @enderror" required>
                                     @error('prenom')
@@ -55,7 +55,7 @@
 
                                 <!-- Email -->
                                 <div class="md:col-span-2">
-                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Email') }}</label>
                                     <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" 
                                            class="form-input @error('email') border-red-500 @enderror" required>
                                     @error('email')
@@ -65,7 +65,7 @@
 
                                 <!-- Téléphone -->
                                 <div>
-                                    <label for="telephone" class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                                    <label for="telephone" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Phone') }}</label>
                                     <input type="tel" id="telephone" name="telephone" value="{{ old('telephone', $user->telephone) }}" 
                                            class="form-input @error('telephone') border-red-500 @enderror">
                                     @error('telephone')
@@ -75,7 +75,7 @@
 
                                 <!-- Numéro de rue -->
                                 <div>
-                                    <label for="numero_rue" class="block text-sm font-medium text-gray-700 mb-2">Numéro</label>
+                                    <label for="numero_rue" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Number') }}</label>
                                     <input type="text" id="numero_rue" name="numero_rue" value="{{ old('numero_rue', $user->numero_rue) }}" 
                                            class="form-input @error('numero_rue') border-red-500 @enderror">
                                     @error('numero_rue')
@@ -85,7 +85,7 @@
 
                                 <!-- Rue -->
                                 <div class="md:col-span-2">
-                                    <label for="rue" class="block text-sm font-medium text-gray-700 mb-2">Rue</label>
+                                    <label for="rue" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Street') }}</label>
                                     <input type="text" id="rue" name="rue" value="{{ old('rue', $user->rue) }}" 
                                            class="form-input @error('rue') border-red-500 @enderror">
                                     @error('rue')
@@ -95,7 +95,7 @@
 
                                 <!-- Ville -->
                                 <div>
-                                    <label for="ville" class="block text-sm font-medium text-gray-700 mb-2">Ville</label>
+                                    <label for="ville" class="block text-sm font-medium text-gray-700 mb-2">{{ __('City') }}</label>
                                     <input type="text" id="ville" name="ville" value="{{ old('ville', $user->ville) }}" 
                                            class="form-input @error('ville') border-red-500 @enderror">
                                     @error('ville')
@@ -105,7 +105,7 @@
 
                                 <!-- Code postal -->
                                 <div>
-                                    <label for="code_postal" class="block text-sm font-medium text-gray-700 mb-2">Code Postal</label>
+                                    <label for="code_postal" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Postal Code') }}</label>
                                     <input type="text" id="code_postal" name="code_postal" value="{{ old('code_postal', $user->code_postal) }}" 
                                            class="form-input @error('code_postal') border-red-500 @enderror">
                                     @error('code_postal')
@@ -115,7 +115,7 @@
 
                                 <!-- Pays -->
                                 <div class="md:col-span-2">
-                                    <label for="pays" class="block text-sm font-medium text-gray-700 mb-2">Pays</label>
+                                    <label for="pays" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Country') }}</label>
                                     <input type="text" id="pays" name="pays" value="{{ old('pays', $user->pays) }}" 
                                            class="form-input @error('pays') border-red-500 @enderror">
                                     @error('pays')
@@ -127,7 +127,7 @@
                             <div class="mt-6">
                                 <button type="submit" class="btn-primary">
                                     <i class="fas fa-save mr-2"></i>
-                                    Mettre à jour le profil
+                                    {{ __('Update Profile') }}
                                 </button>
                             </div>
                         </form>
@@ -139,7 +139,7 @@
                     <div class="card-header">
                         <h2 class="text-xl font-semibold text-gray-900">
                             <i class="fas fa-lock mr-2"></i>
-                            Changer le mot de passe
+                            {{ __('Change Password') }}
                         </h2>
                     </div>
                     <div class="card-body">
@@ -150,7 +150,7 @@
                             <div class="space-y-6">
                                 <!-- Current Password -->
                                 <div>
-                                    <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">Mot de passe actuel</label>
+                                    <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Current Password') }}</label>
                                     <input type="password" id="current_password" name="current_password" 
                                            class="form-input @error('current_password') border-red-500 @enderror" required>
                                     @error('current_password')
@@ -160,7 +160,7 @@
 
                                 <!-- New Password -->
                                 <div>
-                                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Nouveau mot de passe</label>
+                                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">{{ __('New Password') }}</label>
                                     <input type="password" id="password" name="password" 
                                            class="form-input @error('password') border-red-500 @enderror" required>
                                     @error('password')
@@ -170,7 +170,7 @@
 
                                 <!-- Confirm Password -->
                                 <div>
-                                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Confirmer le mot de passe</label>
+                                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Confirm Password') }}</label>
                                     <input type="password" id="password_confirmation" name="password_confirmation" 
                                            class="form-input" required>
                                 </div>
@@ -179,7 +179,7 @@
                             <div class="mt-6">
                                 <button type="submit" class="btn-primary">
                                     <i class="fas fa-key mr-2"></i>
-                                    Changer le mot de passe
+                                    {{ __('Change Password') }}
                                 </button>
                             </div>
                         </form>
@@ -212,7 +212,7 @@
                     <div class="card-header">
                         <h3 class="text-lg font-semibold text-gray-900">
                             <i class="fas fa-link mr-2"></i>
-                            Comptes Liés
+                            {{ __('Linked Accounts') }}
                         </h3>
                     </div>
                     <div class="card-body">
@@ -233,12 +233,12 @@
                                         @csrf
                                         <input type="hidden" name="provider" value="google">
                                         <button type="submit" class="text-red-600 hover:text-red-800 text-sm">
-                                            Dissocier
+                                            {{ __('Unlink') }}
                                         </button>
                                     </form>
                                 @else
                                     <a href="{{ route('auth.google') }}" class="text-blue-600 hover:text-blue-800 text-sm">
-                                        Associer
+                                        {{ __('Link') }}
                                     </a>
                                 @endif
                             </div>
@@ -256,12 +256,12 @@
                                         @csrf
                                         <input type="hidden" name="provider" value="apple">
                                         <button type="submit" class="text-red-600 hover:text-red-800 text-sm">
-                                            Dissocier
+                                            {{ __('Unlink') }}
                                         </button>
                                     </form>
                                 @else
                                     <a href="{{ route('auth.apple') }}" class="text-blue-600 hover:text-blue-800 text-sm">
-                                        Associer
+                                        {{ __('Link') }}
                                     </a>
                                 @endif
                             </div>
@@ -274,24 +274,24 @@
                     <div class="card-header">
                         <h3 class="text-lg font-semibold text-gray-900">
                             <i class="fas fa-info-circle mr-2"></i>
-                            Informations du Compte
+                            {{ __('Account Information') }}
                         </h3>
                     </div>
                     <div class="card-body">
                         <div class="space-y-3 text-sm">
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Membre depuis:</span>
+                                <span class="text-gray-600">{{ __('Member since:') }}</span>
                                 <span class="font-medium">{{ $user->created_at->format('d/m/Y') }}</span>
                             </div>
                             @if($user->last_login_at)
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Dernière connexion:</span>
+                                    <span class="text-gray-600">{{ __('Last login:') }}</span>
                                     <span class="font-medium">{{ $user->last_login_at->format('d/m/Y H:i') }}</span>
                                 </div>
                             @endif
                             @if($user->provider)
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Connecté via:</span>
+                                    <span class="text-gray-600">{{ __('Connected via:') }}</span>
                                     <span class="font-medium">{{ ucfirst($user->provider) }}</span>
                                 </div>
                             @endif

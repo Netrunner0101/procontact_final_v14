@@ -114,9 +114,9 @@ class StatisticsDashboard extends Component
         ", [$today, $today, $today])->first();
 
         $this->statusDistribution = collect([
-            (object)['statut' => 'À venir', 'count' => $stats->upcoming ?? 0],
-            (object)['statut' => "Aujourd'hui", 'count' => $stats->today ?? 0],
-            (object)['statut' => 'Passé', 'count' => $stats->past ?? 0],
+            (object)['statut' => __('Upcoming'), 'count' => $stats->upcoming ?? 0],
+            (object)['statut' => __('Today'), 'count' => $stats->today ?? 0],
+            (object)['statut' => __('Past'), 'count' => $stats->past ?? 0],
         ])->filter(fn($item) => $item->count > 0)->values();
     }
 
@@ -134,8 +134,8 @@ class StatisticsDashboard extends Component
         $private = (clone $baseQuery)->where('is_shared_with_client', false)->count();
 
         $this->priorityDistribution = collect([
-            (object)['priorite' => 'Partagée', 'count' => $shared],
-            (object)['priorite' => 'Privée', 'count' => $private],
+            (object)['priorite' => __('Shared'), 'count' => $shared],
+            (object)['priorite' => __('Private'), 'count' => $private],
         ])->filter(fn($item) => $item->count > 0)->values();
     }
 
@@ -156,12 +156,12 @@ class StatisticsDashboard extends Component
             
             if ($type === 'global') {
                 // Global export
-                fputcsv($file, ['Type', 'Mois', 'Nombre'], ';');
-                
+                fputcsv($file, [__('Type'), __('Month'), __('Count')], ';');
+
                 foreach ($this->monthlyStats as $month) {
-                    fputcsv($file, ['Contacts', $month['month'], $month['contacts']], ';');
-                    fputcsv($file, ['Rendez-vous', $month['month'], $month['appointments']], ';');
-                    fputcsv($file, ['Notes', $month['month'], $month['notes']], ';');
+                    fputcsv($file, [__('Contacts'), $month['month'], $month['contacts']], ';');
+                    fputcsv($file, [__('Appointments'), $month['month'], $month['appointments']], ';');
+                    fputcsv($file, [__('Notes'), $month['month'], $month['notes']], ';');
                 }
             }
             

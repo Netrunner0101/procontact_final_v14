@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Modifier ' . $rendezVous->titre . ' - Pro Contact')
+@section('title', __('Edit') . ' ' . $rendezVous->titre . ' - Pro Contact')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto">
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Modifier le Rendez-vous</h1>
+            <h1 class="text-3xl font-bold text-gray-900">{{ __('Edit Appointment') }}</h1>
             <p class="text-gray-600 mt-2">{{ $rendezVous->titre }}</p>
         </div>
 
@@ -14,10 +14,10 @@
             <form method="POST" action="{{ route('rendez-vous.update', $rendezVous) }}">
                 @csrf
                 @method('PUT')
-                
+
                 <!-- Required Fields -->
                 <div class="mb-6">
-                    <label for="titre" class="block text-sm font-medium text-gray-700 mb-2">Titre du rendez-vous *</label>
+                    <label for="titre" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Appointment title') }} *</label>
                     <input type="text" id="titre" name="titre" value="{{ old('titre', $rendezVous->titre) }}" required
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 @error('titre') border-red-500 @enderror">
                     @error('titre')
@@ -26,7 +26,7 @@
                 </div>
 
                 <div class="mb-6">
-                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Description') }}</label>
                     <textarea id="description" name="description" rows="3"
                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 @error('description') border-red-500 @enderror">{{ old('description', $rendezVous->description) }}</textarea>
                     @error('description')
@@ -37,10 +37,10 @@
                 <!-- Contact and Activity Selection -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <label for="contact_id" class="block text-sm font-medium text-gray-700 mb-2">Contact *</label>
+                        <label for="contact_id" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Contact') }} *</label>
                         <select id="contact_id" name="contact_id" required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 @error('contact_id') border-red-500 @enderror">
-                            <option value="">Sélectionner un contact</option>
+                            <option value="">{{ __('Select a contact') }}</option>
                             @foreach($contacts as $contact)
                                 <option value="{{ $contact->id }}" {{ (old('contact_id', $rendezVous->contact_id) == $contact->id) ? 'selected' : '' }}>
                                     {{ $contact->prenom }} {{ $contact->nom }}
@@ -53,10 +53,10 @@
                     </div>
 
                     <div>
-                        <label for="activite_id" class="block text-sm font-medium text-gray-700 mb-2">Activité *</label>
+                        <label for="activite_id" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Activity') }} *</label>
                         <select id="activite_id" name="activite_id" required
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 @error('activite_id') border-red-500 @enderror">
-                            <option value="">Sélectionner une activité</option>
+                            <option value="">{{ __('Select an activity') }}</option>
                             @foreach($activites as $activite)
                                 <option value="{{ $activite->id }}" {{ (old('activite_id', $rendezVous->activite_id) == $activite->id) ? 'selected' : '' }}>
                                     {{ $activite->nom }}
@@ -72,7 +72,7 @@
                 <!-- Date Selection -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <label for="date_debut" class="block text-sm font-medium text-gray-700 mb-2">Date de début *</label>
+                        <label for="date_debut" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Start date') }} *</label>
                         <input type="date" id="date_debut" name="date_debut" value="{{ old('date_debut', $rendezVous->date_debut->format('Y-m-d')) }}" required
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 @error('date_debut') border-red-500 @enderror">
                         @error('date_debut')
@@ -81,7 +81,7 @@
                     </div>
 
                     <div>
-                        <label for="date_fin" class="block text-sm font-medium text-gray-700 mb-2">Date de fin *</label>
+                        <label for="date_fin" class="block text-sm font-medium text-gray-700 mb-2">{{ __('End date') }} *</label>
                         <input type="date" id="date_fin" name="date_fin" value="{{ old('date_fin', $rendezVous->date_fin->format('Y-m-d')) }}" required
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 @error('date_fin') border-red-500 @enderror">
                         @error('date_fin')
@@ -93,7 +93,7 @@
                 <!-- Time Selection -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <label for="heure_debut" class="block text-sm font-medium text-gray-700 mb-2">Heure de début *</label>
+                        <label for="heure_debut" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Start time') }} *</label>
                         <input type="time" id="heure_debut" name="heure_debut" value="{{ old('heure_debut', $rendezVous->heure_debut->format('H:i')) }}" required
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 @error('heure_debut') border-red-500 @enderror">
                         @error('heure_debut')
@@ -102,7 +102,7 @@
                     </div>
 
                     <div>
-                        <label for="heure_fin" class="block text-sm font-medium text-gray-700 mb-2">Heure de fin *</label>
+                        <label for="heure_fin" class="block text-sm font-medium text-gray-700 mb-2">{{ __('End time') }} *</label>
                         <input type="time" id="heure_fin" name="heure_fin" value="{{ old('heure_fin', $rendezVous->heure_fin->format('H:i')) }}" required
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 @error('heure_fin') border-red-500 @enderror">
                         @error('heure_fin')
@@ -113,10 +113,10 @@
 
                 <div class="flex justify-end space-x-4">
                     <a href="{{ route('rendez-vous.show', $rendezVous) }}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition duration-200">
-                        Annuler
+                        {{ __('Cancel') }}
                     </a>
                     <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition duration-200">
-                        Mettre à jour
+                        {{ __('Update') }}
                     </button>
                 </div>
             </form>

@@ -4,21 +4,21 @@
         <div class="header-content">
             <h1 class="page-title">
                 <i class="fas fa-calendar-alt"></i>
-                Gestion des Rendez-vous
+                {{ __('Appointment Management') }}
             </h1>
-            <p class="page-subtitle">Planifiez et gérez tous vos rendez-vous</p>
+            <p class="page-subtitle">{{ __('Plan and manage all your appointments') }}</p>
         </div>
         <div class="header-actions">
             <div class="view-toggle">
                 <button wire:click="setViewMode('list')" class="view-btn {{ $viewMode === 'list' ? 'active' : '' }}">
-                    <i class="fas fa-list"></i> Liste
+                    <i class="fas fa-list"></i> {{ __('List') }}
                 </button>
                 <button wire:click="setViewMode('calendar')" class="view-btn {{ $viewMode === 'calendar' ? 'active' : '' }}">
-                    <i class="fas fa-calendar"></i> Calendrier
+                    <i class="fas fa-calendar"></i> {{ __('Calendar') }}
                 </button>
             </div>
             <button wire:click="openCreateModal" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Nouveau RDV
+                <i class="fas fa-plus"></i> {{ __('New Appointment') }}
             </button>
         </div>
     </div>
@@ -31,7 +31,7 @@
                 <input
                     type="text"
                     wire:model.live.debounce.300ms="search"
-                    placeholder="Rechercher par nom de contact..."
+                    placeholder="{{ __('Search by contact name...') }}"
                     class="search-input"
                 >
             </div>
@@ -39,26 +39,26 @@
 
         <div class="filter-controls">
             <select wire:model.live="contactFilter" class="filter-select">
-                <option value="">Tous les contacts</option>
+                <option value="">{{ __('All contacts') }}</option>
                 @foreach($contacts as $contact)
                     <option value="{{ $contact->id }}">{{ $contact->nom }} {{ $contact->prenom }}</option>
                 @endforeach
             </select>
 
             <select wire:model.live="activiteFilter" class="filter-select">
-                <option value="">Toutes les activités</option>
+                <option value="">{{ __('All activities') }}</option>
                 @foreach($activites as $activite)
                     <option value="{{ $activite->id }}">{{ $activite->nom }}</option>
                 @endforeach
             </select>
 
             <select wire:model.live="dateFilter" class="filter-select">
-                <option value="">Toutes les dates</option>
-                <option value="today">Aujourd'hui</option>
-                <option value="tomorrow">Demain</option>
-                <option value="this_week">Cette semaine</option>
-                <option value="next_week">Semaine prochaine</option>
-                <option value="this_month">Ce mois</option>
+                <option value="">{{ __('All dates') }}</option>
+                <option value="today">{{ __('Today') }}</option>
+                <option value="tomorrow">{{ __('Tomorrow') }}</option>
+                <option value="this_week">{{ __('This week') }}</option>
+                <option value="next_week">{{ __('Next week') }}</option>
+                <option value="this_month">{{ __('This month') }}</option>
             </select>
         </div>
     </div>
@@ -116,16 +116,16 @@
                         </div>
 
                         <div class="appointment-actions">
-                            <button wire:click="resendEmail({{ $appointment->id }})" class="action-btn" title="Renvoyer email" style="background: #ffdfa0; color: #6d5624;">
+                            <button wire:click="resendEmail({{ $appointment->id }})" class="action-btn" title="{{ __('Resend email') }}" style="background: #ffdfa0; color: #6d5624;">
                                 <i class="fas fa-envelope"></i>
                             </button>
-                            <button wire:click="openEditModal({{ $appointment->id }})" class="action-btn edit-btn" title="Modifier">
+                            <button wire:click="openEditModal({{ $appointment->id }})" class="action-btn edit-btn" title="{{ __('Edit') }}">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <a href="{{ route('rendez-vous.show', $appointment) }}" class="action-btn view-btn" title="Voir">
+                            <a href="{{ route('rendez-vous.show', $appointment) }}" class="action-btn view-btn" title="{{ __('View') }}">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <button wire:click="openDeleteModal({{ $appointment->id }})" class="action-btn delete-btn" title="Supprimer">
+                            <button wire:click="openDeleteModal({{ $appointment->id }})" class="action-btn delete-btn" title="{{ __('Delete') }}">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -134,10 +134,10 @@
             @empty
                 <div class="empty-state">
                     <i class="fas fa-calendar-times"></i>
-                    <h3>Aucun rendez-vous trouvé</h3>
-                    <p>Commencez par planifier votre premier rendez-vous</p>
+                    <h3>{{ __('No appointments found') }}</h3>
+                    <p>{{ __('Start by scheduling your first appointment') }}</p>
                     <button wire:click="openCreateModal" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Créer un rendez-vous
+                        <i class="fas fa-plus"></i> {{ __('Create an appointment') }}
                     </button>
                 </div>
             @endforelse
@@ -149,10 +149,10 @@
         <div class="calendar-view">
             <div class="calendar-placeholder">
                 <i class="fas fa-calendar-alt"></i>
-                <h3>Vue Calendrier</h3>
-                <p>La vue calendrier sera implémentée prochainement</p>
+                <h3>{{ __('Calendar View') }}</h3>
+                <p>{{ __('The calendar view will be implemented soon') }}</p>
                 <button wire:click="setViewMode('list')" class="btn btn-primary">
-                    <i class="fas fa-list"></i> Retour à la liste
+                    <i class="fas fa-list"></i> {{ __('Back to list') }}
                 </button>
             </div>
         </div>
@@ -172,7 +172,7 @@
                 <div class="modal-header">
                     <h2 class="modal-title">
                         <i class="fas fa-{{ $showCreateModal ? 'plus' : 'edit' }}"></i>
-                        {{ $showCreateModal ? 'Nouveau Rendez-vous' : 'Modifier Rendez-vous' }}
+                        {{ $showCreateModal ? __('New Appointment') : __('Edit Appointment') }}
                     </h2>
                     <button wire:click="closeModals" class="modal-close">
                         <i class="fas fa-times"></i>
@@ -182,9 +182,9 @@
                 <form wire:submit.prevent="{{ $showCreateModal ? 'createAppointment' : 'updateAppointment' }}" class="modal-form">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="contact_id" class="form-label">Contact *</label>
+                            <label for="contact_id" class="form-label">{{ __('Contact') }} *</label>
                             <select id="contact_id" wire:model="contact_id" class="form-select" required>
-                                <option value="">Sélectionner un contact</option>
+                                <option value="">{{ __('Select a contact') }}</option>
                                 @foreach($contacts as $contact)
                                     <option value="{{ $contact->id }}">{{ $contact->nom }} {{ $contact->prenom }}</option>
                                 @endforeach
@@ -193,9 +193,9 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="activite_id" class="form-label">Activité *</label>
+                            <label for="activite_id" class="form-label">{{ __('Activity') }} *</label>
                             <select id="activite_id" wire:model="activite_id" class="form-select" required>
-                                <option value="">Sélectionner une activité</option>
+                                <option value="">{{ __('Select an activity') }}</option>
                                 @foreach($activites as $activite)
                                     <option value="{{ $activite->id }}">{{ $activite->nom }}</option>
                                 @endforeach
@@ -204,13 +204,13 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="date_heure" class="form-label">Date et Heure *</label>
+                            <label for="date_heure" class="form-label">{{ __('Date and Time') }} *</label>
                             <input type="datetime-local" id="date_heure" wire:model="date_heure" class="form-input" required>
                             @error('date_heure') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="form-group full-width">
-                            <label for="description" class="form-label">Description</label>
+                            <label for="description" class="form-label">{{ __('Description') }}</label>
                             <textarea id="description" wire:model="description" class="form-textarea" rows="3"></textarea>
                             @error('description') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
@@ -218,11 +218,11 @@
 
                     <div class="modal-actions">
                         <button type="button" wire:click="closeModals" class="btn btn-secondary">
-                            Annuler
+                            {{ __('Cancel') }}
                         </button>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>
-                            {{ $showCreateModal ? 'Créer' : 'Mettre à jour' }}
+                            {{ $showCreateModal ? __('Create') : __('Update') }}
                         </button>
                     </div>
                 </form>
@@ -237,7 +237,7 @@
                 <div class="modal-header">
                     <h2 class="modal-title">
                         <i class="fas fa-trash text-red-500"></i>
-                        Supprimer Rendez-vous
+                        {{ __('Delete Appointment') }}
                     </h2>
                     <button wire:click="closeModals" class="modal-close">
                         <i class="fas fa-times"></i>
@@ -245,17 +245,17 @@
                 </div>
 
                 <div class="modal-body">
-                    <p>Êtes-vous sûr de vouloir supprimer le rendez-vous avec <strong>{{ $selectedAppointment->contact->nom }} {{ $selectedAppointment->contact->prenom }}</strong> ?</p>
-                    <p class="text-sm text-gray-600">Cette action est irréversible.</p>
+                    <p>{{ __('Are you sure you want to delete the appointment with :name?', ['name' => $selectedAppointment->contact->nom . ' ' . $selectedAppointment->contact->prenom]) }}</p>
+                    <p class="text-sm text-gray-600">{{ __('This action is irreversible.') }}</p>
                 </div>
 
                 <div class="modal-actions">
                     <button wire:click="closeModals" class="btn btn-secondary">
-                        Annuler
+                        {{ __('Cancel') }}
                     </button>
                     <button wire:click="deleteAppointment" class="btn btn-danger">
                         <i class="fas fa-trash"></i>
-                        Supprimer
+                        {{ __('Delete') }}
                     </button>
                 </div>
             </div>

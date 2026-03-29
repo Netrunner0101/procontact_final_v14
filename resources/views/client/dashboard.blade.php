@@ -5,9 +5,9 @@
     <!-- Welcome Section -->
     <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">
-            Bonjour {{ Auth::user()->prenom }} {{ Auth::user()->nom }}
+            {{ __('Hello :first :last', ['first' => Auth::user()->prenom, 'last' => Auth::user()->nom]) }}
         </h1>
-        <p class="text-gray-600 mt-2">Voici un aperçu de vos rendez-vous</p>
+        <p class="text-gray-600 mt-2">{{ __('Here is an overview of your appointments') }}</p>
     </div>
 
     <!-- Statistics Cards -->
@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Total Rendez-vous</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Total Appointments') }}</h3>
                     <p class="text-2xl font-bold text-blue-600">{{ $totalAppointmentsCount }}</p>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-semibold text-gray-900">À venir</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Upcoming') }}</h3>
                     <p class="text-2xl font-bold text-green-600">{{ $upcomingAppointments->count() }}</p>
                 </div>
             </div>
@@ -57,7 +57,7 @@
                     </div>
                 </div>
                 <div class="ml-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Passés</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Past') }}</h3>
                     <p class="text-2xl font-bold text-gray-600">{{ $pastAppointmentsCount }}</p>
                 </div>
             </div>
@@ -68,7 +68,7 @@
     @if($upcomingAppointments->count() > 0)
     <div class="bg-white rounded-lg shadow mb-8">
         <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Prochains rendez-vous</h2>
+            <h2 class="text-xl font-semibold text-gray-900">{{ __('Upcoming appointments') }}</h2>
         </div>
         <div class="p-6">
             <div class="space-y-4">
@@ -78,14 +78,14 @@
                         <h3 class="font-semibold text-gray-900">{{ $appointment->titre }}</h3>
                         <p class="text-sm text-gray-600">{{ $appointment->activite->nom }}</p>
                         <p class="text-sm text-gray-500">
-                            {{ \Carbon\Carbon::parse($appointment->date_heure)->format('d/m/Y à H:i') }}
+                            {{ \Carbon\Carbon::parse($appointment->date_heure)->format('d/m/Y') }} {{ __('at') }} {{ \Carbon\Carbon::parse($appointment->date_heure)->format('H:i') }}
                             <span class="text-blue-600">({{ \Carbon\Carbon::parse($appointment->date_heure)->diffForHumans() }})</span>
                         </p>
                     </div>
                     <div class="flex-shrink-0">
-                        <a href="{{ route('client.appointment', $appointment) }}" 
+                        <a href="{{ route('client.appointment', $appointment) }}"
                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition duration-200">
-                            Voir détails
+                            {{ __('View details') }}
                         </a>
                     </div>
                 </div>
@@ -98,10 +98,10 @@
     <!-- Recent Appointments -->
     <div class="bg-white rounded-lg shadow">
         <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-gray-900">Historique des rendez-vous</h2>
-            <a href="{{ route('client.appointments') }}" 
+            <h2 class="text-xl font-semibold text-gray-900">{{ __('Appointment history') }}</h2>
+            <a href="{{ route('client.appointments') }}"
                class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                Voir tous →
+                {{ __('View all') }} →
             </a>
         </div>
         <div class="p-6">
@@ -113,18 +113,18 @@
                         <h3 class="font-semibold text-gray-900">{{ $appointment->titre }}</h3>
                         <p class="text-sm text-gray-600">{{ $appointment->activite->nom }}</p>
                         <p class="text-sm text-gray-500">
-                            {{ \Carbon\Carbon::parse($appointment->date_heure)->format('d/m/Y à H:i') }}
+                            {{ \Carbon\Carbon::parse($appointment->date_heure)->format('d/m/Y') }} {{ __('at') }} {{ \Carbon\Carbon::parse($appointment->date_heure)->format('H:i') }}
                             @if(\Carbon\Carbon::parse($appointment->date_heure)->isPast())
-                                <span class="text-gray-500">(Terminé)</span>
+                                <span class="text-gray-500">({{ __('Completed') }})</span>
                             @else
-                                <span class="text-green-600">(À venir)</span>
+                                <span class="text-green-600">({{ __('Upcoming') }})</span>
                             @endif
                         </p>
                     </div>
                     <div class="flex-shrink-0">
-                        <a href="{{ route('client.appointment', $appointment) }}" 
+                        <a href="{{ route('client.appointment', $appointment) }}"
                            class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                            Voir détails
+                            {{ __('View details') }}
                         </a>
                     </div>
                 </div>
@@ -135,8 +135,8 @@
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun rendez-vous</h3>
-                <p class="mt-1 text-sm text-gray-500">Vous n'avez pas encore de rendez-vous planifiés.</p>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('No appointments') }}</h3>
+                <p class="mt-1 text-sm text-gray-500">{{ __('You do not have any scheduled appointments yet.') }}</p>
             </div>
             @endif
         </div>

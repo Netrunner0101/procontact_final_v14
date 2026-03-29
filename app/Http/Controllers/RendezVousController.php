@@ -48,9 +48,9 @@ class RendezVousController extends Controller
         // Queue email notification if requested
         if ($request->has('send_email') && $request->send_email) {
             SendAppointmentEmail::dispatch($rendezVous);
-            $message = 'Rendez-vous créé avec succès et email en cours d\'envoi';
+            $message = __('Appointment created successfully and email is being sent');
         } else {
-            $message = 'Rendez-vous créé avec succès';
+            $message = __('Appointment created successfully');
         }
 
         return redirect()->route('rendez-vous.index')->with('success', $message);
@@ -87,14 +87,14 @@ class RendezVousController extends Controller
         ]);
 
         $rendezVous->update($validated);
-        return redirect()->route('rendez-vous.show', $rendezVous)->with('success', 'Rendez-vous mis à jour');
+        return redirect()->route('rendez-vous.show', $rendezVous)->with('success', __('Appointment updated successfully'));
     }
 
     public function destroy(RendezVous $rendezVous)
     {
         $this->authorize('delete', $rendezVous);
         $rendezVous->delete();
-        return redirect()->route('rendez-vous.index')->with('success', 'Rendez-vous supprimé');
+        return redirect()->route('rendez-vous.index')->with('success', __('Appointment deleted successfully'));
     }
 
     public function email(Request $request, RendezVous $rendezVous)
@@ -117,6 +117,6 @@ class RendezVousController extends Controller
         SendAppointmentEmail::dispatch($rendezVous, $validated['recipient_email'], $ccEmails);
 
         return redirect()->route('rendez-vous.show', $rendezVous)
-            ->with('success', 'Email en cours d\'envoi');
+            ->with('success', __('Email is being sent'));
     }
 }

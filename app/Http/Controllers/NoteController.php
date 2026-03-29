@@ -81,7 +81,7 @@ class NoteController extends Controller
         $note = Note::create($validated);
 
         return redirect()->route('notes.show', $note)
-            ->with('success', 'Note créée avec succès');
+            ->with('success', __('Note created successfully'));
     }
 
     public function show(Note $note)
@@ -140,7 +140,7 @@ class NoteController extends Controller
         $note->update($validated);
 
         return redirect()->route('notes.show', $note)
-            ->with('success', 'Note mise à jour avec succès');
+            ->with('success', __('Note updated successfully'));
     }
 
     public function destroy(Note $note)
@@ -153,6 +153,6 @@ class NoteController extends Controller
         $note->delete();
         
         return redirect()->route('notes.index')
-            ->with('success', 'Note supprimée avec succès');
+            ->with('success', __('Note deleted successfully'));
     }
 }

@@ -7,8 +7,8 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold">{{ $contact->nom }} {{ $contact->prenom }}</h1>
         <div class="flex gap-2">
-            <a href="{{ route('contacts.edit', $contact) }}" class="px-4 py-2 bg-blue-600 text-white rounded">Modifier</a>
-            <a href="{{ route('contacts.index') }}" class="px-4 py-2 border rounded">Retour</a>
+            <a href="{{ route('contacts.edit', $contact) }}" class="px-4 py-2 bg-blue-600 text-white rounded">{{ __('Edit') }}</a>
+            <a href="{{ route('contacts.index') }}" class="px-4 py-2 border rounded">{{ __('Back') }}</a>
         </div>
     </div>
 
@@ -19,22 +19,22 @@
     <div class="bg-white rounded-lg shadow p-6">
         <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-                <dt class="font-semibold text-gray-600">Nom</dt>
+                <dt class="font-semibold text-gray-600">{{ __('Last Name') }}</dt>
                 <dd>{{ $contact->nom }}</dd>
             </div>
             <div>
-                <dt class="font-semibold text-gray-600">Prénom</dt>
+                <dt class="font-semibold text-gray-600">{{ __('First Name') }}</dt>
                 <dd>{{ $contact->prenom }}</dd>
             </div>
             @if($contact->status)
             <div>
-                <dt class="font-semibold text-gray-600">Statut</dt>
+                <dt class="font-semibold text-gray-600">{{ __('Status') }}</dt>
                 <dd>{{ $contact->status->status_client }}</dd>
             </div>
             @endif
             @if($contact->rue)
             <div>
-                <dt class="font-semibold text-gray-600">Adresse</dt>
+                <dt class="font-semibold text-gray-600">{{ __('Address') }}</dt>
                 <dd>{{ $contact->rue }} {{ $contact->numero }}, {{ $contact->code_postal }} {{ $contact->ville }}, {{ $contact->pays }}</dd>
             </div>
             @endif
@@ -42,7 +42,7 @@
 
         @if($contact->emails->count())
         <div class="mt-4">
-            <h3 class="font-semibold text-gray-600">Emails</h3>
+            <h3 class="font-semibold text-gray-600">{{ __('Emails') }}</h3>
             <ul>
                 @foreach($contact->emails as $email)
                     <li>{{ $email->email }}</li>
@@ -53,7 +53,7 @@
 
         @if($contact->numeroTelephones->count())
         <div class="mt-4">
-            <h3 class="font-semibold text-gray-600">Téléphones</h3>
+            <h3 class="font-semibold text-gray-600">{{ __('Phones') }}</h3>
             <ul>
                 @foreach($contact->numeroTelephones as $phone)
                     <li>{{ $phone->numero_telephone }}</li>
@@ -65,7 +65,7 @@
 
     @if(isset($contact->rendezVous) && $contact->rendezVous->count())
     <div class="mt-6">
-        <h2 class="text-xl font-bold mb-4">Rendez-vous</h2>
+        <h2 class="text-xl font-bold mb-4">{{ __('Appointments') }}</h2>
         <div class="bg-white rounded-lg shadow">
             @foreach($contact->rendezVous as $rdv)
             <div class="p-4 border-b">

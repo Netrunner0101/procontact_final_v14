@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Confirmation de rendez-vous</title>
+    <title>{{ __('Appointment Confirmation') }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -53,84 +53,84 @@
 </head>
 <body>
     <div class="header">
-        <h1>Confirmation de Rendez-vous</h1>
+        <h1>{{ __('Appointment Confirmation') }}</h1>
         <p>Pro Contact</p>
     </div>
 
     <div class="content">
-        <p>Bonjour {{ $contact->prenom }} {{ $contact->nom }},</p>
-        
-        <p>Nous vous confirmons votre rendez-vous :</p>
+        <p>{{ __('Hello :first :last,', ['first' => $contact->prenom, 'last' => $contact->nom]) }}</p>
+
+        <p>{{ __('We confirm your appointment:') }}</p>
 
         <div class="highlight">
             <h2 style="margin-top: 0; color: #843728;">{{ $rendezVous->titre }}</h2>
             @if($rendezVous->description)
-                <p><strong>Description :</strong> {{ $rendezVous->description }}</p>
+                <p><strong>{{ __('Description:') }}</strong> {{ $rendezVous->description }}</p>
             @endif
         </div>
 
         <div class="detail-row">
-            <span class="detail-label">Date :</span>
+            <span class="detail-label">{{ __('Date:') }}</span>
             {{ $rendezVous->date_debut->format('d/m/Y') }}
             @if($rendezVous->date_debut->format('Y-m-d') !== $rendezVous->date_fin->format('Y-m-d'))
-                au {{ $rendezVous->date_fin->format('d/m/Y') }}
+                {{ __('to') }} {{ $rendezVous->date_fin->format('d/m/Y') }}
             @endif
         </div>
 
         <div class="detail-row">
-            <span class="detail-label">Heure :</span>
+            <span class="detail-label">{{ __('Time:') }}</span>
             {{ $rendezVous->heure_debut->format('H:i') }} - {{ $rendezVous->heure_fin->format('H:i') }}
         </div>
 
         <div class="detail-row">
-            <span class="detail-label">Activité :</span>
+            <span class="detail-label">{{ __('Activity:') }}</span>
             {{ $activite->nom }}
         </div>
 
         @if($activite->description)
             <div class="detail-row">
-                <span class="detail-label">Description de l'activité :</span>
+                <span class="detail-label">{{ __('Activity description:') }}</span>
                 {{ $activite->description }}
             </div>
         @endif
 
         @if($activite->numero_telephone)
             <div class="detail-row">
-                <span class="detail-label">Téléphone :</span>
+                <span class="detail-label">{{ __('Phone:') }}</span>
                 {{ $activite->numero_telephone }}
             </div>
         @endif
 
         @if($activite->email)
             <div class="detail-row">
-                <span class="detail-label">Email :</span>
+                <span class="detail-label">{{ __('Email:') }}</span>
                 {{ $activite->email }}
             </div>
         @endif
 
         @if($contact->portal_token)
         <div style="margin-top: 20px; padding: 20px; background-color: #EDE9FE; border-radius: 8px; text-align: center;">
-            <p style="margin: 0 0 15px 0; font-weight: bold;">Accédez à votre espace client</p>
+            <p style="margin: 0 0 15px 0; font-weight: bold;">{{ __('Access your client portal') }}</p>
             <a href="{{ url('/portal/' . $contact->portal_token) }}" style="display: inline-block; padding: 12px 24px; background-color: #843728; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">
-                Voir mes rendez-vous
+                {{ __('View my appointments') }}
             </a>
-            <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">Ce lien est personnel. Ne le partagez pas.</p>
+            <p style="margin: 10px 0 0 0; font-size: 12px; color: #666;">{{ __('This link is personal. Do not share it.') }}</p>
         </div>
         @endif
 
         <div style="margin-top: 20px; padding: 15px; background-color: #FEF3C7; border-radius: 5px;">
-            <p style="margin: 0;"><strong>Important :</strong> Merci de confirmer votre présence ou de nous prévenir en cas d'empêchement.</p>
+            <p style="margin: 0;"><strong>{{ __('Important:') }}</strong> {{ __('Please confirm your attendance or let us know if you are unable to attend.') }}</p>
         </div>
 
-        <p>Nous vous remercions de votre confiance et restons à votre disposition pour toute question.</p>
+        <p>{{ __('Thank you for your trust. We remain at your disposal for any questions.') }}</p>
 
-        <p>Cordialement,<br>
-        L'équipe Pro Contact</p>
+        <p>{{ __('Best regards,') }}<br>
+        {{ __('The Pro Contact Team') }}</p>
     </div>
 
     <div class="footer">
-        <p>Cet email a été envoyé automatiquement depuis Pro Contact.</p>
-        <p>Merci de ne pas répondre directement à cet email.</p>
+        <p>{{ __('This email was sent automatically from Pro Contact.') }}</p>
+        <p>{{ __('Please do not reply directly to this email.') }}</p>
     </div>
 </body>
 </html>

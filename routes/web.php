@@ -15,6 +15,14 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MockOAuthController;
 use App\Http\Controllers\PortalController;
 
+// Language switch route
+Route::get('/lang/{locale}', function (string $locale) {
+    if (in_array($locale, ['en', 'fr'])) {
+        session()->put('locale', $locale);
+    }
+    return redirect()->back();
+})->name('lang.switch');
+
 Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('dashboard');

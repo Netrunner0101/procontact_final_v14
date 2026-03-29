@@ -6,8 +6,8 @@ use Exception;
 
 class InvalidTokenException extends Exception
 {
-    public function __construct(string $message = 'Ce lien n\'est plus valide. Veuillez contacter votre prestataire.')
+    public function __construct(?string $message = null)
     {
-        parent::__construct($message);
+        parent::__construct($message ?? __('This link is no longer valid. Please contact your service provider.'));
     }
 }

@@ -75,7 +75,7 @@ class PortalController extends Controller
         $request->validate([
             'commentaire' => 'required|string',
         ], [
-            'commentaire.required' => 'Ce champ est obligatoire.',
+            'commentaire.required' => __('This field is required.'),
         ]);
 
         // Verify appointment belongs to this contact
@@ -84,7 +84,7 @@ class PortalController extends Controller
         Note::create([
             'user_id' => $appointment->user_id,
             'rendez_vous_id' => $appointment->id,
-            'titre' => 'Message du client — ' . $contact->prenom . ' ' . $contact->nom,
+            'titre' => __('Client message — :name', ['name' => $contact->prenom . ' ' . $contact->nom]),
             'commentaire' => $request->commentaire,
             'is_shared_with_client' => false,
             'date_create' => now(),
@@ -93,6 +93,6 @@ class PortalController extends Controller
 
         return redirect()
             ->route('portal.appointment', ['token' => $token, 'appointmentId' => $appointmentId])
-            ->with('success', 'Votre message a été envoyé avec succès.');
+            ->with('success', __('Your message has been sent successfully.'));
     }
 }

@@ -41,7 +41,7 @@ class ContactController extends Controller
             'state_client' => 'nullable|string|max:255',
             'status_id' => 'nullable|exists:statuses,id',
         ], [
-            'emails.*.email' => "L'adresse email n'est pas valide.",
+            'emails.*.email' => __('The email address is not valid.'),
         ]);
 
         $validated['user_id'] = Auth::id();
@@ -57,7 +57,7 @@ class ContactController extends Controller
             $contact->numeroTelephones()->create(['numero_telephone' => $phone, 'user_id' => Auth::id()]);
         }
 
-        return redirect()->route('contacts.index')->with('success', 'Contact créé avec succès');
+        return redirect()->route('contacts.index')->with('success', __('Contact created successfully'));
     }
 
     public function show(Contact $contact)
@@ -94,7 +94,7 @@ class ContactController extends Controller
             'state_client' => 'nullable|string|max:255',
             'status_id' => 'nullable|exists:statuses,id',
         ], [
-            'emails.*.email' => "L'adresse email n'est pas valide.",
+            'emails.*.email' => __('The email address is not valid.'),
         ]);
 
         $contact->update($validated);
@@ -111,13 +111,13 @@ class ContactController extends Controller
             $contact->numeroTelephones()->create(['numero_telephone' => $phone, 'user_id' => Auth::id()]);
         }
 
-        return redirect()->route('contacts.show', $contact)->with('success', 'Contact mis à jour');
+        return redirect()->route('contacts.show', $contact)->with('success', __('Contact updated successfully'));
     }
 
     public function destroy(Contact $contact)
     {
         $this->authorize('delete', $contact);
         $contact->delete();
-        return redirect()->route('contacts.index')->with('success', 'Contact supprimé');
+        return redirect()->route('contacts.index')->with('success', __('Contact deleted successfully'));
     }
 }

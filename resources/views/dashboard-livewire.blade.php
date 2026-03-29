@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tableau de Bord - Pro Contact')
+@section('title', __('Dashboard - Pro Contact'))
 
 @section('content')
     <livewire:dashboard />

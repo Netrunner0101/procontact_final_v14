@@ -44,7 +44,7 @@ class MockOAuthController extends Controller
         // Log the user in
         Auth::login($user);
         
-        return redirect()->route('dashboard')->with('success', 'Connexion réussie avec Google (mode test)!');
+        return redirect()->route('dashboard')->with('success', __('Successfully logged in with Google (test mode)!'));
     }
     
     /**

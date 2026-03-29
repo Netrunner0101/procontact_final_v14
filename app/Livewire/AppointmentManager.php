@@ -156,14 +156,14 @@ class AppointmentManager extends Component
         $this->sendAppointmentEmail($rendezVous);
 
         $this->closeModals();
-        session()->flash('success', 'Rendez-vous créé avec succès! Un email a été envoyé au client.');
+        session()->flash('success', __('Appointment created successfully! An email has been sent to the client.'));
     }
 
     public function resendEmail($appointmentId)
     {
         $rendezVous = RendezVous::where('user_id', Auth::id())->findOrFail($appointmentId);
         $this->sendAppointmentEmail($rendezVous);
-        session()->flash('success', 'Email renvoyé avec succès!');
+        session()->flash('success', __('Email resent successfully!'));
     }
 
     private function sendAppointmentEmail(RendezVous $rendezVous)
@@ -187,14 +187,14 @@ class AppointmentManager extends Component
         ]);
 
         $this->closeModals();
-        session()->flash('success', 'Rendez-vous mis à jour avec succès!');
+        session()->flash('success', __('Appointment updated successfully!'));
     }
 
     public function deleteAppointment()
     {
         $this->selectedAppointment->delete();
         $this->closeModals();
-        session()->flash('success', 'Rendez-vous supprimé avec succès!');
+        session()->flash('success', __('Appointment deleted successfully!'));
     }
 
     private function resetForm()

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mot de passe oubli&eacute; - Pro Contact</title>
+    <title>{{ __('Forgot Password') }} - Pro Contact</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -19,11 +19,17 @@
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="fixed top-4 right-4 z-50 flex gap-2">
+        <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'en' ? 'bg-white text-gray-900 font-bold' : 'text-white/70 hover:text-white' }} transition-colors">EN</a>
+        <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-white text-gray-900 font-bold' : 'text-white/70 hover:text-white' }} transition-colors">FR</a>
+    </div>
+
     <div class="min-h-screen flex items-center justify-center px-4">
         <div class="max-w-md w-full auth-card p-8">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-bold" style="color: #1b1c1a;">Pro Contact</h1>
-                <p class="mt-2" style="color: #44483e;">R&eacute;initialisation du mot de passe</p>
+                <p class="mt-2" style="color: #44483e;">{{ __('Password Reset') }}</p>
             </div>
 
             @if (session('status'))
@@ -33,14 +39,14 @@
             @endif
 
             <div class="mb-6 text-sm" style="color: #44483e;">
-                <p>Vous avez oubli&eacute; votre mot de passe ? Pas de probl&egrave;me. Indiquez-nous simplement votre adresse email et nous vous enverrons un lien de r&eacute;initialisation.</p>
+                <p>{{ __('Forgot your password? No problem. Just enter your email address and we will send you a password reset link.') }}</p>
             </div>
 
             <form method="POST" action="{{ route('password.email') }}">
                 @csrf
 
                 <div class="mb-6">
-                    <label for="email" class="block text-sm font-medium mb-2" style="color: #44483e;">Adresse email</label>
+                    <label for="email" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Email address') }}</label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus
                            class="w-full px-3 py-2 auth-input @error('email') border-red-500 @enderror">
                     @error('email')
@@ -49,14 +55,14 @@
                 </div>
 
                 <button type="submit" class="w-full auth-btn py-2 px-4 mb-4">
-                    Envoyer le lien de r&eacute;initialisation
+                    {{ __('Send password reset link') }}
                 </button>
             </form>
 
             <div class="text-center">
                 <p style="color: #44483e;">
-                    Vous vous souvenez de votre mot de passe ?
-                    <a href="{{ route('login') }}" style="color: #843728; font-weight: 600;" class="hover:opacity-80">Se connecter</a>
+                    {{ __('Remember your password?') }}
+                    <a href="{{ route('login') }}" style="color: #843728; font-weight: 600;" class="hover:opacity-80">{{ __('Log in') }}</a>
                 </p>
             </div>
         </div>

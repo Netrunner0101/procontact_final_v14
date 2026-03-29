@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -206,11 +206,11 @@
                 <div class="portal-logo"><i class="fas fa-user-circle"></i></div>
                 <div>
                     <div class="portal-brand">Pro Contact</div>
-                    <div class="portal-badge">Espace Client</div>
+                    <div class="portal-badge">{{ __('Client Portal') }}</div>
                 </div>
             </div>
             <a href="{{ route('portal.index', ['token' => $token]) }}" class="back-link">
-                <i class="fas fa-arrow-left"></i> Retour aux rendez-vous
+                <i class="fas fa-arrow-left"></i> {{ __('Back to appointments') }}
             </a>
         </div>
     </nav>
@@ -228,29 +228,29 @@
             <h1 class="detail-title">{{ $appointment->titre }}</h1>
             <div class="detail-grid">
                 <div class="detail-item">
-                    <label>Date de début</label>
+                    <label>{{ __('Start date') }}</label>
                     <span>{{ $appointment->date_debut->format('d/m/Y') }}</span>
                 </div>
                 <div class="detail-item">
-                    <label>Date de fin</label>
+                    <label>{{ __('End date') }}</label>
                     <span>{{ $appointment->date_fin->format('d/m/Y') }}</span>
                 </div>
                 <div class="detail-item">
-                    <label>Heure de début</label>
+                    <label>{{ __('Start time') }}</label>
                     <span>{{ $appointment->heure_debut->format('H:i') }}</span>
                 </div>
                 <div class="detail-item">
-                    <label>Heure de fin</label>
+                    <label>{{ __('End time') }}</label>
                     <span>{{ $appointment->heure_fin->format('H:i') }}</span>
                 </div>
                 <div class="detail-item">
-                    <label>Activité</label>
+                    <label>{{ __('Activity') }}</label>
                     <span>{{ $appointment->activite->nom }}</span>
                 </div>
             </div>
             @if($appointment->description)
                 <div class="detail-description">
-                    <label>Description</label>
+                    <label>{{ __('Description') }}</label>
                     <p>{{ $appointment->description }}</p>
                 </div>
             @endif
@@ -258,7 +258,7 @@
 
         <!-- Shared Notes -->
         <div class="detail-card">
-            <h2 class="section-title"><i class="fas fa-sticky-note"></i> Notes partagées</h2>
+            <h2 class="section-title"><i class="fas fa-sticky-note"></i> {{ __('Shared notes') }}</h2>
             @forelse($sharedNotes as $note)
                 <div class="note-card">
                     <h4>{{ $note->titre }}</h4>
@@ -266,25 +266,25 @@
                     <div class="note-date">{{ $note->date_create ? $note->date_create->format('d/m/Y H:i') : $note->created_at->format('d/m/Y H:i') }}</div>
                 </div>
             @empty
-                <p class="empty-notes">Aucune note partagée pour ce rendez-vous.</p>
+                <p class="empty-notes">{{ __('No shared notes for this appointment.') }}</p>
             @endforelse
         </div>
 
         <!-- Leave a Message -->
         <div class="detail-card">
-            <h2 class="section-title"><i class="fas fa-envelope"></i> Laisser un message à votre prestataire</h2>
+            <h2 class="section-title"><i class="fas fa-envelope"></i> {{ __('Leave a message for your provider') }}</h2>
             <form method="POST" action="{{ route('portal.storeNote', ['token' => $token, 'appointmentId' => $appointment->id]) }}" class="message-form">
                 @csrf
                 <textarea
                     name="commentaire"
-                    placeholder="Votre message..."
+                    placeholder="{{ __('Your message...') }}"
                     class="{{ $errors->has('commentaire') ? 'error' : '' }}"
                 >{{ old('commentaire') }}</textarea>
                 @error('commentaire')
                     <p class="error-text">{{ $message }}</p>
                 @enderror
                 <button type="submit" class="submit-btn">
-                    <i class="fas fa-paper-plane"></i> Envoyer
+                    <i class="fas fa-paper-plane"></i> {{ __('Send') }}
                 </button>
             </form>
         </div>

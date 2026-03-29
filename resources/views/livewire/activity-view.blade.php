@@ -6,7 +6,7 @@
                 <div class="flex items-center space-x-4">
                     <a href="{{ route('dashboard') }}" class="inline-flex items-center px-4 py-2 rounded-lg transition-colors" style="background: #f5f3f0; color: #44483e;">
                         <i class="fas fa-arrow-left mr-2"></i>
-                        Retour
+                        {{ __('Back') }}
                     </a>
                     <div>
                         <h1 class="text-3xl font-bold" style="color: #1b1c1a;">{{ $activity->nom }}</h1>
@@ -17,7 +17,7 @@
                 </div>
                 <a href="{{ route('activites.edit', $activity->id) }}" class="inline-flex items-center px-4 py-2 text-white rounded-lg transition-colors" style="background: #843728;">
                     <i class="fas fa-edit mr-2"></i>
-                    Modifier
+                    {{ __('Edit') }}
                 </a>
             </div>
         </div>
@@ -27,7 +27,7 @@
             <div class="rounded-lg shadow p-6" style="background: white; border: none;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm" style="color: #44483e;">Contacts</p>
+                        <p class="text-sm" style="color: #44483e;">{{ __('Contacts') }}</p>
                         <p class="text-3xl font-bold" style="color: #843728;">{{ $activity->contacts->count() }}</p>
                     </div>
                     <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: #fef5f3;">
@@ -39,7 +39,7 @@
             <div class="rounded-lg shadow p-6" style="background: white; border: none;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm" style="color: #44483e;">Rendez-vous</p>
+                        <p class="text-sm" style="color: #44483e;">{{ __('Appointments') }}</p>
                         <p class="text-3xl font-bold" style="color: #3a6a3a;">{{ $activity->rendezVous->count() }}</p>
                     </div>
                     <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: #f0faf0;">
@@ -51,20 +51,20 @@
             <div class="rounded-lg shadow p-6" style="background: white; border: none;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm" style="color: #44483e;">Notes</p>
+                        <p class="text-sm" style="color: #44483e;">{{ __('Notes') }}</p>
                         <p class="text-3xl font-bold" style="color: #8a6e2e;">{{ $activity->notes->count() ?? 0 }}</p>
                     </div>
                     <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: #f5f3ff;">
                         <i class="fas fa-sticky-note text-xl" style="color: #8a6e2e;"></i>
                     </div>
                 </div>
-                <p class="text-xs mt-2" style="color: #75786c;">Accessible via rendez-vous</p>
+                <p class="text-xs mt-2" style="color: #75786c;">{{ __('Accessible via appointments') }}</p>
             </div>
 
             <div class="rounded-lg shadow p-6" style="background: white; border: none;">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm" style="color: #44483e;">Statistiques</p>
+                        <p class="text-sm" style="color: #44483e;">{{ __('Statistics') }}</p>
                         <p class="text-3xl font-bold" style="color: #8a6e2e;">{{ $activity->statistiques->count() ?? 0 }}</p>
                     </div>
                     <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: #fffbf0;">
@@ -81,22 +81,22 @@
                     <button wire:click="setActiveTab('overview')"
                             class="tab-button {{ $activeTab === 'overview' ? 'tab-active' : '' }}">
                         <i class="fas fa-home mr-2"></i>
-                        Vue d'ensemble
+                        {{ __('Overview') }}
                     </button>
                     <button wire:click="setActiveTab('contacts')"
                             class="tab-button {{ $activeTab === 'contacts' ? 'tab-active' : '' }}">
                         <i class="fas fa-users mr-2"></i>
-                        Contacts
+                        {{ __('Contacts') }}
                     </button>
                     <button wire:click="setActiveTab('appointments')"
                             class="tab-button {{ $activeTab === 'appointments' ? 'tab-active' : '' }}">
                         <i class="fas fa-calendar-alt mr-2"></i>
-                        Rendez-vous
+                        {{ __('Appointments') }}
                     </button>
                     <button wire:click="setActiveTab('statistics')"
                             class="tab-button {{ $activeTab === 'statistics' ? 'tab-active' : '' }}">
                         <i class="fas fa-chart-bar mr-2"></i>
-                        Statistiques
+                        {{ __('Statistics') }}
                     </button>
                 </nav>
             </div>
@@ -106,15 +106,15 @@
         <div class="rounded-lg shadow p-6" style="background: white; border: none;">
             @if($activeTab === 'overview')
                 <div>
-                    <h2 class="text-2xl font-bold mb-6" style="color: #1b1c1a;">Vue d'ensemble</h2>
+                    <h2 class="text-2xl font-bold mb-6" style="color: #1b1c1a;">{{ __('Overview') }}</h2>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Recent Contacts -->
                         <div class="rounded-lg p-4" style="border: none;">
                             <h3 class="font-semibold text-lg mb-4 flex items-center justify-between">
-                                <span>Contacts r&eacute;cents</span>
+                                <span>{{ __('Recent contacts') }}</span>
                                 <button wire:click="setActiveTab('contacts')" class="text-sm" style="color: #843728;">
-                                    Voir tout &rarr;
+                                    {{ __('View all') }} &rarr;
                                 </button>
                             </h3>
                             @if($activity->contacts->take(5)->count() > 0)
@@ -134,16 +134,16 @@
                                     @endforeach
                                 </ul>
                             @else
-                                <p class="text-sm" style="color: #75786c;">Aucun contact</p>
+                                <p class="text-sm" style="color: #75786c;">{{ __('No contacts') }}</p>
                             @endif
                         </div>
 
                         <!-- Recent Appointments -->
                         <div class="rounded-lg p-4" style="border: none;">
                             <h3 class="font-semibold text-lg mb-4 flex items-center justify-between">
-                                <span>Prochains rendez-vous</span>
+                                <span>{{ __('Upcoming appointments') }}</span>
                                 <button wire:click="setActiveTab('appointments')" class="text-sm" style="color: #843728;">
-                                    Voir tout &rarr;
+                                    {{ __('View all') }} &rarr;
                                 </button>
                             </h3>
                             @if($activity->rendezVous->where('date_debut', '>=', now()->toDateString())->take(5)->count() > 0)
@@ -156,33 +156,33 @@
                                                 </div>
                                                 <div>
                                                     <p class="font-medium">{{ $rdv->titre }}</p>
-                                                    <p class="text-sm" style="color: #75786c;">{{ \Carbon\Carbon::parse($rdv->date_debut)->format('d/m/Y') }} à {{ \Carbon\Carbon::parse($rdv->heure_debut)->format('H:i') }}</p>
+                                                    <p class="text-sm" style="color: #75786c;">{{ \Carbon\Carbon::parse($rdv->date_debut)->format('d/m/Y') }} {{ __('at') }} {{ \Carbon\Carbon::parse($rdv->heure_debut)->format('H:i') }}</p>
                                                 </div>
                                             </div>
                                         </li>
                                     @endforeach
                                 </ul>
                             @else
-                                <p class="text-sm" style="color: #75786c;">Aucun rendez-vous à venir</p>
+                                <p class="text-sm" style="color: #75786c;">{{ __('No upcoming appointments') }}</p>
                             @endif
                         </div>
                     </div>
 
                     <!-- Activity Info -->
                     <div class="mt-6 rounded-lg p-4" style="border: none;">
-                        <h3 class="font-semibold text-lg mb-4">Informations de l'activit&eacute;</h3>
+                        <h3 class="font-semibold text-lg mb-4">{{ __('Activity information') }}</h3>
                         <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <dt class="text-sm font-medium" style="color: #75786c;">Date de cr&eacute;ation</dt>
-                                <dd class="mt-1 text-sm" style="color: #1b1c1a;">{{ $activity->created_at->format('d/m/Y à H:i') }}</dd>
+                                <dt class="text-sm font-medium" style="color: #75786c;">{{ __('Creation date') }}</dt>
+                                <dd class="mt-1 text-sm" style="color: #1b1c1a;">{{ $activity->created_at->format('d/m/Y') }} {{ __('at') }} {{ $activity->created_at->format('H:i') }}</dd>
                             </div>
                             <div>
-                                <dt class="text-sm font-medium" style="color: #75786c;">Derni&egrave;re modification</dt>
-                                <dd class="mt-1 text-sm" style="color: #1b1c1a;">{{ $activity->updated_at->format('d/m/Y à H:i') }}</dd>
+                                <dt class="text-sm font-medium" style="color: #75786c;">{{ __('Last modified') }}</dt>
+                                <dd class="mt-1 text-sm" style="color: #1b1c1a;">{{ $activity->updated_at->format('d/m/Y') }} {{ __('at') }} {{ $activity->updated_at->format('H:i') }}</dd>
                             </div>
                             @if($activity->description)
                                 <div class="md:col-span-2">
-                                    <dt class="text-sm font-medium" style="color: #75786c;">Description</dt>
+                                    <dt class="text-sm font-medium" style="color: #75786c;">{{ __('Description') }}</dt>
                                     <dd class="mt-1 text-sm" style="color: #1b1c1a;">{{ $activity->description }}</dd>
                                 </div>
                             @endif

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Réinitialisation de mot de passe</title>
+    <title>{{ __('Password Reset') }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -57,32 +57,32 @@
 <body>
     <div class="header">
         <h1>Pro Contact</h1>
-        <p>Réinitialisation de votre mot de passe</p>
+        <p>{{ __('Reset your password') }}</p>
     </div>
-    
+
     <div class="content">
-        <h2>Bonjour {{ $user->prenom }} {{ $user->nom }},</h2>
-        
-        <p>Vous recevez cet email car nous avons reçu une demande de réinitialisation de mot de passe pour votre compte.</p>
-        
-        <p>Cliquez sur le bouton ci-dessous pour réinitialiser votre mot de passe :</p>
-        
+        <h2>{{ __('Hello :first :last,', ['first' => $user->prenom, 'last' => $user->nom]) }}</h2>
+
+        <p>{{ __('You are receiving this email because we received a password reset request for your account.') }}</p>
+
+        <p>{{ __('Click the button below to reset your password:') }}</p>
+
         <div style="text-align: center;">
-            <a href="{{ $resetUrl }}" class="button">Réinitialiser mon mot de passe</a>
+            <a href="{{ $resetUrl }}" class="button">{{ __('Reset my password') }}</a>
         </div>
-        
+
         <div class="warning">
-            <strong>⚠️ Important :</strong> Ce lien expirera dans 1 heure pour des raisons de sécurité.
+            <strong>{{ __('Important:') }}</strong> {{ __('This link will expire in 1 hour for security reasons.') }}
         </div>
-        
-        <p>Si vous n'avez pas demandé cette réinitialisation, ignorez simplement cet email. Votre mot de passe actuel restera inchangé.</p>
-        
-        <p>Si vous avez des difficultés à cliquer sur le bouton, copiez et collez l'URL suivante dans votre navigateur :</p>
+
+        <p>{{ __('If you did not request this reset, simply ignore this email. Your current password will remain unchanged.') }}</p>
+
+        <p>{{ __('If you have trouble clicking the button, copy and paste the following URL into your browser:') }}</p>
         <p style="word-break: break-all; color: #2563eb;">{{ $resetUrl }}</p>
-        
+
         <div class="footer">
-            <p>Cordialement,<br>L'équipe Pro Contact</p>
-            <p><small>Cet email a été envoyé automatiquement, merci de ne pas y répondre.</small></p>
+            <p>{{ __('Best regards,') }}<br>{{ __('The Pro Contact Team') }}</p>
+            <p><small>{{ __('This email was sent automatically, please do not reply.') }}</small></p>
         </div>
     </div>
 </body>

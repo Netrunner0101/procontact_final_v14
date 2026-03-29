@@ -84,7 +84,7 @@ class ClientManagementController extends Controller
         $client->save();
 
         return redirect()->route('admin.clients.index')
-            ->with('success', 'Client créé avec succès.');
+            ->with('success', __('Client created successfully.'));
     }
 
     /**
@@ -167,7 +167,7 @@ class ClientManagementController extends Controller
         $client->save();
 
         return redirect()->route('admin.clients.show', $client)
-            ->with('success', 'Client mis à jour avec succès.');
+            ->with('success', __('Client updated successfully.'));
     }
 
     /**
@@ -183,6 +183,6 @@ class ClientManagementController extends Controller
         $client->delete();
 
         return redirect()->route('admin.clients.index')
-            ->with('success', 'Client supprimé avec succès.');
+            ->with('success', __('Client deleted successfully.'));
     }
 }

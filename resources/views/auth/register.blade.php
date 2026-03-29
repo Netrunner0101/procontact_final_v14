@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Inscription - Pro Contact</title>
+    <title>{{ __('Registration') }} - Pro Contact</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -22,11 +22,17 @@
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="fixed top-4 right-4 z-50 flex gap-2">
+        <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'en' ? 'bg-white text-gray-900 font-bold' : 'text-white/70 hover:text-white' }} transition-colors">EN</a>
+        <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-white text-gray-900 font-bold' : 'text-white/70 hover:text-white' }} transition-colors">FR</a>
+    </div>
+
     <div class="min-h-screen flex items-center justify-center px-4 py-8">
         <div class="max-w-md w-full auth-card p-8">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-bold" style="color: #1b1c1a;">Pro Contact</h1>
-                <p class="mt-2" style="color: #44483e;">Cr&eacute;ez votre compte</p>
+                <p class="mt-2" style="color: #44483e;">{{ __('Create your account') }}</p>
             </div>
 
             @if (session('status'))
@@ -39,7 +45,7 @@
                 @csrf
 
                 <div class="mb-4">
-                    <label for="nom" class="block text-sm font-medium mb-2" style="color: #44483e;">Nom</label>
+                    <label for="nom" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Last name') }}</label>
                     <input type="text" id="nom" name="nom" value="{{ old('nom') }}" required
                            class="w-full px-3 py-2 auth-input @error('nom') border-red-500 @enderror">
                     @error('nom')
@@ -48,7 +54,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="prenom" class="block text-sm font-medium mb-2" style="color: #44483e;">Pr&eacute;nom</label>
+                    <label for="prenom" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('First name') }}</label>
                     <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" required
                            class="w-full px-3 py-2 auth-input @error('prenom') border-red-500 @enderror">
                     @error('prenom')
@@ -57,7 +63,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium mb-2" style="color: #44483e;">Email</label>
+                    <label for="email" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Email') }}</label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" required
                            class="w-full px-3 py-2 auth-input @error('email') border-red-500 @enderror">
                     @error('email')
@@ -66,7 +72,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="telephone" class="block text-sm font-medium mb-2" style="color: #44483e;">T&eacute;l&eacute;phone (optionnel)</label>
+                    <label for="telephone" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Phone (optional)') }}</label>
                     <input type="tel" id="telephone" name="telephone" value="{{ old('telephone') }}"
                            class="w-full px-3 py-2 auth-input @error('telephone') border-red-500 @enderror">
                     @error('telephone')
@@ -75,7 +81,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="password" class="block text-sm font-medium mb-2" style="color: #44483e;">Mot de passe</label>
+                    <label for="password" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Password') }}</label>
                     <input type="password" id="password" name="password" required
                            class="w-full px-3 py-2 auth-input @error('password') border-red-500 @enderror">
                     @error('password')
@@ -84,20 +90,20 @@
                 </div>
 
                 <div class="mb-6">
-                    <label for="password_confirmation" class="block text-sm font-medium mb-2" style="color: #44483e;">Confirmer le mot de passe</label>
+                    <label for="password_confirmation" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Confirm password') }}</label>
                     <input type="password" id="password_confirmation" name="password_confirmation" required
                            class="w-full px-3 py-2 auth-input">
                 </div>
 
                 <button type="submit" class="w-full auth-btn py-2 px-4">
-                    Cr&eacute;er mon compte
+                    {{ __('Create my account') }}
                 </button>
             </form>
 
             <div class="mt-6 text-center">
                 <p class="text-sm" style="color: #44483e;">
-                    D&eacute;j&agrave; un compte ?
-                    <a href="{{ route('login') }}" style="color: #843728; font-weight: 600;" class="hover:opacity-80">Se connecter</a>
+                    {{ __('Already have an account?') }}
+                    <a href="{{ route('login') }}" style="color: #843728; font-weight: 600;" class="hover:opacity-80">{{ __('Log in') }}</a>
                 </p>
             </div>
 
@@ -108,7 +114,7 @@
                         <div class="w-full border-t divider-line"></div>
                     </div>
                     <div class="relative flex justify-center text-sm">
-                        <span class="px-2" style="background: #ffffff; color: #75786c;">Ou s'inscrire avec</span>
+                        <span class="px-2" style="background: #ffffff; color: #75786c;">{{ __('Or sign up with') }}</span>
                     </div>
                 </div>
 
@@ -120,14 +126,14 @@
                             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                         </svg>
-                        S'inscrire avec Google
+                        {{ __('Sign up with Google') }}
                     </a>
 
                     <a href="{{ route('auth.apple') }}" class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-white hover:opacity-90 transition duration-200" style="background: #1b1c1a; border-radius: 0.375rem;">
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12.017 0C8.396 0 8.025.044 6.79.207 5.56.37 4.703.644 3.967 1.006c-.757.372-1.4.861-2.04 1.5-.64.64-1.128 1.283-1.5 2.04C.044 5.282-.23 6.14.207 7.37.37 8.604.044 8.975.044 12.596s.326 3.992.489 5.227c.163 1.23.437 2.088.799 2.825.372.757.861 1.4 1.5 2.04.64.64 1.283 1.128 2.04 1.5.737.362 1.595.636 2.825.799 1.235.163 1.606.207 5.227.207s3.992-.044 5.227-.207c1.23-.163 2.088-.437 2.825-.799.757-.372 1.4-.861 2.04-1.5.64-.64 1.128-1.283 1.5-2.04.362-.737.636-1.595.799-2.825.163-1.235.207-1.606.207-5.227s-.044-3.992-.207-5.227c-.163-1.23-.437-2.088-.799-2.825-.372-.757-.861-1.4-1.5-2.04-.64-.64-1.283-1.128-2.04-1.5-.737-.362-1.595-.636-2.825-.799C15.009.044 14.638 0 11.017 0h1z"/>
                         </svg>
-                        S'inscrire avec Apple
+                        {{ __('Sign up with Apple') }}
                     </a>
                 </div>
             </div>

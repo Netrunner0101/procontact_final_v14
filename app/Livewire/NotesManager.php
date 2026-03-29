@@ -117,7 +117,7 @@ class NotesManager extends Component
         ]);
 
         $this->closeModals();
-        session()->flash('success', 'Note créée avec succès!');
+        session()->flash('success', __('Note created successfully!'));
     }
 
     public function updateNote()
@@ -133,14 +133,14 @@ class NotesManager extends Component
         ]);
 
         $this->closeModals();
-        session()->flash('success', 'Note mise à jour avec succès!');
+        session()->flash('success', __('Note updated successfully!'));
     }
 
     public function deleteNote()
     {
         $this->selectedNote->delete();
         $this->closeModals();
-        session()->flash('success', 'Note supprimée avec succès!');
+        session()->flash('success', __('Note deleted successfully!'));
     }
 
     private function resetForm()
