@@ -156,6 +156,69 @@
     </section>
 
     <!-- ============================================
+         EDITABLE: Trust Strip
+         Change: trust badges (icon, text)
+         ============================================ -->
+    <div class="py-8" style="background: var(--surface-container-low); border-top: 1px solid rgba(197,200,185,0.1); border-bottom: 1px solid rgba(197,200,185,0.1);">
+        <div class="max-w-7xl mx-auto px-8 flex flex-wrap justify-center md:justify-between items-center gap-8 opacity-70 hover:opacity-100 transition-all duration-500">
+            <!-- EDITABLE: Trust Badge 1 -->
+            <div class="flex items-center gap-3 text-sm font-semibold" style="color: var(--on-surface-variant);">
+                <span class="text-2xl">🇧🇪</span> {{ __('Made in Belgium') }}
+            </div>
+            <!-- EDITABLE: Trust Badge 2 -->
+            <div class="flex items-center gap-3 text-sm font-semibold" style="color: var(--on-surface-variant);">
+                <span class="material-symbols-outlined" style="color: var(--primary);">lock</span> {{ __('GDPR compliant') }}
+            </div>
+            <!-- EDITABLE: Trust Badge 3 -->
+            <div class="flex items-center gap-3 text-sm font-semibold" style="color: var(--on-surface-variant);">
+                <span class="material-symbols-outlined" style="color: var(--tertiary);">star</span> {{ __('Join 50+ beta users') }}
+            </div>
+            <!-- EDITABLE: Trust Badge 4 -->
+            <div class="flex items-center gap-3 text-sm font-semibold" style="color: var(--on-surface-variant);">
+                <span class="material-symbols-outlined" style="color: var(--primary);">verified</span> {{ __('ISO 27001 Ready') }}
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         EDITABLE: Problem Statement
+         Change: section title, pain point cards (icon, title, description)
+         ============================================ -->
+    <section class="py-24 px-6" style="background: var(--surface);">
+        <div class="max-w-7xl mx-auto text-center mb-16">
+            <!-- EDITABLE: Section Heading -->
+            <h2 class="text-4xl lg:text-5xl font-bold mb-4 tracking-tight" style="font-family: 'Manrope', sans-serif;">{{ __('Sound familiar?') }}</h2>
+            <div class="h-1.5 w-24 mx-auto rounded-full" style="background: var(--primary);"></div>
+        </div>
+        <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- EDITABLE: Pain Point Card 1 -->
+            <div class="p-10 rounded-2xl transition-all hover:translate-y-[-2px]" style="background: var(--surface-container-low);">
+                <span class="material-symbols-outlined text-4xl mb-6" style="color: var(--primary);">search_off</span>
+                <h3 class="text-2xl font-bold mb-3">{{ __('Scattered everywhere') }}</h3>
+                <p class="leading-relaxed" style="color: var(--on-surface-variant);">{{ __('Names in WhatsApp, emails in Gmail, and notes on sticky papers. Finding info takes longer than the job itself.') }}</p>
+            </div>
+            <!-- EDITABLE: Pain Point Card 2 -->
+            <div class="p-10 rounded-2xl transition-all hover:translate-y-[-2px]" style="background: var(--surface-container-low);">
+                <span class="material-symbols-outlined text-4xl mb-6" style="color: var(--primary);">notifications_off</span>
+                <h3 class="text-2xl font-bold mb-3">{{ __('Forgotten follow-ups') }}</h3>
+                <p class="leading-relaxed" style="color: var(--on-surface-variant);">{{ __('"I\'ll call them Monday" becomes Friday, then next month. Potential revenue slips through the cracks daily.') }}</p>
+            </div>
+            <!-- EDITABLE: Pain Point Card 3 -->
+            <div class="p-10 rounded-2xl transition-all hover:translate-y-[-2px]" style="background: var(--surface-container-low);">
+                <span class="material-symbols-outlined text-4xl mb-6" style="color: var(--primary);">history_edu</span>
+                <h3 class="text-2xl font-bold mb-3">{{ __('Admin eating your evenings') }}</h3>
+                <p class="leading-relaxed" style="color: var(--on-surface-variant);">{{ __('Spending 2 hours after dinner just to organize who needs what. Your weekend shouldn\'t be for data entry.') }}</p>
+            </div>
+            <!-- EDITABLE: Pain Point Card 4 -->
+            <div class="p-10 rounded-2xl transition-all hover:translate-y-[-2px]" style="background: var(--surface-container-low);">
+                <span class="material-symbols-outlined text-4xl mb-6" style="color: var(--primary);">payments</span>
+                <h3 class="text-2xl font-bold mb-3">{{ __('No visibility on payments') }}</h3>
+                <p class="leading-relaxed" style="color: var(--on-surface-variant);">{{ __('Unsure which clients still owe you money without checking three different apps and your bank statement.') }}</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
          EDITABLE: Features Section
          Change: section title, feature cards (icon, title, description)
          ============================================ -->
