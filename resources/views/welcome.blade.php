@@ -257,40 +257,66 @@
     </section>
 
     <!-- ============================================
-         EDITABLE: Features Section
+         EDITABLE: Features Bento Grid
          Change: section title, feature cards (icon, title, description)
+         Grid layout: first card spans 2 cols, others are 1 col, security card spans 2 cols
          ============================================ -->
-    <section id="features" class="py-20 px-6">
-        <div class="max-w-6xl mx-auto">
+    <section id="features" class="py-24 px-6" style="background: var(--surface);">
+        <div class="max-w-7xl mx-auto">
             <!-- EDITABLE: Section Heading -->
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4" style="color: var(--on-surface);">{{ __('Everything to manage your relationships') }}</h2>
-                <p class="text-lg max-w-xl mx-auto" style="color: var(--on-surface-variant);">{{ __('Powerful tools to organize and track your professional contacts.') }}</p>
-            </div>
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- EDITABLE: Feature Card 1 -->
-                <div class="p-8 rounded-xl transition-all hover:-translate-y-1" style="background: var(--surface-container-lowest); box-shadow: var(--shadow-md);">
-                    <div class="w-12 h-12 rounded-lg flex items-center justify-center mb-5" style="background: rgba(132,55,40,0.08);">
-                        <span class="material-symbols-outlined" style="color: var(--primary);">group</span>
+            <h2 class="text-4xl font-bold mb-12 tracking-tight text-center lg:text-left" style="font-family: 'Manrope', sans-serif;">{{ __('Engineered for simplicity') }}</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+                <!-- EDITABLE: Feature - Works Anywhere (large card, spans 2 cols) -->
+                <div class="md:col-span-2 lg:col-span-2 p-8 rounded-3xl flex flex-col justify-between" style="background: var(--surface-container-low);">
+                    <div>
+                        <span class="material-symbols-outlined text-4xl mb-6" style="color: var(--primary);">devices</span>
+                        <h3 class="text-2xl font-bold mb-4">{{ __('Works anywhere') }}</h3>
+                        <p style="color: var(--on-surface-variant);">{{ __('Your office is everywhere. Access your data on mobile while on-site, or on desktop while doing invoicing.') }}</p>
                     </div>
-                    <h3 class="text-xl font-bold mb-3" style="color: var(--on-surface);">{{ __('Contact Management') }}</h3>
-                    <p style="color: var(--on-surface-variant);">{{ __('Centralize all your contacts with their information, history and notes in an intuitive interface.') }}</p>
+                    <div class="mt-8 rounded-xl h-48 flex items-center justify-center" style="background: var(--surface-container);">
+                        <span class="material-symbols-outlined text-6xl" style="color: var(--outline-variant);">devices</span>
+                    </div>
                 </div>
-                <!-- EDITABLE: Feature Card 2 -->
-                <div class="p-8 rounded-xl transition-all hover:-translate-y-1" style="background: var(--surface-container-lowest); box-shadow: var(--shadow-md);">
-                    <div class="w-12 h-12 rounded-lg flex items-center justify-center mb-5" style="background: rgba(132,55,40,0.08);">
-                        <span class="material-symbols-outlined" style="color: var(--primary);">calendar_month</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-3" style="color: var(--on-surface);">{{ __('Appointments') }}</h3>
-                    <p style="color: var(--on-surface-variant);">{{ __('Schedule and track your appointments. Receive reminders and share details with your clients.') }}</p>
+
+                <!-- EDITABLE: Feature - Every Client Detail (accent card) -->
+                <div class="p-8 rounded-3xl" style="background: var(--primary); color: var(--on-primary); box-shadow: 0 12px 24px rgba(132,55,40,0.1);">
+                    <span class="material-symbols-outlined text-4xl mb-6">contact_page</span>
+                    <h3 class="text-xl font-bold mb-4">{{ __('Every client detail') }}</h3>
+                    <p class="opacity-80">{{ __('Custom fields for VAT numbers, preferred coffee, or kids\' names. Personal service matters.') }}</p>
                 </div>
-                <!-- EDITABLE: Feature Card 3 -->
-                <div class="p-8 rounded-xl transition-all hover:-translate-y-1" style="background: var(--surface-container-lowest); box-shadow: var(--shadow-md);">
-                    <div class="w-12 h-12 rounded-lg flex items-center justify-center mb-5" style="background: rgba(132,55,40,0.08);">
-                        <span class="material-symbols-outlined" style="color: var(--primary);">bar_chart</span>
+
+                <!-- EDITABLE: Feature - Follow-ups on Time -->
+                <div class="p-8 rounded-3xl" style="background: var(--surface-container-low);">
+                    <span class="material-symbols-outlined text-4xl mb-6" style="color: var(--primary);">alarm_on</span>
+                    <h3 class="text-xl font-bold mb-4">{{ __('Follow-ups on time') }}</h3>
+                    <p style="color: var(--on-surface-variant);">{{ __('Automated reminders that don\'t feel robotic. Stay top of mind without the effort.') }}</p>
+                </div>
+
+                <!-- EDITABLE: Feature - Stats & Export -->
+                <div class="p-8 rounded-3xl" style="background: var(--surface-container-low);">
+                    <span class="material-symbols-outlined text-4xl mb-6" style="color: var(--primary);">monitoring</span>
+                    <h3 class="text-xl font-bold mb-4">{{ __('Stats & Export') }}</h3>
+                    <p style="color: var(--on-surface-variant);">{{ __('Export to Excel or PDF for your accountant in seconds. See your growth trajectory.') }}</p>
+                </div>
+
+                <!-- EDITABLE: Feature - Private & Secure (spans 2 cols) -->
+                <div class="md:col-span-2 p-8 rounded-3xl flex flex-col md:flex-row gap-8 items-center" style="background: var(--tertiary-container); color: var(--on-tertiary-container);">
+                    <div class="flex-1">
+                        <span class="material-symbols-outlined text-4xl mb-6">lock_person</span>
+                        <h3 class="text-xl font-bold mb-4">{{ __('Private & Secure') }}</h3>
+                        <p class="opacity-80">{{ __('Your data belongs to you. No tracking, no reselling. Hosted on European soil with military-grade encryption.') }}</p>
                     </div>
-                    <h3 class="text-xl font-bold mb-3" style="color: var(--on-surface);">{{ __('Statistics') }}</h3>
-                    <p style="color: var(--on-surface-variant);">{{ __('Visualize your performance with dashboards and detailed reports on your activities.') }}</p>
+                    <div class="flex-1 w-full h-32 rounded-2xl flex items-center justify-center" style="background: rgba(0,0,0,0.06);">
+                        <span class="material-symbols-outlined text-6xl opacity-50">shield_lock</span>
+                    </div>
+                </div>
+
+                <!-- EDITABLE: Feature - Client Portal -->
+                <div class="p-8 rounded-3xl" style="background: var(--surface-container-low);">
+                    <span class="material-symbols-outlined text-4xl mb-6" style="color: var(--primary);">group_add</span>
+                    <h3 class="text-xl font-bold mb-4">{{ __('Client portal') }}</h3>
+                    <p style="color: var(--on-surface-variant);">{{ __('Let clients update their own details and view shared documents in a professional branded portal.') }}</p>
                 </div>
             </div>
         </div>
