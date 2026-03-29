@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mes rendez-vous - Pro Contact</title>
+    <title>{{ __('My appointments') }} - Pro Contact</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -129,7 +129,7 @@
             <div class="portal-logo"><i class="fas fa-user-circle"></i></div>
             <div>
                 <div class="portal-brand">Pro Contact</div>
-                <div class="portal-badge">Espace Client</div>
+                <div class="portal-badge">{{ __('Client Portal') }}</div>
             </div>
         </div>
     </nav>
@@ -143,8 +143,8 @@
         @endif
 
         <div class="welcome">
-            <h1>Bonjour {{ $contact->prenom }} {{ $contact->nom }}</h1>
-            <p>Voici la liste de vos rendez-vous.</p>
+            <h1>{{ __('Hello :first :last', ['first' => $contact->prenom, 'last' => $contact->nom]) }}</h1>
+            <p>{{ __('Here is the list of your appointments.') }}</p>
         </div>
 
         @forelse($appointments as $appointment)
@@ -159,8 +159,8 @@
         @empty
             <div class="empty-state">
                 <i class="fas fa-calendar-times"></i>
-                <h3>Aucun rendez-vous</h3>
-                <p>Vous n'avez pas encore de rendez-vous programmé.</p>
+                <h3>{{ __('No appointments') }}</h3>
+                <p>{{ __('You do not have any scheduled appointments yet.') }}</p>
             </div>
         @endforelse
     </div>

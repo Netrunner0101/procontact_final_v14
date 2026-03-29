@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,7 +19,7 @@
                     </svg>
                 </div>
                 <h1 class="text-2xl font-bold text-gray-900">Mock Google OAuth</h1>
-                <p class="text-gray-600 mt-2">Test OAuth Flow (Development Mode)</p>
+                <p class="text-gray-600 mt-2">{{ __('Test OAuth Flow (Development Mode)') }}</p>
             </div>
 
             <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -28,10 +28,9 @@
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                     </svg>
                     <div>
-                        <h3 class="text-sm font-medium text-blue-900">Mode Test Activé</h3>
+                        <h3 class="text-sm font-medium text-blue-900">{{ __('Test Mode Enabled') }}</h3>
                         <p class="text-sm text-blue-800 mt-1">
-                            Ceci est une simulation de Google OAuth pour les tests. 
-                            Aucune vraie authentification Google n'est effectuée.
+                            {{ __('This is a Google OAuth simulation for testing. No real Google authentication is performed.') }}
                         </p>
                     </div>
                 </div>
@@ -39,16 +38,16 @@
 
             <form method="POST" action="{{ route('mock.oauth.google') }}">
                 @csrf
-                
+
                 <div class="mb-4">
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                        Email de test
+                        {{ __('Test email') }}
                     </label>
-                    <input type="email" id="email" name="email" value="test@gmail.com" 
+                    <input type="email" id="email" name="email" value="test@gmail.com"
                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="Entrez un email de test">
+                           placeholder="{{ __('Enter a test email') }}">
                     <p class="text-xs text-gray-500 mt-1">
-                        Cet email sera utilisé pour créer/connecter un compte de test
+                        {{ __('This email will be used to create/connect a test account') }}
                     </p>
                 </div>
 
@@ -59,23 +58,23 @@
                         <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                         <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
-                    Simuler la connexion Google
+                    {{ __('Simulate Google login') }}
                 </button>
             </form>
 
             <div class="mt-6 text-center">
                 <a href="{{ route('login') }}" class="text-gray-600 hover:text-gray-800 text-sm">
-                    ← Retour à la connexion
+                    {{ __('← Back to login') }}
                 </a>
             </div>
 
             <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-                <h4 class="text-sm font-medium text-gray-900 mb-2">Pour activer le vrai Google OAuth:</h4>
+                <h4 class="text-sm font-medium text-gray-900 mb-2">{{ __('To enable real Google OAuth:') }}</h4>
                 <ol class="text-xs text-gray-600 space-y-1">
-                    <li>1. Créez des identifiants OAuth sur Google Cloud Console</li>
-                    <li>2. Ajoutez vos vraies clés dans le fichier .env</li>
-                    <li>3. Configurez l'URI de redirection</li>
-                    <li>4. Voir GOOGLE_OAUTH_SETUP.md pour les détails</li>
+                    <li>1. {{ __('Create OAuth credentials on Google Cloud Console') }}</li>
+                    <li>2. {{ __('Add your real keys to the .env file') }}</li>
+                    <li>3. {{ __('Configure the redirect URI') }}</li>
+                    <li>4. {{ __('See GOOGLE_OAUTH_SETUP.md for details') }}</li>
                 </ol>
             </div>
         </div>

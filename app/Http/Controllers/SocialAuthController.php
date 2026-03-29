@@ -77,7 +77,7 @@ class SocialAuthController extends Controller
             return redirect()->route('dashboard');
             
         } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Erreur lors de la connexion avec Google: ' . $e->getMessage());
+            return redirect()->route('login')->with('error', __('Error connecting with Google: :error', ['error' => $e->getMessage()]));
         }
     }
 
@@ -124,7 +124,7 @@ class SocialAuthController extends Controller
 
             $newUser = User::create([
                 'nom' => $appleUser->user['name']['lastName'] ?? '',
-                'prenom' => $appleUser->user['name']['firstName'] ?? $appleUser->name ?? 'Utilisateur',
+                'prenom' => $appleUser->user['name']['firstName'] ?? $appleUser->name ?? __('User'),
                 'email' => $appleUser->email,
                 'apple_id' => $appleUser->id,
                 'provider' => 'apple',
@@ -139,7 +139,7 @@ class SocialAuthController extends Controller
             return redirect()->route('dashboard');
             
         } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Erreur lors de la connexion avec Apple: ' . $e->getMessage());
+            return redirect()->route('login')->with('error', __('Error connecting with Apple: :error', ['error' => $e->getMessage()]));
         }
     }
 
@@ -164,6 +164,6 @@ class SocialAuthController extends Controller
             ]);
         }
         
-        return back()->with('success', 'Compte ' . ucfirst($provider) . ' dissocié avec succès.');
+        return back()->with('success', __(':provider account unlinked successfully.', ['provider' => ucfirst($provider)]));
     }
 }

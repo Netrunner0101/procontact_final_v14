@@ -1,18 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Rappels - Pro Contact')
+@section('title', __('Reminders') . ' - Pro Contact')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
         <div>
-            <h1 class="text-3xl font-bold text-gray-900">Rappels</h1>
-            <p class="text-gray-600 mt-2">Gérez vos rappels de rendez-vous</p>
+            <h1 class="text-3xl font-bold text-gray-900">{{ __('Reminders') }}</h1>
+            <p class="text-gray-600 mt-2">{{ __('Manage your appointment reminders') }}</p>
         </div>
-        <a href="{{ route('rappels.create') }}" 
+        <a href="{{ route('rappels.create') }}"
            class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg transition duration-200">
-            Nouveau Rappel
+            {{ __('New Reminder') }}
         </a>
     </div>
 
@@ -26,7 +26,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Total</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Total') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $rappels->total() }}</p>
                 </div>
             </div>
@@ -40,7 +40,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Expirés</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Expired') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">
                         {{ $rappels->where('date_rappel', '<', now())->count() }}
                     </p>
@@ -56,7 +56,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Aujourd'hui</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Today') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">
                         {{ $rappels->filter(function($rappel) { return $rappel->date_rappel->isToday(); })->count() }}
                     </p>
@@ -72,7 +72,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">À venir</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Upcoming') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">
                         {{ $rappels->where('date_rappel', '>', now())->count() }}
                     </p>
@@ -89,22 +89,22 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Rendez-vous
+                                {{ __('Appointment') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Contact
+                                {{ __('Contact') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Date du rappel
+                                {{ __('Reminder date') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Fréquence
+                                {{ __('Frequency') }}
                             </th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status
+                                {{ __('Status') }}
                             </th>
                             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Actions
+                                {{ __('Actions') }}
                             </th>
                         </tr>
                     </thead>
@@ -149,7 +149,7 @@
                                         $now = now();
                                         $isPast = $rappel->date_rappel->isPast();
                                         $isToday = $rappel->date_rappel->isToday();
-                                        $status = $isPast ? 'Expiré' : ($isToday ? 'Aujourd\'hui' : 'À venir');
+                                        $status = $isPast ? __('Expired') : ($isToday ? __('Today') : __('Upcoming'));
                                         $statusColor = $isPast ? 'bg-red-100 text-red-800' : ($isToday ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800');
                                     @endphp
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $statusColor }}">
@@ -163,21 +163,21 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex justify-end space-x-2">
-                                        <a href="{{ route('rappels.show', $rappel) }}" 
+                                        <a href="{{ route('rappels.show', $rappel) }}"
                                            class="text-blue-600 hover:text-blue-900">
-                                            Voir
+                                            {{ __('View') }}
                                         </a>
-                                        <a href="{{ route('rappels.edit', $rappel) }}" 
+                                        <a href="{{ route('rappels.edit', $rappel) }}"
                                            class="text-indigo-600 hover:text-indigo-900">
-                                            Modifier
+                                            {{ __('Edit') }}
                                         </a>
                                         <form action="{{ route('rappels.destroy', $rappel) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" 
+                                            <button type="submit"
                                                     class="text-red-600 hover:text-red-900"
-                                                    onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce rappel ?')">
-                                                Supprimer
+                                                    onclick="return confirm('{{ __('Are you sure you want to delete this reminder?') }}')">
+                                                {{ __('Delete') }}
                                             </button>
                                         </form>
                                     </div>
@@ -197,12 +197,12 @@
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun rappel</h3>
-                <p class="mt-1 text-sm text-gray-500">Commencez par créer votre premier rappel.</p>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('No reminders') }}</h3>
+                <p class="mt-1 text-sm text-gray-500">{{ __('Start by creating your first reminder.') }}</p>
                 <div class="mt-6">
-                    <a href="{{ route('rappels.create') }}" 
+                    <a href="{{ route('rappels.create') }}"
                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700">
-                        Nouveau Rappel
+                        {{ __('New Reminder') }}
                     </a>
                 </div>
             </div>

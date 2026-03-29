@@ -120,7 +120,7 @@ class ContactManager extends Component
         ]);
 
         $this->closeModals();
-        session()->flash('success', 'Contact créé avec succès!');
+        session()->flash('success', __('Contact created successfully!'));
     }
 
     public function updateContact()
@@ -144,14 +144,14 @@ class ContactManager extends Component
         ]);
 
         $this->closeModals();
-        session()->flash('success', 'Contact mis à jour avec succès!');
+        session()->flash('success', __('Contact updated successfully!'));
     }
 
     public function deleteContact()
     {
         $this->selectedContact->delete();
         $this->closeModals();
-        session()->flash('success', 'Contact supprimé avec succès!');
+        session()->flash('success', __('Contact deleted successfully!'));
     }
 
     private function resetForm()

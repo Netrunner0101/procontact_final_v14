@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Gestion des Contacts - Pro Contact')
+@section('title', __('Contact Management') . ' - Pro Contact')
 
 @section('content')
     <livewire:contact-manager />

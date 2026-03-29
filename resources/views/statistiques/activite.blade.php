@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Statistiques - ' . $activite->nom . ' - Pro Contact')
+@section('title', __('Statistics') . ' - ' . $activite->nom . ' - Pro Contact')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
@@ -13,18 +13,18 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </a>
-                <h1 class="text-3xl font-bold text-gray-900">Statistiques - {{ $activite->nom }}</h1>
+                <h1 class="text-3xl font-bold text-gray-900">{{ __('Statistics') }} - {{ $activite->nom }}</h1>
             </div>
-            <p class="text-gray-600">Analyse détaillée de l'activité</p>
+            <p class="text-gray-600">{{ __('Detailed activity analysis') }}</p>
         </div>
         <div class="flex space-x-3">
             <a href="{{ route('activites.show', $activite) }}" 
                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200">
-                Voir l'activité
+                {{ __('View activity') }}
             </a>
             <a href="{{ route('statistiques.export.activite', $activite) }}" 
                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-200">
-                📊 Exporter Rapport
+                {{ __('Export Report') }}
             </a>
         </div>
     </div>
@@ -44,7 +44,7 @@
                 @if($activite->description)
                     <p class="text-gray-600 mt-1">{{ $activite->description }}</p>
                 @endif
-                <p class="text-sm text-gray-500 mt-1">Créée le {{ $activite->created_at->format('d/m/Y') }}</p>
+                <p class="text-sm text-gray-500 mt-1">{{ __('Created on') }} {{ $activite->created_at->format('d/m/Y') }}</p>
             </div>
         </div>
     </div>
@@ -59,7 +59,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Contacts</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Contacts') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_contacts'] }}</p>
                 </div>
             </div>
@@ -73,7 +73,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Rendez-vous</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Appointments') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_rendez_vous'] }}</p>
                 </div>
             </div>
@@ -87,7 +87,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Notes</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Notes') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_notes'] }}</p>
                 </div>
             </div>
@@ -101,7 +101,7 @@
                     </svg>
                 </div>
                 <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">Rappels</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Reminders') }}</p>
                     <p class="text-2xl font-semibold text-gray-900">{{ $stats['total_rappels'] }}</p>
                 </div>
             </div>
@@ -111,7 +111,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <!-- Monthly Trends -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Tendances mensuelles (6 derniers mois)</h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Monthly trends (last 6 months)') }}</h2>
             <div class="h-64">
                 <canvas id="monthlyTrendsChart"></canvas>
             </div>
@@ -119,26 +119,26 @@
 
         <!-- Appointment Status Distribution -->
         <div class="bg-white rounded-lg shadow p-6">
-            <h2 class="text-xl font-semibold text-gray-900 mb-4">Répartition des rendez-vous</h2>
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Appointment distribution') }}</h2>
             <div class="space-y-4 mb-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <div class="w-4 h-4 bg-green-500 rounded mr-3"></div>
-                        <span class="text-gray-700">À venir</span>
+                        <span class="text-gray-700">{{ __('Upcoming') }}</span>
                     </div>
                     <span class="font-semibold text-gray-900">{{ $appointmentStatus['upcoming'] }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <div class="w-4 h-4 bg-yellow-500 rounded mr-3"></div>
-                        <span class="text-gray-700">Aujourd'hui</span>
+                        <span class="text-gray-700">{{ __('Today') }}</span>
                     </div>
                     <span class="font-semibold text-gray-900">{{ $appointmentStatus['today'] }}</span>
                 </div>
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
                         <div class="w-4 h-4 bg-gray-500 rounded mr-3"></div>
-                        <span class="text-gray-700">Passés</span>
+                        <span class="text-gray-700">{{ __('Past') }}</span>
                     </div>
                     <span class="font-semibold text-gray-900">{{ $appointmentStatus['past'] }}</span>
                 </div>
@@ -153,8 +153,8 @@
         <!-- Top Contacts -->
         <div class="bg-white rounded-lg shadow">
             <div class="p-6 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-900">Top contacts</h2>
-                <p class="text-gray-600 text-sm">Contacts avec le plus de rendez-vous</p>
+                <h2 class="text-xl font-semibold text-gray-900">{{ __('Top contacts') }}</h2>
+                <p class="text-gray-600 text-sm">{{ __('Contacts with the most appointments') }}</p>
             </div>
             <div class="p-6">
                 @if($topContacts->count() > 0)
@@ -176,7 +176,7 @@
                         @endforeach
                     </div>
                 @else
-                    <p class="text-gray-500 text-center py-8">Aucun contact trouvé</p>
+                    <p class="text-gray-500 text-center py-8">{{ __('No contacts found') }}</p>
                 @endif
             </div>
         </div>
@@ -184,8 +184,8 @@
         <!-- Recent Appointments -->
         <div class="bg-white rounded-lg shadow">
             <div class="p-6 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-900">Rendez-vous récents</h2>
-                <p class="text-gray-600 text-sm">10 derniers rendez-vous</p>
+                <h2 class="text-xl font-semibold text-gray-900">{{ __('Recent appointments') }}</h2>
+                <p class="text-gray-600 text-sm">{{ __('Last 10 appointments') }}</p>
             </div>
             <div class="p-6">
                 @if($recentAppointments->count() > 0)
@@ -195,13 +195,13 @@
                                 <div>
                                     <h3 class="font-medium text-gray-900">{{ $rdv->titre }}</h3>
                                     <p class="text-sm text-gray-600">{{ $rdv->contact->prenom }} {{ $rdv->contact->nom }}</p>
-                                    <p class="text-xs text-gray-500">{{ $rdv->date_debut->format('d/m/Y à H:i') }}</p>
+                                    <p class="text-xs text-gray-500">{{ $rdv->date_debut->format('d/m/Y') }} {{ __('at') }} {{ $rdv->date_debut->format('H:i') }}</p>
                                 </div>
                                 <div class="text-right">
                                     @php
                                         $isPast = $rdv->date_debut->isPast();
                                         $isToday = $rdv->date_debut->isToday();
-                                        $status = $isPast ? 'Terminé' : ($isToday ? 'Aujourd\'hui' : 'À venir');
+                                        $status = $isPast ? __('Completed') : ($isToday ? __('Today') : __('Upcoming'));
                                         $statusColor = $isPast ? 'bg-gray-100 text-gray-800' : ($isToday ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800');
                                     @endphp
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColor }}">
@@ -212,7 +212,7 @@
                         @endforeach
                     </div>
                 @else
-                    <p class="text-gray-500 text-center py-8">Aucun rendez-vous trouvé</p>
+                    <p class="text-gray-500 text-center py-8">{{ __('No appointments found') }}</p>
                 @endif
             </div>
         </div>
@@ -220,23 +220,23 @@
 
     <!-- Quick Actions -->
     <div class="bg-white rounded-lg shadow p-6">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">Actions rapides</h2>
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Quick Actions') }}</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <a href="{{ route('rendez-vous.create', ['activite_id' => $activite->id]) }}" 
                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg text-center transition duration-200">
-                Nouveau rendez-vous
+                {{ __('New Appointment') }}
             </a>
             <a href="{{ route('notes.create', ['activite_id' => $activite->id]) }}" 
                class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg text-center transition duration-200">
-                Nouvelle note
+                {{ __('New Note') }}
             </a>
             <a href="{{ route('activites.show', $activite) }}" 
                class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg text-center transition duration-200">
-                Voir l'activité
+                {{ __('View activity') }}
             </a>
             <a href="{{ route('activites.edit', $activite) }}" 
                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg text-center transition duration-200">
-                Modifier l'activité
+                {{ __('Edit activity') }}
             </a>
         </div>
     </div>
@@ -255,14 +255,14 @@ document.addEventListener('DOMContentLoaded', function() {
             labels: monthlyData.map(item => item.month),
             datasets: [
                 {
-                    label: 'Rendez-vous',
+                    label: '{{ __('Appointments') }}',
                     data: monthlyData.map(item => item.rendez_vous),
                     borderColor: 'rgb(147, 51, 234)',
                     backgroundColor: 'rgba(147, 51, 234, 0.1)',
                     tension: 0.4
                 },
                 {
-                    label: 'Notes',
+                    label: '{{ __('Notes') }}',
                     data: monthlyData.map(item => item.notes),
                     borderColor: 'rgb(99, 102, 241)',
                     backgroundColor: 'rgba(99, 102, 241, 0.1)',
@@ -287,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(appointmentCtx, {
         type: 'doughnut',
         data: {
-            labels: ['À venir', 'Aujourd\'hui', 'Passés'],
+            labels: ['{{ __('Upcoming') }}', '{{ __('Today') }}', '{{ __('Past') }}'],
             datasets: [{
                 data: [appointmentData.upcoming, appointmentData.today, appointmentData.past],
                 backgroundColor: ['#10b981', '#f59e0b', '#6b7280']

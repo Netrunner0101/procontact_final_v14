@@ -139,7 +139,7 @@
                     <div class="card-header">
                         <h2 class="text-xl font-semibold text-gray-900">
                             <i class="fas fa-lock mr-2"></i>
-                            Changer le mot de passe
+                            {{ __('Change Password') }}
                         </h2>
                     </div>
                     <div class="card-body">
@@ -150,7 +150,7 @@
                             <div class="space-y-6">
                                 <!-- Current Password -->
                                 <div>
-                                    <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">Mot de passe actuel</label>
+                                    <label for="current_password" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Current Password') }}</label>
                                     <input type="password" id="current_password" name="current_password" 
                                            class="form-input @error('current_password') border-red-500 @enderror" required>
                                     @error('current_password')
@@ -160,7 +160,7 @@
 
                                 <!-- New Password -->
                                 <div>
-                                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Nouveau mot de passe</label>
+                                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">{{ __('New Password') }}</label>
                                     <input type="password" id="password" name="password" 
                                            class="form-input @error('password') border-red-500 @enderror" required>
                                     @error('password')
@@ -170,7 +170,7 @@
 
                                 <!-- Confirm Password -->
                                 <div>
-                                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">Confirmer le mot de passe</label>
+                                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Confirm Password') }}</label>
                                     <input type="password" id="password_confirmation" name="password_confirmation" 
                                            class="form-input" required>
                                 </div>
@@ -179,7 +179,7 @@
                             <div class="mt-6">
                                 <button type="submit" class="btn-primary">
                                     <i class="fas fa-key mr-2"></i>
-                                    Changer le mot de passe
+                                    {{ __('Change Password') }}
                                 </button>
                             </div>
                         </form>
@@ -212,7 +212,7 @@
                     <div class="card-header">
                         <h3 class="text-lg font-semibold text-gray-900">
                             <i class="fas fa-link mr-2"></i>
-                            Comptes Liés
+                            {{ __('Linked Accounts') }}
                         </h3>
                     </div>
                     <div class="card-body">
@@ -233,12 +233,12 @@
                                         @csrf
                                         <input type="hidden" name="provider" value="google">
                                         <button type="submit" class="text-red-600 hover:text-red-800 text-sm">
-                                            Dissocier
+                                            {{ __('Unlink') }}
                                         </button>
                                     </form>
                                 @else
                                     <a href="{{ route('auth.google') }}" class="text-blue-600 hover:text-blue-800 text-sm">
-                                        Associer
+                                        {{ __('Link') }}
                                     </a>
                                 @endif
                             </div>
@@ -256,12 +256,12 @@
                                         @csrf
                                         <input type="hidden" name="provider" value="apple">
                                         <button type="submit" class="text-red-600 hover:text-red-800 text-sm">
-                                            Dissocier
+                                            {{ __('Unlink') }}
                                         </button>
                                     </form>
                                 @else
                                     <a href="{{ route('auth.apple') }}" class="text-blue-600 hover:text-blue-800 text-sm">
-                                        Associer
+                                        {{ __('Link') }}
                                     </a>
                                 @endif
                             </div>
@@ -274,24 +274,24 @@
                     <div class="card-header">
                         <h3 class="text-lg font-semibold text-gray-900">
                             <i class="fas fa-info-circle mr-2"></i>
-                            Informations du Compte
+                            {{ __('Account Information') }}
                         </h3>
                     </div>
                     <div class="card-body">
                         <div class="space-y-3 text-sm">
                             <div class="flex justify-between">
-                                <span class="text-gray-600">Membre depuis:</span>
+                                <span class="text-gray-600">{{ __('Member since:') }}</span>
                                 <span class="font-medium">{{ $user->created_at->format('d/m/Y') }}</span>
                             </div>
                             @if($user->last_login_at)
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Dernière connexion:</span>
+                                    <span class="text-gray-600">{{ __('Last login:') }}</span>
                                     <span class="font-medium">{{ $user->last_login_at->format('d/m/Y H:i') }}</span>
                                 </div>
                             @endif
                             @if($user->provider)
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Connecté via:</span>
+                                    <span class="text-gray-600">{{ __('Connected via:') }}</span>
                                     <span class="font-medium">{{ ucfirst($user->provider) }}</span>
                                 </div>
                             @endif

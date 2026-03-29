@@ -4,13 +4,13 @@
         <div class="header-content">
             <h1 class="page-title">
                 <i class="fas fa-sticky-note"></i>
-                Gestion des Notes
+                {{ __('Notes Management') }}
             </h1>
-            <p class="page-subtitle">Organisez et gérez toutes vos notes importantes</p>
+            <p class="page-subtitle">{{ __('Organize and manage all your important notes') }}</p>
         </div>
         <div class="header-actions">
             <button wire:click="openCreateModal" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Nouvelle Note
+                <i class="fas fa-plus"></i> {{ __('New Note') }}
             </button>
         </div>
     </div>
@@ -23,7 +23,7 @@
                 <input
                     type="text"
                     wire:model.live.debounce.300ms="search"
-                    placeholder="Rechercher par titre, contenu ou contact..."
+                    placeholder="{{ __('Search by title, content or contact...') }}"
                     class="search-input"
                 >
             </div>
@@ -31,13 +31,13 @@
 
         <div class="filter-controls">
             <select wire:model.live="sharingFilter" class="filter-select">
-                <option value="">Toutes les notes</option>
-                <option value="1">Partagées avec le client</option>
-                <option value="0">Non partagées</option>
+                <option value="">{{ __('All notes') }}</option>
+                <option value="1">{{ __('Shared with client') }}</option>
+                <option value="0">{{ __('Not shared') }}</option>
             </select>
 
             <select wire:model.live="appointmentFilter" class="filter-select">
-                <option value="">Tous les rendez-vous</option>
+                <option value="">{{ __('All appointments') }}</option>
                 @foreach($appointments as $appointment)
                     <option value="{{ $appointment->id }}">
                         {{ $appointment->contact->nom }} {{ $appointment->contact->prenom }} - {{ $appointment->date_debut->format('d/m/Y') }}
@@ -47,13 +47,13 @@
 
             <div class="sort-controls">
                 <button wire:click="sortBy('created_at')" class="sort-btn {{ $sortBy === 'created_at' ? 'active' : '' }}">
-                    Date
+                    {{ __('Date') }}
                     @if($sortBy === 'created_at')
                         <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
                     @endif
                 </button>
                 <button wire:click="sortBy('titre')" class="sort-btn {{ $sortBy === 'titre' ? 'active' : '' }}">
-                    Titre
+                    {{ __('Title') }}
                     @if($sortBy === 'titre')
                         <i class="fas fa-sort-{{ $sortDirection === 'asc' ? 'up' : 'down' }}"></i>
                     @endif
@@ -78,19 +78,19 @@
                     <div class="note-sharing">
                         @if($note->is_shared_with_client)
                             <span class="sharing-badge shared">
-                                <i class="fas fa-share-alt"></i> Partagée
+                                <i class="fas fa-share-alt"></i> {{ __('Shared') }}
                             </span>
                         @else
                             <span class="sharing-badge private">
-                                <i class="fas fa-lock"></i> Privée
+                                <i class="fas fa-lock"></i> {{ __('Private') }}
                             </span>
                         @endif
                     </div>
                     <div class="note-actions">
-                        <button wire:click="openEditModal({{ $note->id }})" class="action-btn edit-btn" title="Modifier">
+                        <button wire:click="openEditModal({{ $note->id }})" class="action-btn edit-btn" title="{{ __('Edit') }}">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button wire:click="openDeleteModal({{ $note->id }})" class="action-btn delete-btn" title="Supprimer">
+                        <button wire:click="openDeleteModal({{ $note->id }})" class="action-btn delete-btn" title="{{ __('Delete') }}">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -125,10 +125,10 @@
         @empty
             <div class="empty-state">
                 <i class="fas fa-sticky-note"></i>
-                <h3>Aucune note trouvée</h3>
-                <p>Commencez par créer votre première note</p>
+                <h3>{{ __('No notes found') }}</h3>
+                <p>{{ __('Start by creating your first note') }}</p>
                 <button wire:click="openCreateModal" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Créer une note
+                    <i class="fas fa-plus"></i> {{ __('Create a note') }}
                 </button>
             </div>
         @endforelse
@@ -148,7 +148,7 @@
                 <div class="modal-header">
                     <h2 class="modal-title">
                         <i class="fas fa-{{ $showCreateModal ? 'plus' : 'edit' }}"></i>
-                        {{ $showCreateModal ? 'Nouvelle Note' : 'Modifier Note' }}
+                        {{ $showCreateModal ? __('New Note') : __('Edit Note') }}
                     </h2>
                     <button wire:click="closeModals" class="modal-close">
                         <i class="fas fa-times"></i>
@@ -158,9 +158,9 @@
                 <form wire:submit.prevent="{{ $showCreateModal ? 'createNote' : 'updateNote' }}" class="modal-form">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="rendez_vous_id" class="form-label">Rendez-vous *</label>
+                            <label for="rendez_vous_id" class="form-label">{{ __('Appointment') }} *</label>
                             <select id="rendez_vous_id" wire:model="rendez_vous_id" class="form-select" required>
-                                <option value="">Sélectionner un rendez-vous</option>
+                                <option value="">{{ __('Select an appointment') }}</option>
                                 @foreach($appointments as $appointment)
                                     <option value="{{ $appointment->id }}">
                                         {{ $appointment->contact->nom }} {{ $appointment->contact->prenom }} -
@@ -173,24 +173,24 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Partager avec le client</label>
+                            <label class="form-label">{{ __('Share with client') }}</label>
                             <div class="sharing-toggle">
                                 <label class="toggle-label">
                                     <input type="checkbox" wire:model="is_shared_with_client" class="toggle-input">
                                     <span class="toggle-slider"></span>
-                                    <span class="toggle-text">{{ $is_shared_with_client ? 'Partagée' : 'Privée' }}</span>
+                                    <span class="toggle-text">{{ $is_shared_with_client ? __('Shared') : __('Private') }}</span>
                                 </label>
                             </div>
                         </div>
 
                         <div class="form-group full-width">
-                            <label for="titre" class="form-label">Titre *</label>
+                            <label for="titre" class="form-label">{{ __('Title') }} *</label>
                             <input type="text" id="titre" wire:model="titre" class="form-input" required>
                             @error('titre') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="form-group full-width">
-                            <label for="commentaire" class="form-label">Commentaire *</label>
+                            <label for="commentaire" class="form-label">{{ __('Comment') }} *</label>
                             <textarea id="commentaire" wire:model="commentaire" class="form-textarea" rows="6" required></textarea>
                             @error('commentaire') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
@@ -198,11 +198,11 @@
 
                     <div class="modal-actions">
                         <button type="button" wire:click="closeModals" class="btn btn-secondary">
-                            Annuler
+                            {{ __('Cancel') }}
                         </button>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>
-                            {{ $showCreateModal ? 'Créer' : 'Mettre à jour' }}
+                            {{ $showCreateModal ? __('Create') : __('Update') }}
                         </button>
                     </div>
                 </form>
@@ -217,7 +217,7 @@
                 <div class="modal-header">
                     <h2 class="modal-title">
                         <i class="fas fa-trash text-red-500"></i>
-                        Supprimer Note
+                        {{ __('Delete Note') }}
                     </h2>
                     <button wire:click="closeModals" class="modal-close">
                         <i class="fas fa-times"></i>
@@ -225,17 +225,17 @@
                 </div>
 
                 <div class="modal-body">
-                    <p>Êtes-vous sûr de vouloir supprimer la note <strong>{{ $selectedNote->titre }}</strong> ?</p>
-                    <p class="text-sm text-gray-600">Cette action est irréversible.</p>
+                    <p>{{ __('Are you sure you want to delete the note :title?', ['title' => $selectedNote->titre]) }}</p>
+                    <p class="text-sm text-gray-600">{{ __('This action is irreversible.') }}</p>
                 </div>
 
                 <div class="modal-actions">
                     <button wire:click="closeModals" class="btn btn-secondary">
-                        Annuler
+                        {{ __('Cancel') }}
                     </button>
                     <button wire:click="deleteNote" class="btn btn-danger">
                         <i class="fas fa-trash"></i>
-                        Supprimer
+                        {{ __('Delete') }}
                     </button>
                 </div>
             </div>

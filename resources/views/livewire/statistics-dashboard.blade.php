@@ -4,16 +4,16 @@
         <div class="header-content">
             <h1 class="page-title">
                 <i class="fas fa-chart-bar"></i>
-                Tableau de Bord Statistiques
+                {{ __('Statistics Dashboard') }}
             </h1>
-            <p class="page-subtitle">Analysez vos performances et tendances</p>
+            <p class="page-subtitle">{{ __('Analyze your performance and trends') }}</p>
         </div>
         <div class="header-actions">
             <button wire:click="exportData('global')" class="btn btn-secondary">
-                <i class="fas fa-download"></i> Exporter CSV
+                <i class="fas fa-download"></i> {{ __('Export CSV') }}
             </button>
             <button wire:click="loadStatistics" class="btn btn-primary">
-                <i class="fas fa-sync-alt"></i> Actualiser
+                <i class="fas fa-sync-alt"></i> {{ __('Refresh') }}
             </button>
         </div>
     </div>
@@ -21,19 +21,19 @@
     <!-- Controls -->
     <div class="controls-section">
         <div class="control-group">
-            <label for="dateRange" class="control-label">Période d'analyse</label>
+            <label for="dateRange" class="control-label">{{ __('Analysis period') }}</label>
             <select id="dateRange" wire:model.live="dateRange" class="control-select">
-                <option value="3">3 derniers mois</option>
-                <option value="6">6 derniers mois</option>
-                <option value="12">12 derniers mois</option>
-                <option value="24">24 derniers mois</option>
+                <option value="3">{{ __('Last 3 months') }}</option>
+                <option value="6">{{ __('Last 6 months') }}</option>
+                <option value="12">{{ __('Last 12 months') }}</option>
+                <option value="24">{{ __('Last 24 months') }}</option>
             </select>
         </div>
 
         <div class="control-group">
-            <label for="selectedActivity" class="control-label">Activité spécifique</label>
+            <label for="selectedActivity" class="control-label">{{ __('Specific activity') }}</label>
             <select id="selectedActivity" wire:model.live="selectedActivity" class="control-select">
-                <option value="">Toutes les activités</option>
+                <option value="">{{ __('All activities') }}</option>
                 @foreach($activities as $activity)
                     <option value="{{ $activity->id }}">{{ $activity->nom }}</option>
                 @endforeach
@@ -47,7 +47,7 @@
             <div class="chart-header">
                 <h3 class="chart-title">
                     <i class="fas fa-line-chart"></i>
-                    Évolution Mensuelle
+                    {{ __('Monthly Trends') }}
                 </h3>
             </div>
             <div class="chart-container">
@@ -63,7 +63,7 @@
             <div class="stat-header">
                 <h3 class="stat-title">
                     <i class="fas fa-briefcase"></i>
-                    Performance par Activité
+                    {{ __('Performance by Activity') }}
                 </h3>
             </div>
             <div class="stat-content">
@@ -77,7 +77,7 @@
                                 </div>
                                 <div class="activity-stats">
                                     <span class="stat-number">{{ $activity->rendez_vous_count }}</span>
-                                    <span class="stat-label">RDV</span>
+                                    <span class="stat-label">{{ __('Appts') }}</span>
                                 </div>
                             </div>
                         @endforeach
@@ -85,7 +85,7 @@
                 @else
                     <div class="empty-state">
                         <i class="fas fa-briefcase"></i>
-                        <p>Aucune activité trouvée</p>
+                        <p>{{ __('No activity found') }}</p>
                     </div>
                 @endif
             </div>
@@ -96,7 +96,7 @@
             <div class="stat-header">
                 <h3 class="stat-title">
                     <i class="fas fa-chart-pie"></i>
-                    Répartition des Statuts
+                    {{ __('Status Distribution') }}
                 </h3>
             </div>
             <div class="stat-content">
@@ -121,7 +121,7 @@
                 @else
                     <div class="empty-state">
                         <i class="fas fa-chart-pie"></i>
-                        <p>Aucune donnée de statut</p>
+                        <p>{{ __('No status data') }}</p>
                     </div>
                 @endif
             </div>
@@ -132,7 +132,7 @@
             <div class="stat-header">
                 <h3 class="stat-title">
                     <i class="fas fa-exclamation-triangle"></i>
-                    Répartition des Priorités
+                    {{ __('Priority Distribution') }}
                 </h3>
             </div>
             <div class="stat-content">
@@ -157,7 +157,7 @@
                 @else
                     <div class="empty-state">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <p>Aucune donnée de priorité</p>
+                        <p>{{ __('No priority data') }}</p>
                     </div>
                 @endif
             </div>
@@ -168,7 +168,7 @@
             <div class="stat-header">
                 <h3 class="stat-title">
                     <i class="fas fa-calendar-alt"></i>
-                    Résumé Mensuel
+                    {{ __('Monthly Summary') }}
                 </h3>
             </div>
             <div class="stat-content">
@@ -180,15 +180,15 @@
                                 <div class="month-stats">
                                     <div class="month-stat">
                                         <span class="stat-number">{{ $month['contacts'] }}</span>
-                                        <span class="stat-label">Contacts</span>
+                                        <span class="stat-label">{{ __('Contacts') }}</span>
                                     </div>
                                     <div class="month-stat">
                                         <span class="stat-number">{{ $month['appointments'] }}</span>
-                                        <span class="stat-label">RDV</span>
+                                        <span class="stat-label">{{ __('Appts') }}</span>
                                     </div>
                                     <div class="month-stat">
                                         <span class="stat-number">{{ $month['notes'] }}</span>
-                                        <span class="stat-label">Notes</span>
+                                        <span class="stat-label">{{ __('Notes') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -197,7 +197,7 @@
                 @else
                     <div class="empty-state">
                         <i class="fas fa-calendar-alt"></i>
-                        <p>Aucune donnée mensuelle</p>
+                        <p>{{ __('No monthly data') }}</p>
                     </div>
                 @endif
             </div>
@@ -541,7 +541,7 @@ function initializeCharts() {
         const monthlyData = @json($monthlyStats);
 
         // Placeholder for Chart.js implementation
-        monthlyCtx.getContext('2d').fillText('Graphique des tendances mensuelles', 50, 100);
+        monthlyCtx.getContext('2d').fillText('Monthly trends chart', 50, 100);
     }
 
     // Status Distribution Chart
@@ -550,7 +550,7 @@ function initializeCharts() {
         const statusData = @json($statusDistribution);
 
         // Placeholder for Chart.js implementation
-        statusCtx.getContext('2d').fillText('Graphique des statuts', 50, 100);
+        statusCtx.getContext('2d').fillText('Status chart', 50, 100);
     }
 
     // Priority Distribution Chart
@@ -559,7 +559,7 @@ function initializeCharts() {
         const priorityData = @json($priorityDistribution);
 
         // Placeholder for Chart.js implementation
-        priorityCtx.getContext('2d').fillText('Graphique des priorités', 50, 100);
+        priorityCtx.getContext('2d').fillText('Priority chart', 50, 100);
     }
 }
 

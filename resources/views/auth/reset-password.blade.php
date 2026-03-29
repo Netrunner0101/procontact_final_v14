@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Nouveau mot de passe - Pro Contact</title>
+    <title>{{ __('New Password') }} - Pro Contact</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -19,11 +19,17 @@
     </style>
 </head>
 <body>
+    <!-- Language Switcher -->
+    <div class="fixed top-4 right-4 z-50 flex gap-2">
+        <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'en' ? 'bg-white text-gray-900 font-bold' : 'text-white/70 hover:text-white' }} transition-colors">EN</a>
+        <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-white text-gray-900 font-bold' : 'text-white/70 hover:text-white' }} transition-colors">FR</a>
+    </div>
+
     <div class="min-h-screen flex items-center justify-center px-4">
         <div class="max-w-md w-full auth-card p-8">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-bold" style="color: #1b1c1a;">Pro Contact</h1>
-                <p class="mt-2" style="color: #44483e;">Cr&eacute;er un nouveau mot de passe</p>
+                <p class="mt-2" style="color: #44483e;">{{ __('Create a new password') }}</p>
             </div>
 
             <form method="POST" action="{{ route('password.update') }}">
@@ -32,7 +38,7 @@
                 <input type="hidden" name="token" value="{{ $token }}">
 
                 <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium mb-2" style="color: #44483e;">Adresse email</label>
+                    <label for="email" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Email address') }}</label>
                     <input type="email" id="email" name="email" value="{{ request()->get('email') ?? old('email') }}" required
                            class="w-full px-3 py-2 auth-input @error('email') border-red-500 @enderror">
                     @error('email')
@@ -41,29 +47,29 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="password" class="block text-sm font-medium mb-2" style="color: #44483e;">Nouveau mot de passe</label>
+                    <label for="password" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('New password') }}</label>
                     <input type="password" id="password" name="password" required
                            class="w-full px-3 py-2 auth-input @error('password') border-red-500 @enderror">
                     @error('password')
                         <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
                     @enderror
-                    <p class="text-sm mt-1" style="color: #75786c;">Minimum 8 caract&egrave;res</p>
+                    <p class="text-sm mt-1" style="color: #75786c;">{{ __('Minimum 8 characters') }}</p>
                 </div>
 
                 <div class="mb-6">
-                    <label for="password_confirmation" class="block text-sm font-medium mb-2" style="color: #44483e;">Confirmer le mot de passe</label>
+                    <label for="password_confirmation" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Confirm password') }}</label>
                     <input type="password" id="password_confirmation" name="password_confirmation" required
                            class="w-full px-3 py-2 auth-input">
                 </div>
 
                 <button type="submit" class="w-full auth-btn py-2 px-4">
-                    R&eacute;initialiser le mot de passe
+                    {{ __('Reset password') }}
                 </button>
             </form>
 
             <div class="text-center mt-6">
                 <p style="color: #44483e;">
-                    <a href="{{ route('login') }}" style="color: #843728; font-weight: 600;" class="hover:opacity-80">Retour &agrave; la connexion</a>
+                    <a href="{{ route('login') }}" style="color: #843728; font-weight: 600;" class="hover:opacity-80">{{ __('Back to login') }}</a>
                 </p>
             </div>
         </div>
@@ -74,7 +80,7 @@
             const password = document.getElementById('password').value;
             const confirmation = this.value;
             if (password !== confirmation && confirmation.length > 0) {
-                this.setCustomValidity('Les mots de passe ne correspondent pas');
+                this.setCustomValidity('{{ __("Passwords do not match") }}');
                 this.style.borderColor = '#ba1a1a';
             } else {
                 this.setCustomValidity('');

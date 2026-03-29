@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Lien invalide - Pro Contact</title>
+    <title>{{ __('Invalid link') }} - Pro Contact</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -57,8 +57,8 @@
         <div class="error-icon">
             <i class="fas fa-link-slash"></i>
         </div>
-        <h1>Ce lien n'est plus valide</h1>
-        <p>Veuillez contacter votre prestataire de services.</p>
+        <h1>{{ __('This link is no longer valid') }}</h1>
+        <p>{{ __('Please contact your service provider.') }}</p>
     </div>
 </body>
 </html>

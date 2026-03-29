@@ -15,7 +15,7 @@
                 <div class="text-right">
                     <p class="text-sm text-gray-500">{{ __('Last login') }}</p>
                     <p class="text-sm font-medium text-gray-700">
-                        {{ auth()->user()->last_login_at ? auth()->user()->last_login_at->format('d/m/Y à H:i') : __('First login') }}
+                        {{ auth()->user()->last_login_at ? auth()->user()->last_login_at->format('d/m/Y') . ' ' . __('at') . ' ' . auth()->user()->last_login_at->format('H:i') : __('First login') }}
                     </p>
                 </div>
             </div>

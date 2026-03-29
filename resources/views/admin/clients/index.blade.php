@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Gestion des Clients')
+@section('title', __('Client Management'))
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Gestion des Clients</h1>
-        <a href="{{ route('admin.clients.create') }}" class="btn-primary px-4 py-2 rounded">Nouveau Client</a>
+        <h1 class="text-2xl font-bold">{{ __('Client Management') }}</h1>
+        <a href="{{ route('admin.clients.create') }}" class="btn-primary px-4 py-2 rounded">{{ __('New Client') }}</a>
     </div>
 
     @if(session('success'))
@@ -17,9 +17,9 @@
         <table class="w-full">
             <thead>
                 <tr class="border-b">
-                    <th class="p-3 text-left">Nom</th>
-                    <th class="p-3 text-left">Email</th>
-                    <th class="p-3 text-left">Actions</th>
+                    <th class="p-3 text-left">{{ __('Name') }}</th>
+                    <th class="p-3 text-left">{{ __('Email') }}</th>
+                    <th class="p-3 text-left">{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,12 +28,12 @@
                         <td class="p-3">{{ $client->nom }} {{ $client->prenom }}</td>
                         <td class="p-3">{{ $client->email }}</td>
                         <td class="p-3">
-                            <a href="{{ route('admin.clients.show', $client) }}">Voir</a>
-                            <a href="{{ route('admin.clients.edit', $client) }}">Modifier</a>
+                            <a href="{{ route('admin.clients.show', $client) }}">{{ __('View') }}</a>
+                            <a href="{{ route('admin.clients.edit', $client) }}">{{ __('Edit') }}</a>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="3" class="p-3 text-center">Aucun client</td></tr>
+                    <tr><td colspan="3" class="p-3 text-center">{{ __('No clients') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
