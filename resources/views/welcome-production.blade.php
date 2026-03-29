@@ -7,8 +7,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        [x-cloak] { display: none !important; }
         body { font-family: 'Inter', sans-serif; background: #fbf9f6; color: #1b1c1a; }
         h1, h2, h3 { font-family: 'Manrope', sans-serif; }
         .btn-primary { background: linear-gradient(135deg, #843728, #c4816e); color: #ffffff; font-weight: 600; letter-spacing: 0.02em; transition: all 0.25s; }
@@ -22,16 +24,45 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50" style="background: rgba(251,249,246,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(197,200,185,0.2);">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <nav class="fixed top-0 w-full z-50" style="background: rgba(251,249,246,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(197,200,185,0.2);" x-data="{ mobileOpen: false }">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
             <h1 class="text-2xl font-bold" style="color: #1b1c1a;">Pro Contact</h1>
-            <div class="flex items-center gap-3">
+
+            <!-- Desktop Nav -->
+            <div class="hidden sm:flex items-center gap-3">
                 <div class="flex gap-2">
-                    <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'en' ? 'bg-white text-gray-900 font-bold shadow-sm' : 'text-white/70 hover:text-white' }} transition-colors">EN</a>
-                    <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-white text-gray-900 font-bold shadow-sm' : 'text-white/70 hover:text-white' }} transition-colors">FR</a>
+                    <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'en' ? 'bg-white text-gray-900 font-bold shadow-sm' : 'text-gray-500 hover:text-gray-700' }} transition-colors">EN</a>
+                    <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-white text-gray-900 font-bold shadow-sm' : 'text-gray-500 hover:text-gray-700' }} transition-colors">FR</a>
                 </div>
                 <a href="{{ route('login') }}" class="px-5 py-2 rounded-md text-sm btn-secondary">{{ __('Login') }}</a>
                 <a href="{{ route('register') }}" class="px-5 py-2 rounded-md text-sm btn-primary">{{ __('Sign Up') }}</a>
+            </div>
+
+            <!-- Mobile Hamburger -->
+            <button @click="mobileOpen = !mobileOpen" class="sm:hidden p-2 rounded-lg" style="color: #75786c;">
+                <i class="fas fa-bars text-lg" x-show="!mobileOpen"></i>
+                <i class="fas fa-times text-lg" x-show="mobileOpen" x-cloak></i>
+            </button>
+        </div>
+
+        <!-- Mobile Dropdown -->
+        <div class="sm:hidden px-4 pb-4"
+             x-show="mobileOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             x-cloak
+             @click.away="mobileOpen = false">
+            <div class="flex gap-2 mb-3">
+                <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'en' ? 'bg-white text-gray-900 font-bold shadow-sm' : 'text-gray-500 hover:text-gray-700' }} transition-colors">EN</a>
+                <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg {{ app()->getLocale() === 'fr' ? 'bg-white text-gray-900 font-bold shadow-sm' : 'text-gray-500 hover:text-gray-700' }} transition-colors">FR</a>
+            </div>
+            <div class="flex flex-col gap-2">
+                <a href="{{ route('login') }}" class="w-full text-center px-5 py-2.5 rounded-md text-sm btn-secondary">{{ __('Login') }}</a>
+                <a href="{{ route('register') }}" class="w-full text-center px-5 py-2.5 rounded-md text-sm btn-primary">{{ __('Sign Up') }}</a>
             </div>
         </div>
     </nav>

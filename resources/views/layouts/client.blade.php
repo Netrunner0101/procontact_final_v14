@@ -21,7 +21,7 @@
     <div class="min-h-screen">
         <!-- Glass Navigation -->
         <nav class="sticky top-0 z-50" style="background: rgba(255,255,255,0.70); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(197,200,185,0.10);">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" x-data="{ mobileOpen: false }">
                 <div class="flex justify-between h-16">
                     <div class="flex items-center">
                         <!-- Logo -->
@@ -37,7 +37,7 @@
                             </div>
                         </div>
 
-                        <!-- Navigation Links -->
+                        <!-- Navigation Links (Desktop) -->
                         <div class="hidden lg:flex lg:ml-10 lg:space-x-1">
                             <a href="{{ route('client.dashboard') }}" class="client-nav-link {{ request()->routeIs('client.dashboard') ? 'client-nav-link-active' : '' }}">
                                 <i class="fas fa-tachometer-alt"></i>
@@ -50,8 +50,8 @@
                         </div>
                     </div>
 
-                    <!-- Language Switcher & Settings Dropdown -->
-                    <div class="hidden sm:flex sm:items-center sm:ml-6">
+                    <!-- Language Switcher & Settings Dropdown (Desktop) -->
+                    <div class="hidden lg:flex lg:items-center lg:ml-6">
                         <!-- Language Switcher -->
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" class="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg hover:bg-white/10 transition-colors">
@@ -90,6 +90,66 @@
                                 </div>
                             @endauth
                         </div>
+                    </div>
+
+                    <!-- Mobile Hamburger Button -->
+                    <div class="flex items-center lg:hidden">
+                        <button @click="mobileOpen = !mobileOpen" class="inline-flex items-center justify-center p-2 rounded-lg transition-colors duration-200" style="color: #75786c;" onmouseover="this.style.background='rgba(245,243,240,0.8)';this.style.color='#1b1c1a'" onmouseout="this.style.background='';this.style.color='#75786c'">
+                            <i class="fas fa-bars text-lg" x-show="!mobileOpen"></i>
+                            <i class="fas fa-times text-lg" x-show="mobileOpen" x-cloak></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Navigation Drawer -->
+                <div class="lg:hidden"
+                     x-show="mobileOpen"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-2"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 -translate-y-2"
+                     x-cloak
+                     @click.away="mobileOpen = false">
+                    <div class="pb-4 space-y-1">
+                        <!-- Navigation Links -->
+                        <a href="{{ route('client.dashboard') }}" class="client-mobile-nav-link {{ request()->routeIs('client.dashboard') ? 'active' : '' }}">
+                            <i class="fas fa-tachometer-alt w-5 text-center"></i>
+                            <span>{{ __('Dashboard') }}</span>
+                        </a>
+                        <a href="{{ route('client.appointments') }}" class="client-mobile-nav-link {{ request()->routeIs('client.appointments*') ? 'active' : '' }}">
+                            <i class="fas fa-calendar-check w-5 text-center"></i>
+                            <span>{{ __('My appointments') }}</span>
+                        </a>
+
+                        <!-- Divider -->
+                        <div class="my-2" style="border-top: 1px solid rgba(197,200,185,0.2);"></div>
+
+                        <!-- Language Switcher -->
+                        <div class="flex items-center gap-2 px-3 py-2">
+                            <i class="fas fa-globe w-5 text-center" style="color: #75786c;"></i>
+                            <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1 text-sm rounded-lg transition-colors {{ app()->getLocale() === 'en' ? 'font-bold' : '' }}" style="color: {{ app()->getLocale() === 'en' ? '#843728' : '#75786c' }}; {{ app()->getLocale() === 'en' ? 'background: rgba(255,219,209,0.3);' : '' }}">EN</a>
+                            <a href="{{ route('lang.switch', 'fr') }}" class="px-3 py-1 text-sm rounded-lg transition-colors {{ app()->getLocale() === 'fr' ? 'font-bold' : '' }}" style="color: {{ app()->getLocale() === 'fr' ? '#843728' : '#75786c' }}; {{ app()->getLocale() === 'fr' ? 'background: rgba(255,219,209,0.3);' : '' }}">FR</a>
+                        </div>
+
+                        <!-- Divider -->
+                        <div class="my-2" style="border-top: 1px solid rgba(197,200,185,0.2);"></div>
+
+                        <!-- User Section -->
+                        @auth
+                            <div class="px-3 py-2">
+                                <div class="text-sm font-semibold" style="color: #1b1c1a;">{{ Auth::user()->prenom }} {{ Auth::user()->nom }}</div>
+                                <div class="text-xs" style="color: #75786c;">{{ Auth::user()->email }}</div>
+                            </div>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="client-mobile-nav-link w-full" style="color: #ba1a1a;">
+                                    <i class="fas fa-sign-out-alt w-5 text-center"></i>
+                                    <span>{{ __('Log out') }}</span>
+                                </button>
+                            </form>
+                        @endauth
                     </div>
                 </div>
             </div>
@@ -227,16 +287,32 @@
             transform: translateY(-1px);
         }
 
-        /* Mobile */
-        @media (max-width: 1024px) {
-            .client-nav-link span {
-                display: none;
-            }
-            .client-nav-link {
-                padding: 0.5rem;
-                justify-content: center;
-            }
+        /* Mobile Navigation Drawer Links */
+        .client-mobile-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            color: #75786c;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            width: 100%;
+            border: none;
+            background: none;
+            cursor: pointer;
+            text-align: left;
         }
+
+        .client-mobile-nav-link:hover,
+        .client-mobile-nav-link.active {
+            color: #843728;
+            background: rgba(255, 219, 209, 0.3);
+        }
+
+        [x-cloak] { display: none !important; }
     </style>
 
     <script>

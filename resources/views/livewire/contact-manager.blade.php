@@ -387,7 +387,7 @@
 
 .contacts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
@@ -736,12 +736,26 @@
         flex-wrap: wrap;
     }
 
+    .search-box {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .filter-select {
+        min-width: 0;
+        width: 100%;
+    }
+
     .contacts-grid {
         grid-template-columns: 1fr;
     }
 
     .form-grid {
         grid-template-columns: 1fr;
+    }
+
+    .contact-card {
+        padding: 1rem;
     }
 }
     </style>
