@@ -219,6 +219,44 @@
     </section>
 
     <!-- ============================================
+         EDITABLE: How It Works
+         Change: section title, subtitle, step numbers, step titles, step descriptions
+         ============================================ -->
+    <section id="how-it-works" class="py-24 px-6 relative overflow-hidden" style="background: var(--surface-container-low);">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-20">
+                <!-- EDITABLE: Section Heading -->
+                <h2 class="text-4xl font-bold tracking-tight mb-4" style="font-family: 'Manrope', sans-serif;">{{ __('How it works') }}</h2>
+                <p style="color: var(--on-surface-variant);" class="max-w-2xl mx-auto">{{ __('Three simple steps to regain your mental space.') }}</p>
+            </div>
+            <div class="relative">
+                <!-- Progress line (desktop only) -->
+                <div class="hidden lg:block absolute top-1/2 left-0 w-full h-0.5 -translate-y-1/2 -z-0" style="background: rgba(197,200,185,0.3);"></div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 relative z-10">
+                    <!-- EDITABLE: Step 1 -->
+                    <div class="p-8 rounded-3xl flex flex-col items-center text-center" style="background: var(--surface); border: 1px solid rgba(197,200,185,0.1); box-shadow: var(--shadow-sm);">
+                        <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-6" style="background: var(--primary); color: var(--on-primary);">1</div>
+                        <h3 class="text-xl font-bold mb-4">{{ __('Add contacts') }}</h3>
+                        <p style="color: var(--on-surface-variant);">{{ __('Import from phone or email in one click. ProContact auto-organizes them by business type.') }}</p>
+                    </div>
+                    <!-- EDITABLE: Step 2 -->
+                    <div class="p-8 rounded-3xl flex flex-col items-center text-center" style="background: var(--surface); border: 1px solid rgba(197,200,185,0.1); box-shadow: var(--shadow-sm);">
+                        <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-6" style="background: var(--primary); color: var(--on-primary);">2</div>
+                        <h3 class="text-xl font-bold mb-4">{{ __('Track interactions') }}</h3>
+                        <p style="color: var(--on-surface-variant);">{{ __('Log calls, notes, and milestones. Every conversation history available at your fingertips.') }}</p>
+                    </div>
+                    <!-- EDITABLE: Step 3 -->
+                    <div class="p-8 rounded-3xl flex flex-col items-center text-center" style="background: var(--surface); border: 1px solid rgba(197,200,185,0.1); box-shadow: var(--shadow-sm);">
+                        <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mb-6" style="background: var(--primary); color: var(--on-primary);">3</div>
+                        <h3 class="text-xl font-bold mb-4">{{ __('Never miss a follow-up') }}</h3>
+                        <p style="color: var(--on-surface-variant);">{{ __('Set smart reminders. Get a gentle nudge when a high-value client hasn\'t heard from you.') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
          EDITABLE: Features Section
          Change: section title, feature cards (icon, title, description)
          ============================================ -->
