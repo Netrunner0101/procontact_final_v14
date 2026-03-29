@@ -739,6 +739,64 @@ table tbody td {
 }
 
 /* ========================================
+   MOBILE SMALL SCREENS (max-width: 480px)
+   ======================================== */
+
+@media (max-width: 480px) {
+    /* Reduce container padding on small phones */
+    .max-w-7xl {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    /* Page titles */
+    .page-title,
+    h1.text-2xl {
+        font-size: 1.25rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.85rem;
+    }
+
+    /* Compact manager headers */
+    .manager-header,
+    .dashboard-header {
+        padding: 1rem;
+    }
+
+    /* Buttons - slightly smaller */
+    .btn {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.8125rem;
+    }
+
+    /* Modals - nearly edge to edge */
+    .modal-overlay {
+        padding: 0.5rem;
+    }
+
+    .modal-content {
+        border-radius: 0.75rem;
+        padding: 1rem;
+    }
+
+    /* Badge/chip text */
+    .badge,
+    .chip {
+        font-size: 0.6875rem;
+        padding: 0.125rem 0.5rem;
+    }
+
+    /* Notification toast */
+    .fixed.top-4.right-4 {
+        left: 0.75rem;
+        right: 0.75rem;
+        max-width: none;
+    }
+}
+
+/* ========================================
    GLOBAL INLINE-STYLE OVERRIDES
    Transforms Livewire components' inline
    styles to Sophisticated Architect palette
