@@ -323,6 +323,91 @@
     </section>
 
     <!-- ============================================
+         EDITABLE: Persona Segmentation
+         Change: section title, persona cards (icon, title, description, bullet points)
+         ============================================ -->
+    <section id="personas" class="py-24 px-6" style="background: var(--surface-container-lowest);">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-16">
+                <!-- EDITABLE: Section Heading -->
+                <h2 class="text-4xl font-bold mb-4" style="font-family: 'Manrope', sans-serif;">{{ __('Made for you') }}</h2>
+                <p style="color: var(--on-surface-variant);">{{ __('Built for the unique needs of the Belgian professional ecosystem.') }}</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- EDITABLE: Persona Card 1 - Freelancers -->
+                <div class="p-8 rounded-3xl transition-transform hover:-translate-y-2" style="background: var(--surface); border: 1px solid rgba(197,200,185,0.1);">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style="background: var(--surface-container);">
+                        <span class="material-symbols-outlined" style="color: var(--primary);">design_services</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">{{ __('Freelancers') }}</h3>
+                    <p class="mb-6" style="color: var(--on-surface-variant);">{{ __('Manage diverse client portfolios, track project milestones, and ensure prompt payments without the corporate bloat.') }}</p>
+                    <!-- EDITABLE: Persona features list -->
+                    <ul class="space-y-3 text-sm font-semibold" style="color: var(--on-surface-variant);">
+                        <li class="flex items-center gap-2"><span class="material-symbols-outlined text-lg" style="color: var(--primary);">check_circle</span> {{ __('Project timeline tracking') }}</li>
+                        <li class="flex items-center gap-2"><span class="material-symbols-outlined text-lg" style="color: var(--primary);">check_circle</span> {{ __('Portfolio integration') }}</li>
+                    </ul>
+                </div>
+                <!-- EDITABLE: Persona Card 2 - Tradespeople -->
+                <div class="p-8 rounded-3xl transition-transform hover:-translate-y-2" style="background: var(--surface); border: 1px solid rgba(197,200,185,0.1);">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style="background: var(--surface-container);">
+                        <span class="material-symbols-outlined" style="color: var(--primary);">construction</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">{{ __('Tradespeople') }}</h3>
+                    <p class="mb-6" style="color: var(--on-surface-variant);">{{ __('Electricians, plumbers, and decorators who need site details, address history, and recurring maintenance logs.') }}</p>
+                    <ul class="space-y-3 text-sm font-semibold" style="color: var(--on-surface-variant);">
+                        <li class="flex items-center gap-2"><span class="material-symbols-outlined text-lg" style="color: var(--primary);">check_circle</span> {{ __('Address & site notes') }}</li>
+                        <li class="flex items-center gap-2"><span class="material-symbols-outlined text-lg" style="color: var(--primary);">check_circle</span> {{ __('Photo attachments') }}</li>
+                    </ul>
+                </div>
+                <!-- EDITABLE: Persona Card 3 - Side Hustlers -->
+                <div class="p-8 rounded-3xl transition-transform hover:-translate-y-2" style="background: var(--surface); border: 1px solid rgba(197,200,185,0.1);">
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6" style="background: var(--surface-container);">
+                        <span class="material-symbols-outlined" style="color: var(--primary);">rocket_launch</span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">{{ __('Side Hustlers') }}</h3>
+                    <p class="mb-6" style="color: var(--on-surface-variant);">{{ __('Growing your dream while working a 9-to-5? ProContact keeps you organized in minutes, not hours.') }}</p>
+                    <ul class="space-y-3 text-sm font-semibold" style="color: var(--on-surface-variant);">
+                        <li class="flex items-center gap-2"><span class="material-symbols-outlined text-lg" style="color: var(--primary);">check_circle</span> {{ __('Quick-entry mobile app') }}</li>
+                        <li class="flex items-center gap-2"><span class="material-symbols-outlined text-lg" style="color: var(--primary);">check_circle</span> {{ __('Low-cost starter plan') }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         EDITABLE: Founder Story
+         Change: founder image, quote text, founder name, founder title
+         ============================================ -->
+    <section id="founder-story" class="py-24 px-6" style="background: var(--surface);">
+        <div class="max-w-4xl mx-auto">
+            <div class="p-12 lg:p-20 rounded-[3rem] relative overflow-hidden" style="background: var(--surface-container-low);">
+                <!-- Decorative quote mark -->
+                <div class="absolute top-0 right-0 p-12 opacity-5">
+                    <span class="material-symbols-outlined" style="font-size: 10rem;">format_quote</span>
+                </div>
+                <div class="relative z-10 text-center">
+                    <!-- EDITABLE: Founder Image (replace with actual photo) -->
+                    <div class="mb-8 flex justify-center">
+                        <div class="w-24 h-24 rounded-full flex items-center justify-center shadow-lg" style="background: var(--surface-container-high); border: 4px solid var(--surface);">
+                            <span class="material-symbols-outlined text-4xl" style="color: var(--primary);">person</span>
+                        </div>
+                    </div>
+                    <!-- EDITABLE: Founder Quote -->
+                    <blockquote class="text-2xl md:text-3xl font-semibold leading-snug mb-8 italic" style="font-family: 'Manrope', sans-serif; color: var(--on-surface);">
+                        "{{ __('I spent years looking for a CRM that didn\'t feel like a cockpit of a Boeing 747. I just wanted to remember my clients and what we talked about. So, I built ProContact right here in Belgium.') }}"
+                    </blockquote>
+                    <!-- EDITABLE: Founder Name & Title -->
+                    <cite class="block not-italic">
+                        <span class="font-bold text-lg" style="color: var(--primary);">Eric D.</span><br>
+                        <span class="text-sm uppercase tracking-widest" style="color: var(--on-surface-variant);">{{ __('Tech Consultant & Founder') }}</span>
+                    </cite>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
          EDITABLE: CTA Section
          Change: heading, description, button text
          ============================================ -->
