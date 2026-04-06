@@ -82,6 +82,8 @@
                                 <input type="tel" name="phones[]" value="{{ old('phones.' . $index, $phoneObj->numero_telephone) }}" required
                                        class="flex-1 px-3 py-2 rounded-lg @error('phones.' . $index) border-2 border-red-500 @enderror"
                                        style="border: 2px solid #efecea;"
+                                       pattern="[0-9+\s()-]+"
+                                       title="{{ __('Only digits, +, spaces, dashes and parentheses allowed') }}"
                                        placeholder="+33 1 23 45 67 89">
                                 <button type="button" class="remove-phone text-white px-3 py-2 rounded" style="background: #ba1a1a; {{ $loop->count <= 1 ? 'display: none;' : '' }}">
                                     −
@@ -93,6 +95,8 @@
                                 <input type="tel" name="phones[]" value="" required
                                        class="flex-1 px-3 py-2 rounded-lg"
                                        style="border: 2px solid #efecea;"
+                                       pattern="[0-9+\s()-]+"
+                                       title="{{ __('Only digits, +, spaces, dashes and parentheses allowed') }}"
                                        placeholder="+33 1 23 45 67 89">
                                 <button type="button" class="remove-phone text-white px-3 py-2 rounded" style="background: #ba1a1a; display: none;">
                                     −
@@ -134,17 +138,6 @@
                     </div>
                 </div>
 
-                <!-- Status -->
-                <div class="mb-6">
-                    <label for="status_id" class="block text-sm font-semibold mb-2" style="color: #374151;">{{ __('CRM Status') }}</label>
-                    <select name="status_id" id="status_id" class="w-full px-3 py-2 rounded-lg" style="border: 2px solid #efecea;">
-                        <option value="">-- {{ __('Select') }} --</option>
-                        @foreach($statuses as $status)
-                            <option value="{{ $status->id }}" {{ old('status_id', $contact->status_id) == $status->id ? 'selected' : '' }}>{{ $status->status_client }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
                 <!-- Buttons -->
                 <div class="flex justify-end gap-3 pt-4">
                     <a href="{{ route('contacts.show', $contact) }}" class="px-6 py-2 rounded-lg font-semibold" style="background: #f5f3f0; color: #374151;">
@@ -184,6 +177,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <input type="tel" name="phones[]" required
                    class="flex-1 px-3 py-2 rounded-lg"
                    style="border: 2px solid #efecea;"
+                   pattern="[0-9+\\s()-]+"
+                   title="{{ __('Only digits, +, spaces, dashes and parentheses allowed') }}"
                    placeholder="+33 1 23 45 67 89">
             <button type="button" class="remove-phone text-white px-3 py-2 rounded" style="background: #ba1a1a;">−</button>
         `;
@@ -209,6 +204,13 @@ document.addEventListener('DOMContentLoaded', function() {
             removeBtn.style.display = fields.length > 1 ? 'block' : 'none';
         });
     }
+
+    // Real-time phone number filtering
+    document.addEventListener('input', function(e) {
+        if (e.target.name === 'phones[]') {
+            e.target.value = e.target.value.replace(/[^0-9+\s()-]/g, '');
+        }
+    });
 });
 </script>
 @endsection
