@@ -187,29 +187,69 @@
 <div id="addContactModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Add a contact to the activity') }}</h3>
-        <form id="addContactForm" action="{{ route('activites.contacts.attach', $activite) }}" method="POST">
-            @csrf
-            <div class="mb-4">
-                <label for="contact_id" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Select a contact') }}</label>
-                <select id="contact_id" name="contact_id" required
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option value="">{{ __('Choose a contact...') }}</option>
-                    @foreach(Auth::user()->contacts()->whereNotIn('id', $activite->contacts->pluck('id'))->get() as $contact)
-                        <option value="{{ $contact->id }}">{{ $contact->prenom }} {{ $contact->nom }}</option>
-                    @endforeach
-                </select>
+
+        <!-- Tab buttons -->
+        <div class="flex border-b border-gray-200 mb-4">
+            <button type="button" id="tabExisting"
+                    class="px-4 py-2 text-sm font-medium border-b-2 transition duration-200"
+                    style="border-color: #843728; color: #843728;">
+                <i class="fas fa-users mr-1"></i>{{ __('Existing contact') }}
+            </button>
+            <button type="button" id="tabNew"
+                    class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 border-b-2 border-transparent transition duration-200">
+                <i class="fas fa-user-plus mr-1"></i>{{ __('New contact') }}
+            </button>
+        </div>
+
+        <!-- Tab 1: Existing contact selector -->
+        <div id="panelExisting">
+            <form id="addContactForm" action="{{ route('activites.contacts.attach', $activite) }}" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label for="contact_id" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Select a contact') }}</label>
+                    <select id="contact_id" name="contact_id" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2" style="--tw-ring-color: #843728;">
+                        <option value="">{{ __('Choose a contact...') }}</option>
+                        @foreach(Auth::user()->contacts()->whereNotIn('id', $activite->contacts->pluck('id'))->get() as $contact)
+                            <option value="{{ $contact->id }}">{{ $contact->prenom }} {{ $contact->nom }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelAddContact"
+                            class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-200">
+                        {{ __('Cancel') }}
+                    </button>
+                    <button type="submit"
+                            class="text-white px-4 py-2 rounded transition duration-200"
+                            style="background: linear-gradient(135deg, #843728, #c4816e);">
+                        {{ __('Add') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tab 2: Create new contact -->
+        <div id="panelNew" class="hidden">
+            <div class="text-center py-6">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style="background-color: rgba(132, 55, 40, 0.1);">
+                    <i class="fas fa-user-plus text-2xl" style="color: #843728;"></i>
+                </div>
+                <p class="text-gray-600 mb-4">{{ __('Create a new contact and automatically link it to this activity.') }}</p>
+                <a href="{{ route('contacts.create', ['activite_id' => $activite->id]) }}"
+                   class="inline-flex items-center text-white px-6 py-2 rounded-lg transition duration-200 hover:opacity-90"
+                   style="background: linear-gradient(135deg, #843728, #c4816e);">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    {{ __('Create a new contact') }}
+                </a>
             </div>
-            <div class="flex justify-end space-x-3">
-                <button type="button" id="cancelAddContact" 
+            <div class="flex justify-end">
+                <button type="button" id="cancelAddContact2"
                         class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-200">
                     {{ __('Cancel') }}
                 </button>
-                <button type="submit"
-                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded transition duration-200">
-                    {{ __('Add') }}
-                </button>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -218,29 +258,61 @@ document.addEventListener('DOMContentLoaded', function() {
     const addContactBtn = document.getElementById('addContactBtn');
     const addContactModal = document.getElementById('addContactModal');
     const cancelAddContact = document.getElementById('cancelAddContact');
+    const cancelAddContact2 = document.getElementById('cancelAddContact2');
+    const tabExisting = document.getElementById('tabExisting');
+    const tabNew = document.getElementById('tabNew');
+    const panelExisting = document.getElementById('panelExisting');
+    const panelNew = document.getElementById('panelNew');
 
-    addContactBtn.addEventListener('click', function() {
+    function openModal() {
         addContactModal.classList.remove('hidden');
         addContactModal.classList.add('flex');
-    });
+    }
 
-    cancelAddContact.addEventListener('click', function() {
+    function closeModal() {
         addContactModal.classList.add('hidden');
         addContactModal.classList.remove('flex');
+    }
+
+    addContactBtn.addEventListener('click', openModal);
+    cancelAddContact.addEventListener('click', closeModal);
+    cancelAddContact2.addEventListener('click', closeModal);
+
+    // Tab switching
+    tabExisting.addEventListener('click', function() {
+        panelExisting.classList.remove('hidden');
+        panelNew.classList.add('hidden');
+        tabExisting.style.borderColor = '#843728';
+        tabExisting.style.color = '#843728';
+        tabExisting.classList.remove('border-transparent');
+        tabNew.style.borderColor = 'transparent';
+        tabNew.style.color = '';
+        tabNew.classList.add('border-transparent', 'text-gray-500');
+        tabExisting.classList.remove('text-gray-500');
+    });
+
+    tabNew.addEventListener('click', function() {
+        panelNew.classList.remove('hidden');
+        panelExisting.classList.add('hidden');
+        tabNew.style.borderColor = '#843728';
+        tabNew.style.color = '#843728';
+        tabNew.classList.remove('border-transparent', 'text-gray-500');
+        tabExisting.style.borderColor = 'transparent';
+        tabExisting.style.color = '';
+        tabExisting.classList.add('border-transparent', 'text-gray-500');
+        tabNew.classList.remove('text-gray-500');
     });
 
     // Close modal when clicking outside
     addContactModal.addEventListener('click', function(e) {
         if (e.target === addContactModal) {
-            addContactModal.classList.add('hidden');
-            addContactModal.classList.remove('flex');
+            closeModal();
         }
     });
 
     // Auto-open modal when arriving via #addContact anchor
     if (window.location.hash === '#addContact') {
-        addContactModal.classList.remove('hidden');
-        addContactModal.classList.add('flex');
+        openModal();
     }
 });
 </script>

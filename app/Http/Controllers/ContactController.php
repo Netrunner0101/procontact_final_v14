@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activite;
 use App\Models\Contact;
 use App\Models\Status;
 use Illuminate\Http\Request;
@@ -11,7 +12,8 @@ class ContactController extends Controller
 {
     public function index()
     {
-        $contacts = Contact::with(['status', 'emails', 'numeroTelephones'])
+        $contacts = Contact::with(['emails', 'numeroTelephones'])
+            ->withCount('rendezVous')
             ->where('user_id', Auth::id())
             ->paginate(15);
         
@@ -20,8 +22,9 @@ class ContactController extends Controller
 
     public function create()
     {
-        $statuses = Status::all();
-        return view('contacts.create', compact('statuses'));
+        $activites = Activite::where('user_id', Auth::id())->get();
+        $selectedActiviteId = request('activite_id');
+        return view('contacts.create', compact('activites', 'selectedActiviteId'));
     }
 
     public function store(Request $request)
@@ -32,16 +35,16 @@ class ContactController extends Controller
             'emails' => 'required|array|min:1',
             'emails.*' => 'required|email|max:255',
             'phones' => 'required|array|min:1',
-            'phones.*' => 'required|string|max:20',
+            'phones.*' => ['required', 'regex:/^[0-9+\s()-]+$/', 'max:20'],
             'rue' => 'nullable|string|max:255',
             'numero' => 'nullable|string|max:50',
             'ville' => 'nullable|string|max:255',
             'code_postal' => 'nullable|string|max:20',
             'pays' => 'nullable|string|max:255',
-            'state_client' => 'nullable|string|max:255',
-            'status_id' => 'nullable|exists:statuses,id',
+            'activite_id' => 'nullable|exists:activites,id',
         ], [
             'emails.*.email' => __('The email address is not valid.'),
+            'phones.*.regex' => __('The phone number must contain only digits, +, spaces, dashes and parentheses.'),
         ]);
 
         $validated['user_id'] = Auth::id();
@@ -57,13 +60,25 @@ class ContactController extends Controller
             $contact->numeroTelephones()->create(['numero_telephone' => $phone, 'user_id' => Auth::id()]);
         }
 
+        // Link to activity if provided
+        if ($request->filled('activite_id')) {
+            $activite = Activite::findOrFail($validated['activite_id']);
+            if ($activite->user_id !== Auth::id()) {
+                abort(403);
+            }
+            $activite->contacts()->syncWithoutDetaching([$contact->id]);
+
+            return redirect()->route('activites.show', $activite)->with('success', __('Contact created and linked to the activity successfully'));
+        }
+
         return redirect()->route('contacts.index')->with('success', __('Contact created successfully'));
     }
 
     public function show(Contact $contact)
     {
         $this->authorize('view', $contact);
-        $contact->load(['status', 'emails', 'numeroTelephones', 'rendezVous']);
+        $contact->load(['emails', 'numeroTelephones', 'rendezVous']);
+        $contact->loadCount('rendezVous');
         return view('contacts.show', compact('contact'));
     }
 
@@ -71,8 +86,7 @@ class ContactController extends Controller
     {
         $this->authorize('update', $contact);
         $contact->load(['emails', 'numeroTelephones']);
-        $statuses = Status::all();
-        return view('contacts.edit', compact('contact', 'statuses'));
+        return view('contacts.edit', compact('contact'));
     }
 
     public function update(Request $request, Contact $contact)
@@ -85,16 +99,15 @@ class ContactController extends Controller
             'emails' => 'required|array|min:1',
             'emails.*' => 'required|email|max:255',
             'phones' => 'required|array|min:1',
-            'phones.*' => 'required|string|max:20',
+            'phones.*' => ['required', 'regex:/^[0-9+\s()-]+$/', 'max:20'],
             'rue' => 'nullable|string|max:255',
             'numero' => 'nullable|string|max:50',
             'ville' => 'nullable|string|max:255',
             'code_postal' => 'nullable|string|max:20',
             'pays' => 'nullable|string|max:255',
-            'state_client' => 'nullable|string|max:255',
-            'status_id' => 'nullable|exists:statuses,id',
         ], [
             'emails.*.email' => __('The email address is not valid.'),
+            'phones.*.regex' => __('The phone number must contain only digits, +, spaces, dashes and parentheses.'),
         ]);
 
         $contact->update($validated);
