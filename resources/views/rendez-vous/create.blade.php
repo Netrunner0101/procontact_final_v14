@@ -53,15 +53,26 @@
 
                     <div>
                         <label for="activite_id" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Activity') }} *</label>
-                        <select id="activite_id" name="activite_id" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 @error('activite_id') border-red-500 @enderror">
-                            <option value="">{{ __('Select an activity') }}</option>
-                            @foreach($activites as $activite)
-                                <option value="{{ $activite->id }}" {{ old('activite_id') == $activite->id ? 'selected' : '' }}>
-                                    {{ $activite->nom }}
-                                </option>
-                            @endforeach
-                        </select>
+                        @if(isset($selectedActiviteId) && $selectedActiviteId)
+                            @php
+                                $selectedActivite = $activites->firstWhere('id', $selectedActiviteId);
+                            @endphp
+                            <input type="hidden" name="activite_id" value="{{ $selectedActiviteId }}">
+                            <div class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-700">
+                                <i class="fas fa-briefcase mr-1 text-gray-500"></i>
+                                {{ $selectedActivite->nom ?? __('Activity') }}
+                            </div>
+                        @else
+                            <select id="activite_id" name="activite_id" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 @error('activite_id') border-red-500 @enderror">
+                                <option value="">{{ __('Select an activity') }}</option>
+                                @foreach($activites as $activite)
+                                    <option value="{{ $activite->id }}" {{ old('activite_id') == $activite->id ? 'selected' : '' }}>
+                                        {{ $activite->nom }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        @endif
                         @error('activite_id')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -110,21 +121,14 @@
                     </div>
                 </div>
 
-                <!-- Email Notification Option -->
-                <div class="mb-6">
-                    <div class="flex items-center">
-                        <input type="checkbox" id="send_email" name="send_email" value="1" {{ old('send_email') ? 'checked' : '' }}
-                               class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
-                        <label for="send_email" class="ml-2 block text-sm text-gray-900">
-                            {{ __('Send an email notification to the client') }}
-                        </label>
+                <!-- Email Notification Info -->
+                <div class="mb-6 p-4 bg-blue-50 rounded-lg" id="emailInfo">
+                    <div class="flex items-center mb-2">
+                        <i class="fas fa-envelope text-blue-600 mr-2"></i>
+                        <h4 class="text-sm font-medium text-blue-900">{{ __('Automatic email notification') }}</h4>
                     </div>
-                </div>
-
-                <!-- Contact Email Preview -->
-                <div id="emailPreview" class="mb-6 p-4 bg-blue-50 rounded-lg hidden">
-                    <h4 class="text-sm font-medium text-blue-900 mb-2">{{ __('Email will be sent to:') }}</h4>
-                    <p id="contactEmail" class="text-sm text-blue-700"></p>
+                    <p class="text-sm text-blue-700">{{ __('An email notification will be automatically sent to the client when this appointment is created.') }}</p>
+                    <p id="contactEmail" class="text-sm text-blue-700 mt-1 font-medium hidden"></p>
                 </div>
 
                 <div class="flex justify-end space-x-4">
@@ -143,9 +147,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const contactSelect = document.getElementById('contact_id');
-    const sendEmailCheckbox = document.getElementById('send_email');
-    const emailPreview = document.getElementById('emailPreview');
-    const contactEmail = document.getElementById('contactEmail');
+    const contactEmailEl = document.getElementById('contactEmail');
     const dateDebutInput = document.getElementById('date_debut');
     const dateFinInput = document.getElementById('date_fin');
 
@@ -161,19 +163,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Show/hide email preview
+    // Show email preview when contact is selected
     function updateEmailPreview() {
-        if (sendEmailCheckbox.checked && contactSelect.value) {
+        if (contactSelect.value) {
             const email = contacts[contactSelect.value] || '{{ __('No email available') }}';
-            contactEmail.textContent = email;
-            emailPreview.classList.remove('hidden');
+            contactEmailEl.textContent = '{{ __('Email will be sent to:') }} ' + email;
+            contactEmailEl.classList.remove('hidden');
         } else {
-            emailPreview.classList.add('hidden');
+            contactEmailEl.classList.add('hidden');
         }
     }
 
     contactSelect.addEventListener('change', updateEmailPreview);
-    sendEmailCheckbox.addEventListener('change', updateEmailPreview);
+    updateEmailPreview();
 
     // Set minimum date to today
     const today = new Date().toISOString().split('T')[0];
