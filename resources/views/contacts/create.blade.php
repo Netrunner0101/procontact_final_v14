@@ -21,276 +21,317 @@
             </div>
         </div>
 
-        <!-- Progress Indicator -->
-        <div class="mb-8">
-            <div class="flex items-center space-x-4">
-                <div class="flex items-center" id="step-indicator-1">
-                    <div class="step-circle w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium" style="background-color: #843728;">
-                        1
+        <style>
+            .block-card {
+                position: relative;
+                overflow: hidden;
+            }
+            .block-card::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 4px;
+                height: 100%;
+                background: linear-gradient(180deg, #843728 0%, #c4816e 100%);
+            }
+            .block-icon {
+                width: 44px;
+                height: 44px;
+                border-radius: 12px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                color: #ffffff;
+                font-size: 1.05rem;
+                background: linear-gradient(135deg, #843728 0%, #c4816e 100%);
+                box-shadow: 0 4px 12px rgba(132, 55, 40, 0.22);
+                flex-shrink: 0;
+            }
+            .block-header {
+                padding: 1.25rem 1.75rem;
+                background: linear-gradient(135deg, rgba(132, 55, 40, 0.035) 0%, rgba(138, 110, 46, 0.035) 100%);
+                border-bottom: 1px solid rgba(197, 200, 185, 0.25);
+            }
+            .block-title {
+                font-family: 'Manrope', 'Inter', sans-serif;
+                font-size: 1.05rem;
+                font-weight: 700;
+                color: #1b1c1a;
+                line-height: 1.2;
+            }
+            .block-subtitle {
+                font-size: 0.825rem;
+                color: #44483e;
+                margin-top: 2px;
+            }
+            .block-body {
+                padding: 1.5rem 1.75rem 1.75rem;
+            }
+            .optional-chip {
+                display: inline-flex;
+                align-items: center;
+                font-size: 0.7rem;
+                font-weight: 600;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+                color: #6f5d4e;
+                background: #f5dfd0;
+                padding: 2px 8px;
+                border-radius: 9999px;
+                margin-left: 0.5rem;
+            }
+            .required-chip {
+                display: inline-flex;
+                align-items: center;
+                font-size: 0.7rem;
+                font-weight: 600;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+                color: #ffffff;
+                background: linear-gradient(135deg, #843728, #c4816e);
+                padding: 2px 8px;
+                border-radius: 9999px;
+                margin-left: 0.5rem;
+            }
+        </style>
+
+        <form method="POST" action="{{ route('contacts.store') }}" id="contactForm" class="space-y-6">
+            @csrf
+
+            <!-- ACTIVITY BLOCK -->
+            <div class="card card-elevated block-card">
+                <div class="block-header">
+                    <div class="flex items-center gap-3">
+                        <div class="block-icon"><i class="fas fa-briefcase"></i></div>
+                        <div>
+                            <h3 class="block-title">
+                                {{ __('Activity') }}
+                                <span class="optional-chip">{{ __('Optional') }}</span>
+                            </h3>
+                            <p class="block-subtitle">{{ __('Choose which activity to link this contact to') }}</p>
+                        </div>
                     </div>
-                    <span class="ml-2 text-sm font-medium" style="color: #843728;">{{ __('Activity') }}</span>
                 </div>
-                <div class="flex-1 h-px bg-gray-300" id="step-line-1"></div>
-                <div class="flex items-center" id="step-indicator-2">
-                    <div class="step-circle w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-sm font-medium">
-                        2
+                <div class="block-body">
+                    <div class="form-group">
+                        <label for="activite_id" class="form-label">{{ __('Link to an activity') }}</label>
+                        <select id="activite_id" name="activite_id" class="form-select">
+                            <option value="">{{ __('No activity (standalone contact)') }}</option>
+                            @foreach($activites as $activite)
+                                <option value="{{ $activite->id }}" {{ (old('activite_id', $selectedActiviteId) == $activite->id) ? 'selected' : '' }}>
+                                    {{ $activite->nom }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <p class="text-sm text-gray-500 mt-2">{{ __('Optionally link this contact to one of your activities') }}</p>
                     </div>
-                    <span class="ml-2 text-sm font-medium text-gray-500">{{ __('Personal Info & Contact') }}</span>
-                </div>
-                <div class="flex-1 h-px bg-gray-300" id="step-line-2"></div>
-                <div class="flex items-center" id="step-indicator-3">
-                    <div class="step-circle w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-sm font-medium">
-                        3
-                    </div>
-                    <span class="ml-2 text-sm font-medium text-gray-500">{{ __('Address') }}</span>
                 </div>
             </div>
-        </div>
 
-        <!-- Form Card -->
-        <div class="card card-elevated">
-            <div class="card-header">
-                <h2 class="text-xl font-semibold text-gray-900 flex items-center">
-                    <i class="fas fa-user-plus mr-3" style="color: #843728;"></i>
-                    {{ __('Contact Information') }}
-                </h2>
-                <p class="text-gray-600 mt-1">{{ __('Fill in the basic contact information') }}</p>
+            <!-- IDENTITY BLOCK -->
+            <div class="card card-elevated block-card">
+                <div class="block-header">
+                    <div class="flex items-center gap-3">
+                        <div class="block-icon"><i class="fas fa-id-card"></i></div>
+                        <div>
+                            <h3 class="block-title">
+                                {{ __('Identity') }}
+                                <span class="required-chip">{{ __('Required') }}</span>
+                            </h3>
+                            <p class="block-subtitle">{{ __('Enter the contact\'s name') }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="block-body">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="form-group">
+                            <label for="nom" class="form-label">{{ __('Last Name') }} *</label>
+                            <input type="text" id="nom" name="nom" value="{{ old('nom') }}" required
+                                   class="form-input @error('nom') border-red-500 @enderror"
+                                   placeholder="{{ __('Enter the last name') }}">
+                            @error('nom')
+                                <p class="text-red-500 text-sm mt-1 flex items-center">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prenom" class="form-label">{{ __('First Name') }} *</label>
+                            <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" required
+                                   class="form-input @error('prenom') border-red-500 @enderror"
+                                   placeholder="{{ __('Enter the first name') }}">
+                            @error('prenom')
+                                <p class="text-red-500 text-sm mt-1 flex items-center">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <form method="POST" action="{{ route('contacts.store') }}" id="contactForm">
-                @csrf
+            <!-- EMAILS BLOCK -->
+            <div class="card card-elevated block-card">
+                <div class="block-header">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="block-icon"><i class="fas fa-envelope"></i></div>
+                            <div>
+                                <h3 class="block-title">
+                                    {{ __('Emails') }}
+                                    <span class="required-chip">{{ __('Required') }}</span>
+                                </h3>
+                                <p class="block-subtitle">{{ __('Add one or more email addresses') }}</p>
+                            </div>
+                        </div>
+                        <button type="button" id="addEmail" class="btn btn-secondary text-xs px-3 py-2 flex-shrink-0">
+                            <i class="fas fa-plus mr-1"></i>{{ __('Add Email') }}
+                        </button>
+                    </div>
+                </div>
+                <div class="block-body">
+                    <div id="emailContainer" class="space-y-3">
+                        <div class="email-field flex gap-3">
+                            <input type="email" name="emails[]" value="{{ old('emails.0') }}" required
+                                   class="form-input flex-1 @error('emails.0') border-red-500 @enderror"
+                                   placeholder="{{ __('email@example.com') }}">
+                            <button type="button" class="remove-email btn btn-secondary px-3 py-2 text-red-600" style="display: none;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    @error('emails.*')
+                        <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
 
+            <!-- PHONES BLOCK -->
+            <div class="card card-elevated block-card">
+                <div class="block-header">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="block-icon"><i class="fas fa-phone"></i></div>
+                            <div>
+                                <h3 class="block-title">
+                                    {{ __('Phone numbers') }}
+                                    <span class="required-chip">{{ __('Required') }}</span>
+                                </h3>
+                                <p class="block-subtitle">{{ __('Add one or more phone numbers with country prefix') }}</p>
+                            </div>
+                        </div>
+                        <button type="button" id="addPhone" class="btn btn-secondary text-xs px-3 py-2 flex-shrink-0">
+                            <i class="fas fa-plus mr-1"></i>{{ __('Add Phone') }}
+                        </button>
+                    </div>
+                </div>
+                <div class="block-body">
+                    <div id="phoneContainer" class="space-y-3">
+                        <div class="phone-field flex gap-3 items-start">
+                            <select class="phone-prefix form-select" style="width: 140px; flex-shrink: 0;">
+                                <option value="+33">+33 FR</option>
+                                <option value="+1">+1 US/CA</option>
+                                <option value="+44">+44 UK</option>
+                                <option value="+49">+49 DE</option>
+                                <option value="+34">+34 ES</option>
+                                <option value="+39">+39 IT</option>
+                                <option value="+32">+32 BE</option>
+                                <option value="+41">+41 CH</option>
+                                <option value="+352">+352 LU</option>
+                                <option value="+212">+212 MA</option>
+                                <option value="+216">+216 TN</option>
+                                <option value="+213">+213 DZ</option>
+                                <option value="+351">+351 PT</option>
+                                <option value="+31">+31 NL</option>
+                                <option value="+43">+43 AT</option>
+                                <option value="+48">+48 PL</option>
+                                <option value="+90">+90 TR</option>
+                                <option value="+7">+7 RU</option>
+                            </select>
+                            <input type="tel" class="phone-number form-input flex-1 @error('phones.0') border-red-500 @enderror"
+                                   value="{{ old('phones.0') ? preg_replace('/^\+\d+\s*/', '', old('phones.0')) : '' }}"
+                                   required
+                                   pattern="[0-9\s()-]+"
+                                   title="{{ __('Only digits, spaces, dashes and parentheses allowed') }}"
+                                   placeholder="6 12 34 56 78">
+                            <input type="hidden" name="phones[]" class="phone-combined">
+                            <button type="button" class="remove-phone btn btn-secondary px-3 py-2 text-red-600" style="display: none;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    @error('phones.*')
+                        <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            <!-- ADDRESS BLOCK -->
+            <div class="card card-elevated block-card">
+                <div class="block-header">
+                    <div class="flex items-center gap-3">
+                        <div class="block-icon"><i class="fas fa-map-marker-alt"></i></div>
+                        <div>
+                            <h3 class="block-title">
+                                {{ __('Address') }}
+                                <span class="optional-chip">{{ __('Optional') }}</span>
+                            </h3>
+                            <p class="block-subtitle">{{ __('Optional address information') }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="block-body space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="form-group md:col-span-2">
+                            <label for="rue" class="form-label">{{ __('Street') }}</label>
+                            <input type="text" id="rue" name="rue" value="{{ old('rue') }}"
+                                   class="form-input"
+                                   placeholder="{{ __('Enter the street') }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="numero" class="form-label">{{ __('Number') }}</label>
+                            <input type="text" id="numero" name="numero" value="{{ old('numero') }}"
+                                   class="form-input"
+                                   placeholder="{{ __('Enter the number') }}">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="form-group">
+                            <label for="ville" class="form-label">{{ __('City') }}</label>
+                            <input type="text" id="ville" name="ville" value="{{ old('ville') }}"
+                                   class="form-input"
+                                   placeholder="{{ __('Enter the city') }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="code_postal" class="form-label">{{ __('Postal Code') }}</label>
+                            <input type="text" id="code_postal" name="code_postal" value="{{ old('code_postal') }}"
+                                   class="form-input"
+                                   placeholder="{{ __('Enter the postal code') }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pays" class="form-label">{{ __('Country') }}</label>
+                            <input type="text" id="pays" name="pays" value="{{ old('pays', 'France') }}"
+                                   class="form-input"
+                                   placeholder="{{ __('Enter the country') }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTIONS BLOCK -->
+            <div class="card card-elevated">
                 <div class="card-body">
-
-                    <!-- Step 1: Activity Selection -->
-                    <div class="step-section" data-step="1">
-                        <div class="space-y-8">
-                            <div class="flex items-center space-x-3 pb-4 border-b border-gray-200">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: rgba(132, 55, 40, 0.1);">
-                                    <i class="fas fa-briefcase" style="color: #843728;"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Activity') }}</h3>
-                                    <p class="text-sm text-gray-500">{{ __('Choose which activity to link this contact to') }}</p>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="activite_id" class="form-label">{{ __('Link to an activity') }}</label>
-                                <select id="activite_id" name="activite_id" class="form-select">
-                                    <option value="">{{ __('No activity (standalone contact)') }}</option>
-                                    @foreach($activites as $activite)
-                                        <option value="{{ $activite->id }}" {{ (old('activite_id', $selectedActiviteId) == $activite->id) ? 'selected' : '' }}>
-                                            {{ $activite->nom }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <p class="text-sm text-gray-500 mt-2">{{ __('Optionally link this contact to one of your activities') }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Step 2: Personal Info & Contact -->
-                    <div class="step-section hidden" data-step="2">
-                        <div class="space-y-8">
-                            <!-- Identity -->
-                            <div>
-                                <div class="flex items-center space-x-3 pb-4 border-b border-gray-200">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: rgba(132, 55, 40, 0.1);">
-                                        <i class="fas fa-id-card" style="color: #843728;"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-lg font-semibold text-gray-900">{{ __('Identity') }}</h3>
-                                        <p class="text-sm text-gray-500">{{ __('Enter the contact\'s name') }}</p>
-                                    </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                                    <div class="form-group">
-                                        <label for="nom" class="form-label">{{ __('Last Name') }} *</label>
-                                        <input type="text" id="nom" name="nom" value="{{ old('nom') }}" required
-                                               class="form-input @error('nom') border-red-500 @enderror"
-                                               placeholder="{{ __('Enter the last name') }}">
-                                        @error('nom')
-                                            <p class="text-red-500 text-sm mt-1 flex items-center">
-                                                <i class="fas fa-exclamation-circle mr-1"></i>
-                                                {{ $message }}
-                                            </p>
-                                        @enderror
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="prenom" class="form-label">{{ __('First Name') }} *</label>
-                                        <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" required
-                                               class="form-input @error('prenom') border-red-500 @enderror"
-                                               placeholder="{{ __('Enter the first name') }}">
-                                        @error('prenom')
-                                            <p class="text-red-500 text-sm mt-1 flex items-center">
-                                                <i class="fas fa-exclamation-circle mr-1"></i>
-                                                {{ $message }}
-                                            </p>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Emails -->
-                            <div>
-                                <div class="flex items-center space-x-3 pb-4 border-b border-gray-200">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: rgba(132, 55, 40, 0.1);">
-                                        <i class="fas fa-envelope" style="color: #843728;"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-lg font-semibold text-gray-900">{{ __('Emails') }}</h3>
-                                        <p class="text-sm text-gray-500">{{ __('Add one or more email addresses') }}</p>
-                                    </div>
-                                </div>
-
-                                <div class="mt-6">
-                                    <div class="flex justify-between items-center mb-3">
-                                        <label class="form-label mb-0">{{ __('Email addresses') }} *</label>
-                                        <button type="button" id="addEmail" class="btn btn-secondary text-xs px-3 py-1">
-                                            <i class="fas fa-plus mr-1"></i>{{ __('Add Email') }}
-                                        </button>
-                                    </div>
-                                    <div id="emailContainer" class="space-y-3">
-                                        <div class="email-field flex gap-3">
-                                            <input type="email" name="emails[]" value="{{ old('emails.0') }}" required
-                                                   class="form-input flex-1 @error('emails.0') border-red-500 @enderror"
-                                                   placeholder="{{ __('email@example.com') }}">
-                                            <button type="button" class="remove-email btn btn-secondary px-3 py-2 text-red-600" style="display: none;">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    @error('emails.*')
-                                        <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Phones -->
-                            <div>
-                                <div class="flex items-center space-x-3 pb-4 border-b border-gray-200">
-                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: rgba(132, 55, 40, 0.1);">
-                                        <i class="fas fa-phone" style="color: #843728;"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="text-lg font-semibold text-gray-900">{{ __('Phone numbers') }}</h3>
-                                        <p class="text-sm text-gray-500">{{ __('Add one or more phone numbers with country prefix') }}</p>
-                                    </div>
-                                </div>
-
-                                <div class="mt-6">
-                                    <div class="flex justify-between items-center mb-3">
-                                        <label class="form-label mb-0">{{ __('Phone numbers') }} *</label>
-                                        <button type="button" id="addPhone" class="btn btn-secondary text-xs px-3 py-1">
-                                            <i class="fas fa-plus mr-1"></i>{{ __('Add Phone') }}
-                                        </button>
-                                    </div>
-                                    <div id="phoneContainer" class="space-y-3">
-                                        <div class="phone-field flex gap-3 items-start">
-                                            <select class="phone-prefix form-select" style="width: 140px; flex-shrink: 0;">
-                                                <option value="+33">+33 FR</option>
-                                                <option value="+1">+1 US/CA</option>
-                                                <option value="+44">+44 UK</option>
-                                                <option value="+49">+49 DE</option>
-                                                <option value="+34">+34 ES</option>
-                                                <option value="+39">+39 IT</option>
-                                                <option value="+32">+32 BE</option>
-                                                <option value="+41">+41 CH</option>
-                                                <option value="+352">+352 LU</option>
-                                                <option value="+212">+212 MA</option>
-                                                <option value="+216">+216 TN</option>
-                                                <option value="+213">+213 DZ</option>
-                                                <option value="+351">+351 PT</option>
-                                                <option value="+31">+31 NL</option>
-                                                <option value="+43">+43 AT</option>
-                                                <option value="+48">+48 PL</option>
-                                                <option value="+90">+90 TR</option>
-                                                <option value="+7">+7 RU</option>
-                                            </select>
-                                            <input type="tel" class="phone-number form-input flex-1 @error('phones.0') border-red-500 @enderror"
-                                                   value="{{ old('phones.0') ? preg_replace('/^\+\d+\s*/', '', old('phones.0')) : '' }}"
-                                                   required
-                                                   pattern="[0-9\s()-]+"
-                                                   title="{{ __('Only digits, spaces, dashes and parentheses allowed') }}"
-                                                   placeholder="6 12 34 56 78">
-                                            <input type="hidden" name="phones[]" class="phone-combined">
-                                            <button type="button" class="remove-phone btn btn-secondary px-3 py-2 text-red-600" style="display: none;">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    @error('phones.*')
-                                        <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Step 3: Address -->
-                    <div class="step-section hidden" data-step="3">
-                        <div class="space-y-8">
-                            <div class="flex items-center space-x-3 pb-4 border-b border-gray-200">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background-color: rgba(132, 55, 40, 0.1);">
-                                    <i class="fas fa-map-marker-alt" style="color: #843728;"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-semibold text-gray-900">{{ __('Address') }}</h3>
-                                    <p class="text-sm text-gray-500">{{ __('Optional address information') }}</p>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="form-group">
-                                    <label for="rue" class="form-label">{{ __('Street') }}</label>
-                                    <input type="text" id="rue" name="rue" value="{{ old('rue') }}"
-                                           class="form-input"
-                                           placeholder="{{ __('Enter the street') }}">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="numero" class="form-label">{{ __('Number') }}</label>
-                                    <input type="text" id="numero" name="numero" value="{{ old('numero') }}"
-                                           class="form-input"
-                                           placeholder="{{ __('Enter the number') }}">
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div class="form-group">
-                                    <label for="ville" class="form-label">{{ __('City') }}</label>
-                                    <input type="text" id="ville" name="ville" value="{{ old('ville') }}"
-                                           class="form-input"
-                                           placeholder="{{ __('Enter the city') }}">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="code_postal" class="form-label">{{ __('Postal Code') }}</label>
-                                    <input type="text" id="code_postal" name="code_postal" value="{{ old('code_postal') }}"
-                                           class="form-input"
-                                           placeholder="{{ __('Enter the postal code') }}">
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="pays" class="form-label">{{ __('Country') }}</label>
-                                    <input type="text" id="pays" name="pays" value="{{ old('pays', 'France') }}"
-                                           class="form-input"
-                                           placeholder="{{ __('Enter the country') }}">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- Form Footer with Navigation -->
-                <div class="card-footer">
                     <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
                         <div class="flex items-center text-sm text-gray-500">
-                            <i class="fas fa-info-circle mr-2"></i>
+                            <i class="fas fa-info-circle mr-2" style="color: #843728;"></i>
                             <span>{{ __('Fields marked with * are required') }}</span>
                         </div>
                         <div class="flex space-x-3">
@@ -298,34 +339,20 @@
                                 <i class="fas fa-times"></i>
                                 <span>{{ __('Cancel') }}</span>
                             </a>
-                            <button type="button" id="prevBtn" class="btn btn-secondary" style="display: none;">
-                                <i class="fas fa-arrow-left"></i>
-                                <span>{{ __('Previous') }}</span>
-                            </button>
-                            <button type="button" id="nextBtn" class="btn btn-primary">
-                                <span>{{ __('Next') }}</span>
-                                <i class="fas fa-arrow-right"></i>
-                            </button>
-                            <button type="submit" id="submitBtn" class="btn btn-primary" style="display: none;">
+                            <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save"></i>
                                 <span>{{ __('Create Contact') }}</span>
                             </button>
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    let currentStep = 1;
-    const totalSteps = 3;
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const submitBtn = document.getElementById('submitBtn');
-
     const phonePrefixOptions = `
         <option value="+33">+33 FR</option>
         <option value="+1">+1 US/CA</option>
@@ -346,102 +373,6 @@ document.addEventListener('DOMContentLoaded', function() {
         <option value="+90">+90 TR</option>
         <option value="+7">+7 RU</option>
     `;
-
-    // Detect which step has validation errors on page load
-    const errorStep = detectErrorStep();
-    if (errorStep > 1) {
-        currentStep = errorStep;
-    }
-    updateStepDisplay();
-
-    function detectErrorStep() {
-        const allErrors = document.querySelectorAll('.text-red-500');
-        for (const error of allErrors) {
-            const section = error.closest('.step-section');
-            if (section) {
-                return parseInt(section.dataset.step);
-            }
-        }
-        return 1;
-    }
-
-    function updateStepDisplay() {
-        document.querySelectorAll('.step-section').forEach(function(section) {
-            if (parseInt(section.dataset.step) === currentStep) {
-                section.classList.remove('hidden');
-            } else {
-                section.classList.add('hidden');
-            }
-        });
-
-        for (let i = 1; i <= totalSteps; i++) {
-            const indicator = document.getElementById('step-indicator-' + i);
-            const circle = indicator.querySelector('.step-circle');
-            const label = indicator.querySelector('span');
-
-            if (i < currentStep) {
-                circle.style.backgroundColor = '#3a6a3a';
-                circle.className = 'step-circle w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium';
-                circle.innerHTML = '<i class="fas fa-check"></i>';
-                label.style.color = '#3a6a3a';
-                label.className = 'ml-2 text-sm font-medium';
-            } else if (i === currentStep) {
-                circle.style.backgroundColor = '#843728';
-                circle.className = 'step-circle w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium';
-                circle.innerHTML = i;
-                label.style.color = '#843728';
-                label.className = 'ml-2 text-sm font-medium';
-            } else {
-                circle.style.backgroundColor = '';
-                circle.className = 'step-circle w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-sm font-medium';
-                circle.innerHTML = i;
-                label.style.color = '';
-                label.className = 'ml-2 text-sm font-medium text-gray-500';
-            }
-        }
-
-        for (let i = 1; i < totalSteps; i++) {
-            const line = document.getElementById('step-line-' + i);
-            if (i < currentStep) {
-                line.style.backgroundColor = '#3a6a3a';
-            } else {
-                line.style.backgroundColor = '';
-                line.className = 'flex-1 h-px bg-gray-300';
-            }
-        }
-
-        prevBtn.style.display = currentStep > 1 ? 'inline-flex' : 'none';
-        nextBtn.style.display = currentStep < totalSteps ? 'inline-flex' : 'none';
-        submitBtn.style.display = currentStep === totalSteps ? 'inline-flex' : 'none';
-    }
-
-    function validateCurrentStep() {
-        const currentSection = document.querySelector('.step-section[data-step="' + currentStep + '"]');
-        const requiredFields = currentSection.querySelectorAll('.phone-number[required], input[required]:not(.phone-combined), select[required]');
-        let valid = true;
-
-        for (const field of requiredFields) {
-            if (!field.reportValidity()) {
-                valid = false;
-                break;
-            }
-        }
-        return valid;
-    }
-
-    nextBtn.addEventListener('click', function() {
-        if (validateCurrentStep()) {
-            currentStep++;
-            updateStepDisplay();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    });
-
-    prevBtn.addEventListener('click', function() {
-        currentStep--;
-        updateStepDisplay();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
 
     // Combine phone prefix + number before form submit
     document.getElementById('contactForm').addEventListener('submit', function() {
