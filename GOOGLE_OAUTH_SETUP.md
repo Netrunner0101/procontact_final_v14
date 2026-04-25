@@ -71,8 +71,16 @@ GOOGLE_CLIENT_SECRET=GOCSPX-demo-secret-key
 
 ## Production Setup
 
-For production, you'll need to:
-1. Verify your domain in Google Console
-2. Set up OAuth consent screen
-3. Add production redirect URIs
-4. Update APP_URL in .env to your production domain
+For production (domain: `procontact.be`):
+
+1. Verify the domain in Google Console (Search Console ownership)
+2. Set up the OAuth consent screen (publish from "Testing" to "In production")
+3. Add this production redirect URI to the OAuth 2.0 Client:
+   ```
+   https://procontact.be/auth/google/callback
+   ```
+4. In the production `.env`, set:
+   ```env
+   APP_URL=https://procontact.be
+   ```
+5. Run `php artisan config:cache` after updating `.env`
