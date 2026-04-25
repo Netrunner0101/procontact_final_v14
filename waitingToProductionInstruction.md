@@ -64,7 +64,7 @@ Using the CSV exported in Step 1, send an email to each waitlist subscriber.
 > Nous sommes ravis de vous annoncer que l'application est maintenant disponible !
 > Creez votre compte des maintenant :
 >
-> **[Creer mon compte]({your-domain}/register)**
+> **[Creer mon compte](https://procontact.be/register)**
 >
 > A bientot,
 > L'equipe Pro Contact
