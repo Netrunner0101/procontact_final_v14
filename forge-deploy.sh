@@ -25,6 +25,9 @@ $FORGE_PHP artisan event:cache
 # Restart queue workers to pick up new code
 $FORGE_PHP artisan queue:restart
 
+# Notify Nightwatch of the new deployment (no-op if NIGHTWATCH_TOKEN is unset)
+$FORGE_PHP artisan nightwatch:deploy || true
+
 # Restart FPM to clear OPcache
 ( flock -w 10 9 || exit 1
     echo 'Restarting FPM...'; sudo -S service $FORGE_PHP_FPM reload ) 9>/tmp/fpmrestart.lock
