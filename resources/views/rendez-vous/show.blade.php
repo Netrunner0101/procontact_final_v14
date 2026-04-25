@@ -222,14 +222,14 @@
                 <div class="bg-white rounded-lg shadow p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Quick actions') }}</h3>
                     <div class="space-y-3">
-                        <button type="button" id="addReminderBtn"
-                                class="block w-full bg-yellow-600 hover:bg-yellow-700 text-white text-center px-4 py-2 rounded transition duration-200">
+                        <a href="{{ route('rappels.create', ['rendez_vous_id' => $rendezVous->id]) }}"
+                           class="block w-full bg-yellow-600 hover:bg-yellow-700 text-white text-center px-4 py-2 rounded transition duration-200">
                             {{ __('Add a Reminder') }}
-                        </button>
-                        <button type="button" id="addNoteBtn"
-                                class="block w-full bg-gray-600 hover:bg-gray-700 text-white text-center px-4 py-2 rounded transition duration-200">
+                        </a>
+                        <a href="{{ route('notes.create', ['rendez_vous_id' => $rendezVous->id]) }}"
+                           class="block w-full bg-gray-600 hover:bg-gray-700 text-white text-center px-4 py-2 rounded transition duration-200">
                             {{ __('Add a Note') }}
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
