@@ -100,6 +100,9 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('activites/{activite}/contacts', [ActiviteController::class, 'attachContact'])->name('activites.contacts.attach');
     Route::delete('activites/{activite}/contacts/{contact}', [ActiviteController::class, 'detachContact'])->name('activites.contacts.detach');
     
+    // Update appointment status (manual lifecycle status)
+    Route::patch('rendez-vous/{rendezVous}/status', [RendezVousController::class, 'updateStatus'])->name('rendez-vous.status');
+
     // Email appointment details
     Route::post('rendez-vous/{rendezVous}/email', [RendezVousController::class, 'email'])->name('rendez-vous.email');
     Route::post('/rendez-vous/{rendezVous}/send-email', [RendezVousController::class, 'sendEmail'])->name('rendez-vous.send-email');

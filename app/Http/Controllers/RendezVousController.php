@@ -92,6 +92,20 @@ class RendezVousController extends Controller
         return redirect()->route('rendez-vous.index')->with('success', __('Appointment deleted successfully'));
     }
 
+    public function updateStatus(Request $request, RendezVous $rendezVous)
+    {
+        $this->authorize('update', $rendezVous);
+
+        $validated = $request->validate([
+            'statut' => ['required', 'string', 'in:'.implode(',', array_keys(RendezVous::STATUTS))],
+        ]);
+
+        $rendezVous->update($validated);
+
+        return redirect()->route('rendez-vous.show', $rendezVous)
+            ->with('success', __('Status updated'));
+    }
+
     public function email(Request $request, RendezVous $rendezVous)
     {
         $this->authorize('view', $rendezVous);
