@@ -202,20 +202,21 @@
                 <!-- Status -->
                 <div class="bg-white rounded-lg shadow p-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Status') }}</h3>
-                    @php
-                        $now = now();
-                        $rdvDateTime = $rendezVous->date_debut->setTimeFromTimeString($rendezVous->heure_debut->format('H:i:s'));
-                        $status = $rdvDateTime->isPast() ? __('Completed') : ($rdvDateTime->isToday() ? __('Today') : __('Upcoming'));
-                        $statusColor = $rdvDateTime->isPast() ? 'bg-gray-100 text-gray-800' : ($rdvDateTime->isToday() ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800');
-                    @endphp
-                    <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full {{ $statusColor }}">
-                        {{ $status }}
-                    </span>
-                    @if($rdvDateTime->isFuture())
-                        <p class="text-sm text-gray-600 mt-2">
-                            {{ __('In') }} {{ $rdvDateTime->diffForHumans() }}
-                        </p>
-                    @endif
+                    <form action="{{ route('rendez-vous.status', $rendezVous) }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <select name="statut" onchange="this.form.submit()"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            @foreach(\App\Models\RendezVous::STATUTS as $key => $label)
+                                <option value="{{ $key }}" @selected($rendezVous->statut === $key)>{{ __($label) }}</option>
+                            @endforeach
+                        </select>
+                        <noscript>
+                            <button type="submit" class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                                {{ __('Update') }}
+                            </button>
+                        </noscript>
+                    </form>
                 </div>
 
                 <!-- Quick Actions -->

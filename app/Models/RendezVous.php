@@ -13,6 +13,14 @@ class RendezVous extends Model
 
     protected $table = 'rendez_vous';
 
+    public const STATUTS = [
+        'scheduled'  => 'Scheduled',
+        'confirmed'  => 'Confirmed',
+        'completed'  => 'Completed',
+        'cancelled'  => 'Cancelled',
+        'no_show'    => 'No-show',
+    ];
+
     protected $fillable = [
         'user_id',
         'contact_id',
@@ -23,6 +31,7 @@ class RendezVous extends Model
         'date_fin',
         'heure_debut',
         'heure_fin',
+        'statut',
     ];
 
     protected $casts = [
