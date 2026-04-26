@@ -17,6 +17,7 @@ class Note extends Model
         'contact_id',
         'titre',
         'commentaire',
+        'priorite',
         'is_shared_with_client',
         'date_create',
         'date_update',

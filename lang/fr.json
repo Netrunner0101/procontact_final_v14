@@ -767,5 +767,8 @@
     "Event": "Événement",
     "IP": "IP",
     "Details": "Détails",
-    "No portal activity yet.": "Aucune activité sur le portail pour le moment."
+    "No portal activity yet.": "Aucune activité sur le portail pour le moment.",
+    "Visibility": "Visibilité",
+    "Only you can see this note in the admin.": "Vous seul·e pouvez voir cette note dans l'administration.",
+    "Visible to the linked client in their portal.": "Visible par le client associé dans son portail."
 }

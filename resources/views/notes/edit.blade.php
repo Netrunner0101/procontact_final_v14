@@ -32,14 +32,43 @@
 
                         <!-- Content -->
                         <div>
-                            <label for="contenu" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Content') }} *</label>
-                            <textarea id="contenu" name="contenu" rows="12" required
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('contenu') border-red-500 @enderror"
-                                      placeholder="{{ __('Note content...') }}">{{ old('contenu', $note->contenu) }}</textarea>
-                            @error('contenu')
+                            <label for="commentaire" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Content') }} *</label>
+                            <textarea id="commentaire" name="commentaire" rows="12" required
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('commentaire') border-red-500 @enderror"
+                                      placeholder="{{ __('Note content...') }}">{{ old('commentaire', $note->commentaire) }}</textarea>
+                            @error('commentaire')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                             <p class="text-sm text-gray-600 mt-1">{{ __('You can use formatted text, lists, etc.') }}</p>
+                        </div>
+
+                        <!-- Visibility (Private / Shared with client) -->
+                        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                            <span class="block text-sm font-medium text-gray-700 mb-3">{{ __('Visibility') }}</span>
+                            @php($currentVisibility = old('is_shared_with_client', $note->is_shared_with_client ? '1' : '0'))
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <label class="relative cursor-pointer rounded-lg border border-gray-300 bg-white p-3 flex items-start gap-3 hover:border-indigo-400 has-[:checked]:border-indigo-600 has-[:checked]:ring-2 has-[:checked]:ring-indigo-200 transition">
+                                    <input type="radio" name="is_shared_with_client" value="0"
+                                           {{ (string) $currentVisibility === '0' ? 'checked' : '' }}
+                                           class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <span class="flex-1 min-w-0">
+                                        <span class="block text-sm font-semibold text-gray-900">🔒 {{ __('Private') }}</span>
+                                        <span class="block text-xs text-gray-600 mt-0.5">{{ __('Only you can see this note in the admin.') }}</span>
+                                    </span>
+                                </label>
+                                <label class="relative cursor-pointer rounded-lg border border-gray-300 bg-white p-3 flex items-start gap-3 hover:border-indigo-400 has-[:checked]:border-indigo-600 has-[:checked]:ring-2 has-[:checked]:ring-indigo-200 transition">
+                                    <input type="radio" name="is_shared_with_client" value="1"
+                                           {{ (string) $currentVisibility === '1' ? 'checked' : '' }}
+                                           class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <span class="flex-1 min-w-0">
+                                        <span class="block text-sm font-semibold text-gray-900">🔓 {{ __('Shared with client') }}</span>
+                                        <span class="block text-xs text-gray-600 mt-0.5">{{ __('Visible to the linked client in their portal.') }}</span>
+                                    </span>
+                                </label>
+                            </div>
+                            @error('is_shared_with_client')
+                                <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -125,7 +154,7 @@
                                 @if($note->updated_at != $note->created_at)
                                     <p><strong>{{ __('Modified on:') }}</strong> {{ $note->updated_at->format('d/m/Y à H:i') }}</p>
                                 @endif
-                                <p><strong>{{ __('Characters:') }}</strong> {{ strlen($note->contenu) }}</p>
+                                <p><strong>{{ __('Characters:') }}</strong> {{ strlen($note->commentaire) }}</p>
                             </div>
                         </div>
 
@@ -133,9 +162,9 @@
                         <div class="p-4 bg-gray-50 rounded-lg">
                             <h4 class="text-sm font-medium text-gray-900 mb-2">{{ __('Content statistics:') }}</h4>
                             <div class="text-sm text-gray-700 space-y-1">
-                                <p>{{ __('Characters:') }} <span id="charCount">{{ strlen($note->contenu) }}</span></p>
-                                <p>{{ __('Words:') }} <span id="wordCount">{{ str_word_count($note->contenu) }}</span></p>
-                                <p>{{ __('Lines:') }} <span id="lineCount">{{ substr_count($note->contenu, "\n") + 1 }}</span></p>
+                                <p>{{ __('Characters:') }} <span id="charCount">{{ strlen($note->commentaire) }}</span></p>
+                                <p>{{ __('Words:') }} <span id="wordCount">{{ str_word_count($note->commentaire) }}</span></p>
+                                <p>{{ __('Lines:') }} <span id="lineCount">{{ substr_count($note->commentaire, "\n") + 1 }}</span></p>
                             </div>
                         </div>
                     </div>
@@ -157,7 +186,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const contenuTextarea = document.getElementById('contenu');
+    const contenuTextarea = document.getElementById("commentaire");
     const charCount = document.getElementById('charCount');
     const wordCount = document.getElementById('wordCount');
     const lineCount = document.getElementById('lineCount');

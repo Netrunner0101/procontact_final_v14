@@ -18,9 +18,18 @@
                             'Urgente' => 'bg-red-100 text-red-800'
                         ];
                     @endphp
-                    <span class="px-3 py-1 text-sm font-medium rounded-full {{ $priorityColors[$note->priorite] }}">
+                    <span class="px-3 py-1 text-sm font-medium rounded-full {{ $priorityColors[$note->priorite] ?? 'bg-gray-100 text-gray-800' }}">
                         {{ __('Priority') }} {{ $note->priorite }}
                     </span>
+                    @if($note->is_shared_with_client)
+                        <span class="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-800" title="{{ __('Visible to the linked client in their portal.') }}">
+                            🔓 {{ __('Shared with client') }}
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-full bg-gray-100 text-gray-700" title="{{ __('Only you can see this note in the admin.') }}">
+                            🔒 {{ __('Private') }}
+                        </span>
+                    @endif
                     <span class="text-gray-600 text-sm">
                         {{ __('Created on') }} {{ $note->created_at->format('d/m/Y à H:i') }}
                     </span>
@@ -53,7 +62,7 @@
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="prose max-w-none">
-                        {!! nl2br(e($note->contenu)) !!}
+                        {!! nl2br(e($note->commentaire)) !!}
                     </div>
                 </div>
             </div>
@@ -148,11 +157,11 @@
                         @endif
                         <div>
                             <label class="text-sm font-medium text-gray-500">{{ __('Character count') }}</label>
-                            <p class="text-gray-900">{{ strlen($note->contenu) }}</p>
+                            <p class="text-gray-900">{{ strlen($note->commentaire) }}</p>
                         </div>
                         <div>
                             <label class="text-sm font-medium text-gray-500">{{ __('Word count') }}</label>
-                            <p class="text-gray-900">{{ str_word_count($note->contenu) }}</p>
+                            <p class="text-gray-900">{{ str_word_count($note->commentaire) }}</p>
                         </div>
                     </div>
                 </div>
