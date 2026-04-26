@@ -62,12 +62,14 @@ class AuthController extends Controller
             $user = Auth::user();
             $user->update(['last_login_at' => Carbon::now()]);
             
+            $welcome = __('Welcome back, :name!', ['name' => $user->prenom ?: $user->nom ?: $user->email]);
+
             // Redirect based on user role
             if ($user->isClient()) {
-                return redirect()->intended(route('client.dashboard'));
+                return redirect()->intended(route('client.dashboard'))->with('success', $welcome);
             }
-            
-            return redirect()->intended('dashboard');
+
+            return redirect()->intended('dashboard')->with('success', $welcome);
         }
 
         // Increment failed attempts
@@ -108,7 +110,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect('dashboard');
+        return redirect('dashboard')->with('success', __('Your account has been created successfully. Welcome to Pro Contact!'));
     }
 
     public function logout(Request $request)
@@ -116,7 +118,7 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
+        return redirect()->route('login')->with('status', __('You have been logged out successfully.'));
     }
     
     public function showForgotPassword()
