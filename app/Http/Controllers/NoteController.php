@@ -61,14 +61,21 @@ class NoteController extends Controller
         $validated = $request->validate([
             'titre' => 'required|string|max:255',
             'commentaire' => 'required|string',
+            'priorite' => 'nullable|in:Basse,Normale,Haute,Urgente',
+            'contact_id' => 'nullable|exists:contacts,id',
             'activite_id' => 'nullable|exists:activites,id',
             'rendez_vous_id' => 'nullable|exists:rendez_vous,id',
             'is_shared_with_client' => 'boolean',
         ]);
 
         $validated['user_id'] = Auth::id();
+        $validated['is_shared_with_client'] = $request->boolean('is_shared_with_client');
         $validated['date_create'] = now();
         $validated['date_update'] = now();
+
+        if (!empty($validated['contact_id'])) {
+            \App\Models\Contact::where('user_id', Auth::id())->findOrFail($validated['contact_id']);
+        }
 
         if (!empty($validated['activite_id'])) {
             Activite::where('user_id', Auth::id())->findOrFail($validated['activite_id']);
@@ -122,12 +129,19 @@ class NoteController extends Controller
         $validated = $request->validate([
             'titre' => 'required|string|max:255',
             'commentaire' => 'required|string',
+            'priorite' => 'nullable|in:Basse,Normale,Haute,Urgente',
+            'contact_id' => 'nullable|exists:contacts,id',
             'activite_id' => 'nullable|exists:activites,id',
             'rendez_vous_id' => 'nullable|exists:rendez_vous,id',
             'is_shared_with_client' => 'boolean',
         ]);
 
+        $validated['is_shared_with_client'] = $request->boolean('is_shared_with_client');
         $validated['date_update'] = now();
+
+        if (!empty($validated['contact_id'])) {
+            \App\Models\Contact::where('user_id', Auth::id())->findOrFail($validated['contact_id']);
+        }
 
         if (!empty($validated['activite_id'])) {
             Activite::where('user_id', Auth::id())->findOrFail($validated['activite_id']);
