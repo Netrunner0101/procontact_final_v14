@@ -120,9 +120,9 @@ return [
     | Global "Reply-To" Address
     |--------------------------------------------------------------------------
     |
-    | Replies to outgoing mail go to this human-monitored inbox instead of
-    | bouncing off the noreply@ sending domain. Applied to every mail via
-    | Mail::alwaysReplyTo() in AppServiceProvider when an address is set.
+    | Replies to outgoing mail go to this human-monitored inbox. Applied to
+    | every mail via Mail::alwaysReplyTo() in AppServiceProvider when an
+    | address is set.
     |
     */
 
