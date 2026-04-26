@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialAuthController extends Controller
@@ -57,23 +54,20 @@ class SocialAuthController extends Controller
                 return redirect()->route('dashboard')->with('success', __('Google account linked. Welcome back!'));
             }
 
-            // Create new user (admin role by default — entrepreneur)
-            $adminRole = Role::where('nom', Role::ADMIN)->firstOrFail();
-
-            $newUser = User::create([
+            // No matching account — stash the verified Google profile in the session
+            // and send the user to /register so they can confirm their details before
+            // an account is created.
+            $request->session()->put('pending_oauth', [
+                'provider' => 'google',
+                'google_id' => $googleUser->id,
+                'email' => $googleUser->email,
                 'nom' => $googleUser->user['family_name'] ?? '',
                 'prenom' => $googleUser->user['given_name'] ?? $googleUser->name,
-                'email' => $googleUser->email,
-                'google_id' => $googleUser->id,
-                'provider' => 'google',
                 'avatar' => $googleUser->avatar,
-                'password' => Hash::make(Str::random(16)),
-                'email_verified_at' => now(),
-                'role_id' => $adminRole->id,
             ]);
 
-            Auth::login($newUser);
-            return redirect()->route('dashboard')->with('success', __('Account created with Google. Welcome!'));
+            return redirect()->route('register')
+                ->with('status', __('Almost there! Confirm your details to create your account.'));
 
         } catch (\Exception $e) {
             Log::warning('Google OAuth callback failed', [
@@ -129,22 +123,20 @@ class SocialAuthController extends Controller
                 return redirect()->route('dashboard')->with('success', __('Apple account linked. Welcome back!'));
             }
 
-            // Create new user (admin role by default — entrepreneur)
-            $adminRole = Role::where('nom', Role::ADMIN)->firstOrFail();
-
-            $newUser = User::create([
-                'nom' => $appleUser->user['name']['lastName'] ?? '',
-                'prenom' => $appleUser->user['name']['firstName'] ?? $appleUser->name ?? __('User'),
-                'email' => $appleUser->email,
-                'apple_id' => $appleUser->id,
+            // No matching account — stash the verified Apple profile in the session
+            // and send the user to /register so they can confirm their details before
+            // an account is created.
+            $request->session()->put('pending_oauth', [
                 'provider' => 'apple',
-                'password' => Hash::make(Str::random(16)),
-                'email_verified_at' => now(),
-                'role_id' => $adminRole->id,
+                'apple_id' => $appleUser->id,
+                'email' => $appleUser->email,
+                'nom' => $appleUser->user['name']['lastName'] ?? '',
+                'prenom' => $appleUser->user['name']['firstName'] ?? $appleUser->name ?? '',
+                'avatar' => null,
             ]);
 
-            Auth::login($newUser);
-            return redirect()->route('dashboard')->with('success', __('Account created with Apple. Welcome!'));
+            return redirect()->route('register')
+                ->with('status', __('Almost there! Confirm your details to create your account.'));
 
         } catch (\Exception $e) {
             Log::warning('Apple OAuth callback failed', [

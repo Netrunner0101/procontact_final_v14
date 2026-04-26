@@ -80,13 +80,21 @@ class AuthController extends Controller
         ])->onlyInput('email');
     }
 
-    public function showRegister()
+    public function showRegister(Request $request)
     {
-        return view('auth.register');
+        return view('auth.register', [
+            'pendingOauth' => $request->session()->get('pending_oauth'),
+        ]);
     }
 
     public function register(Request $request)
     {
+        $pending = $request->session()->get('pending_oauth');
+
+        if ($pending) {
+            return $this->confirmOauthRegistration($request, $pending);
+        }
+
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
@@ -111,6 +119,67 @@ class AuthController extends Controller
         Auth::login($user);
 
         return redirect('dashboard')->with('success', __('Your account has been created successfully. Welcome to Pro Contact!'));
+    }
+
+    private function confirmOauthRegistration(Request $request, array $pending)
+    {
+        $validated = $request->validate([
+            'nom' => 'required|string|max:255',
+            'prenom' => 'required|string|max:255',
+            'telephone' => 'nullable|string|max:50',
+        ]);
+
+        // The email is verified by the OAuth provider and not editable in the
+        // confirmation form, but another user could have registered the same
+        // address between the OAuth start and this confirmation.
+        if (User::where('email', $pending['email'])->exists()) {
+            $request->session()->forget('pending_oauth');
+            return redirect()->route('login')
+                ->with('error', __('An account with this email already exists. Please sign in.'));
+        }
+
+        $adminRole = Role::where('nom', Role::ADMIN)->first();
+
+        if (!$adminRole) {
+            return back()->withErrors(['email' => __('The system is not yet configured. Please contact the administrator.')]);
+        }
+
+        $userData = [
+            'nom' => $validated['nom'],
+            'prenom' => $validated['prenom'],
+            'email' => $pending['email'],
+            'telephone' => $validated['telephone'] ?? null,
+            'password' => Str::random(32),
+            'provider' => $pending['provider'],
+            'avatar' => $pending['avatar'] ?? null,
+            'email_verified_at' => Carbon::now(),
+            'role_id' => $adminRole->id,
+        ];
+
+        if ($pending['provider'] === 'google' && isset($pending['google_id'])) {
+            $userData['google_id'] = $pending['google_id'];
+        }
+
+        if ($pending['provider'] === 'apple' && isset($pending['apple_id'])) {
+            $userData['apple_id'] = $pending['apple_id'];
+        }
+
+        $user = User::create($userData);
+
+        $request->session()->forget('pending_oauth');
+        Auth::login($user);
+
+        $providerName = ucfirst($pending['provider']);
+
+        return redirect('dashboard')->with('success', __('Account created with :provider. Welcome to Pro Contact!', ['provider' => $providerName]));
+    }
+
+    public function cancelOauthRegistration(Request $request)
+    {
+        $request->session()->forget('pending_oauth');
+
+        return redirect()->route('login')
+            ->with('status', __('Sign-up cancelled. You can sign in or register at any time.'));
     }
 
     public function logout(Request $request)
