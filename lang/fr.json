@@ -767,5 +767,15 @@
     "Event": "Événement",
     "IP": "IP",
     "Details": "Détails",
-    "No portal activity yet.": "Aucune activité sur le portail pour le moment."
+    "No portal activity yet.": "Aucune activité sur le portail pour le moment.",
+    "Live": "En direct",
+    "Updates every 5 seconds": "Mise à jour toutes les 5 secondes",
+    "Visible to the client in their portal": "Visible pour le client dans son portail",
+    "No notes yet for this appointment.": "Aucune note pour le moment sur ce rendez-vous.",
+    "Note added.": "Note ajoutée.",
+    "Note updated.": "Note mise à jour.",
+    "Note deleted.": "Note supprimée.",
+    "Visible to client": "Visible par le client",
+    "Private to you": "Privée — vous seul·e",
+    "Hide from client": "Masquer au client"
 }
