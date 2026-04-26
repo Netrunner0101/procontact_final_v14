@@ -378,5 +378,7 @@
             }, 5000);
         }
     </script>
+
+    @include('partials.idle-timeout-modal')
 </body>
 </html>

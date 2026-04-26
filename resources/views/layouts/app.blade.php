@@ -404,5 +404,7 @@
     </script>
 
     @livewireScripts
+
+    @include('partials.idle-timeout-modal')
 </body>
 </html>

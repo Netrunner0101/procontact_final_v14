@@ -14,6 +14,7 @@ use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MockOAuthController;
 use App\Http\Controllers\PortalController;
+use App\Http\Controllers\SessionController;
 
 // Language switch route
 Route::get('/lang/{locale}', function (string $locale) {
@@ -53,6 +54,12 @@ Route::prefix('auth')->name('auth.')->group(function () {
 Route::prefix('mock')->name('mock.')->group(function () {
     Route::get('/oauth/google', [MockOAuthController::class, 'showMockAuth'])->name('oauth.google.show');
     Route::post('/oauth/google', [MockOAuthController::class, 'mockGoogleAuth'])->name('oauth.google');
+});
+
+// Idle session — used by the front-end keepalive modal
+Route::middleware('auth')->group(function () {
+    Route::post('/session/keepalive', [SessionController::class, 'keepalive'])->name('session.keepalive');
+    Route::get('/session/status', [SessionController::class, 'status'])->name('session.status');
 });
 
 // Profile routes (for authenticated users)
