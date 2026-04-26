@@ -25,7 +25,8 @@ class RendezVousController extends Controller
     {
         $contacts = Contact::where('user_id', Auth::id())->get();
         $activites = Activite::where('user_id', Auth::id())->get();
-        return view('rendez-vous.create', compact('contacts', 'activites'));
+        $selectedActiviteId = request('activite_id');
+        return view('rendez-vous.create', compact('contacts', 'activites', 'selectedActiviteId'));
     }
 
     public function store(Request $request)
@@ -39,21 +40,15 @@ class RendezVousController extends Controller
             'date_fin' => 'required|date|after_or_equal:date_debut',
             'heure_debut' => 'required|date_format:H:i',
             'heure_fin' => 'required|date_format:H:i|after:heure_debut',
-            'send_email' => 'nullable|boolean',
         ]);
 
         $validated['user_id'] = Auth::id();
         $rendezVous = RendezVous::create($validated);
 
-        // Queue email notification if requested
-        if ($request->has('send_email') && $request->send_email) {
-            SendAppointmentEmail::dispatch($rendezVous);
-            $message = __('Appointment created successfully and email is being sent');
-        } else {
-            $message = __('Appointment created successfully');
-        }
+        // Always send email notification
+        SendAppointmentEmail::dispatch($rendezVous);
 
-        return redirect()->route('rendez-vous.index')->with('success', $message);
+        return redirect()->route('rendez-vous.index')->with('success', __('Appointment created successfully and email notification sent'));
     }
 
     public function show(RendezVous $rendezVous)
@@ -95,6 +90,20 @@ class RendezVousController extends Controller
         $this->authorize('delete', $rendezVous);
         $rendezVous->delete();
         return redirect()->route('rendez-vous.index')->with('success', __('Appointment deleted successfully'));
+    }
+
+    public function updateStatus(Request $request, RendezVous $rendezVous)
+    {
+        $this->authorize('update', $rendezVous);
+
+        $validated = $request->validate([
+            'statut' => ['required', 'string', 'in:'.implode(',', array_keys(RendezVous::STATUTS))],
+        ]);
+
+        $rendezVous->update($validated);
+
+        return redirect()->route('rendez-vous.show', $rendezVous)
+            ->with('success', __('Status updated'));
     }
 
     public function email(Request $request, RendezVous $rendezVous)

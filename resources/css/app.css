@@ -267,6 +267,36 @@ nav .w-9.h-9 {
     transform: translateY(-2px);
 }
 
+.card-elevated {
+    box-shadow: 0 4px 16px rgba(27, 28, 26, 0.06) !important;
+}
+
+.card-header {
+    padding: 1.5rem 2rem 1rem;
+}
+
+.card-body {
+    padding: 1.5rem 2rem;
+}
+
+.card-footer {
+    padding: 1rem 2rem 1.5rem;
+    border-top: 1px solid rgba(197, 200, 185, 0.2);
+    margin-top: 1rem;
+}
+
+.form-group {
+    margin-bottom: 0.25rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
 .glass-card {
     background: rgba(251, 249, 246, 0.80);
     backdrop-filter: blur(20px);
@@ -735,6 +765,64 @@ table tbody td {
 
     .btn {
         padding: 0.5rem 1rem;
+    }
+}
+
+/* ========================================
+   MOBILE SMALL SCREENS (max-width: 480px)
+   ======================================== */
+
+@media (max-width: 480px) {
+    /* Reduce container padding on small phones */
+    .max-w-7xl {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    /* Page titles */
+    .page-title,
+    h1.text-2xl {
+        font-size: 1.25rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.85rem;
+    }
+
+    /* Compact manager headers */
+    .manager-header,
+    .dashboard-header {
+        padding: 1rem;
+    }
+
+    /* Buttons - slightly smaller */
+    .btn {
+        padding: 0.5rem 0.875rem;
+        font-size: 0.8125rem;
+    }
+
+    /* Modals - nearly edge to edge */
+    .modal-overlay {
+        padding: 0.5rem;
+    }
+
+    .modal-content {
+        border-radius: 0.75rem;
+        padding: 1rem;
+    }
+
+    /* Badge/chip text */
+    .badge,
+    .chip {
+        font-size: 0.6875rem;
+        padding: 0.125rem 0.5rem;
+    }
+
+    /* Notification toast */
+    .fixed.top-4.right-4 {
+        left: 0.75rem;
+        right: 0.75rem;
+        max-width: none;
     }
 }
 

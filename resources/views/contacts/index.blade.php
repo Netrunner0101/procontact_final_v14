@@ -48,9 +48,17 @@
                                 <div class="text-sm text-gray-900">{{ $contact->ville ?? '-' }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    {{ $contact->status->status_client ?? __('Not defined') }}
-                                </span>
+                                @if($contact->rendez_vous_count > 0)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" title="{{ __('Client') }}">
+                                        <i class="fas fa-star text-green-600 mr-1"></i>
+                                        {{ __('Client') }}
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600" title="{{ __('Contact') }}">
+                                        <i class="fas fa-user text-gray-500 mr-1"></i>
+                                        {{ __('Contact') }}
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                 @if($contact->emails->count() > 0)
