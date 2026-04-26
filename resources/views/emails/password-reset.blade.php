@@ -82,7 +82,7 @@
 
         <div class="footer">
             <p>{{ __('Best regards,') }}<br>{{ __('The Pro Contact Team') }}</p>
-            <p><small>{{ __('This email was sent automatically, please do not reply.') }}</small></p>
+            <p><small>{!! __('Need help? Email us at <a href="mailto:contact@procontact.app">contact@procontact.app</a>.') !!}</small></p>
         </div>
     </div>
 </body>
