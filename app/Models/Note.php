@@ -14,6 +14,7 @@ class Note extends Model
         'user_id',
         'rendez_vous_id',
         'activite_id',
+        'contact_id',
         'titre',
         'commentaire',
         'is_shared_with_client',
