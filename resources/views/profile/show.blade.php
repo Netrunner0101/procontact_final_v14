@@ -17,6 +17,13 @@
             </div>
         @endif
 
+        @if ($errors->any())
+            <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg" role="alert">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                {{ $errors->first() }}
+            </div>
+        @endif
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Profile Information -->
             <div class="lg:col-span-2">
@@ -296,6 +303,100 @@
                                 </div>
                             @endif
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Data & Privacy (GDPR) -->
+        <div class="card mt-8" x-data="{ showDelete: false }">
+            <div class="card-header">
+                <h2 class="text-xl font-semibold text-gray-900">
+                    <i class="fas fa-shield-alt mr-2"></i>
+                    {{ __('My Data & Privacy') }}
+                </h2>
+            </div>
+            <div class="card-body space-y-6">
+                <!-- Data export -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200">
+                    <div>
+                        <h3 class="text-base font-semibold text-gray-900">{{ __('Download my data') }}</h3>
+                        <p class="text-sm text-gray-600 mt-1">{{ __('Get a copy of all the personal data we hold about you in a portable JSON file.') }}</p>
+                    </div>
+                    <a href="{{ route('profile.export') }}" class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 whitespace-nowrap">
+                        <i class="fas fa-download mr-2"></i>
+                        {{ __('Export my data') }}
+                    </a>
+                </div>
+
+                <!-- Danger zone: delete account -->
+                <div class="rounded-lg border border-red-300 bg-red-50 p-4">
+                    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                        <div>
+                            <h3 class="text-base font-semibold text-red-800">{{ __('Delete my account') }}</h3>
+                            <p class="text-sm text-red-700 mt-1">
+                                {{ __('Once you delete your account, all your contacts, appointments, notes, reminders, emails and phone numbers will be permanently removed. This action cannot be undone.') }}
+                            </p>
+                        </div>
+                        <button type="button" @click="showDelete = true" x-show="!showDelete"
+                                class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium bg-red-600 text-white hover:bg-red-700 whitespace-nowrap">
+                            <i class="fas fa-trash mr-2"></i>
+                            {{ __('Delete my account') }}
+                        </button>
+                    </div>
+
+                    <div x-show="showDelete" x-cloak class="mt-4 pt-4 border-t border-red-200">
+                        <form method="POST" action="{{ route('profile.destroy') }}" class="space-y-4">
+                            @csrf
+                            @method('DELETE')
+
+                            <p class="text-sm text-red-800">
+                                {{ __('To confirm, please retype your email and the word ":phrase" below.', ['phrase' => __('DELETE')]) }}
+                            </p>
+
+                            <div>
+                                <label for="confirm_email" class="block text-sm font-medium text-red-900 mb-1">{{ __('Your email') }}</label>
+                                <input type="email" id="confirm_email" name="confirm_email" autocomplete="off"
+                                       class="form-input @error('confirm_email') border-red-500 @enderror" required>
+                                @error('confirm_email')
+                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="confirm_phrase" class="block text-sm font-medium text-red-900 mb-1">
+                                    {{ __('Type ":phrase" to confirm', ['phrase' => __('DELETE')]) }}
+                                </label>
+                                <input type="text" id="confirm_phrase" name="confirm_phrase" autocomplete="off"
+                                       class="form-input @error('confirm_phrase') border-red-500 @enderror" required>
+                                @error('confirm_phrase')
+                                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            @if (! $user->provider)
+                                <div>
+                                    <label for="delete_current_password" class="block text-sm font-medium text-red-900 mb-1">{{ __('Current Password') }}</label>
+                                    <input type="password" id="delete_current_password" name="current_password" autocomplete="current-password"
+                                           class="form-input @error('current_password') border-red-500 @enderror" required>
+                                    @error('current_password')
+                                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            @endif
+
+                            <div class="flex flex-col sm:flex-row gap-2 pt-2">
+                                <button type="submit"
+                                        class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium bg-red-600 text-white hover:bg-red-700">
+                                    <i class="fas fa-trash mr-2"></i>
+                                    {{ __('Permanently delete my account') }}
+                                </button>
+                                <button type="button" @click="showDelete = false"
+                                        class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium border border-gray-300 bg-white text-gray-700 hover:bg-gray-50">
+                                    {{ __('Cancel') }}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
