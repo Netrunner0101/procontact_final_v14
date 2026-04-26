@@ -49,6 +49,18 @@ class SendAppointmentEmail implements ShouldQueue
             $mail->cc($this->ccEmails);
         }
 
+        // Send a copy to the appointment owner so they keep a record of every
+        // notification their clients receive.
+        $ownerEmail = $this->rendezVous->user?->email;
+        if ($ownerEmail) {
+            $alreadyAddressed = strcasecmp($ownerEmail, $email) === 0
+                || collect($this->ccEmails)->contains(fn ($cc) => strcasecmp($cc, $ownerEmail) === 0);
+
+            if (! $alreadyAddressed) {
+                $mail->bcc($ownerEmail);
+            }
+        }
+
         $mail->send(new RendezVousNotification($this->rendezVous));
     }
 }

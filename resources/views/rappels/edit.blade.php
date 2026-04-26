@@ -64,6 +64,37 @@
                     @enderror
                 </div>
 
+                <!-- Recipient Selection -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Send the reminder to') }} *</label>
+                    <div class="space-y-2">
+                        @foreach (['Utilisateur' => __('Me (the user)'), 'Client' => __('The client'), 'Les deux' => __('Both')] as $value => $label)
+                            <label class="flex items-center">
+                                <input type="radio" name="destinataire" value="{{ $value }}" required
+                                       {{ old('destinataire', $rappel->destinataire ?? 'Les deux') === $value ? 'checked' : '' }}
+                                       class="mr-2 text-yellow-600 focus:ring-yellow-500">
+                                <span class="text-sm text-gray-900">{{ $label }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                    @error('destinataire')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- CC Emails -->
+                <div class="mb-6">
+                    <label for="emails_cc" class="block text-sm font-medium text-gray-700 mb-2">{{ __('CC (optional)') }}</label>
+                    <input type="text" id="emails_cc" name="emails_cc"
+                           value="{{ old('emails_cc', $rappel->emails_cc) }}"
+                           placeholder="{{ __('email1@example.com, email2@example.com') }}"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 @error('emails_cc') border-red-500 @enderror">
+                    <p class="text-sm text-gray-600 mt-1">{{ __('Separate multiple emails with a comma.') }}</p>
+                    @error('emails_cc')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <!-- Quick Reminder Options -->
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-3">{{ __('Quick reminders') }}</label>
