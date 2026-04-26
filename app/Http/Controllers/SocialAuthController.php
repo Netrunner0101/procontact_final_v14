@@ -69,10 +69,8 @@ class SocialAuthController extends Controller
                 'avatar' => $googleUser->avatar,
                 'password' => Hash::make(Str::random(16)),
                 'email_verified_at' => now(),
+                'role_id' => $adminRole->id,
             ]);
-
-            $newUser->role_id = $adminRole->id;
-            $newUser->save();
 
             Auth::login($newUser);
             return redirect()->route('dashboard')->with('success', __('Account created with Google. Welcome!'));
@@ -142,10 +140,8 @@ class SocialAuthController extends Controller
                 'provider' => 'apple',
                 'password' => Hash::make(Str::random(16)),
                 'email_verified_at' => now(),
+                'role_id' => $adminRole->id,
             ]);
-
-            $newUser->role_id = $adminRole->id;
-            $newUser->save();
 
             Auth::login($newUser);
             return redirect()->route('dashboard')->with('success', __('Account created with Apple. Welcome!'));
