@@ -556,7 +556,7 @@
                     <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Privacy Policy') }}</a>
                     <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Terms of Service') }}</a>
                     <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Cookie Settings') }}</a>
-                    <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Contact Support') }}</a>
+                    <a href="mailto:contact@procontact.app" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Contact Support') }}</a>
                 </div>
             </div>
             <!-- EDITABLE: Footer Copyright -->
