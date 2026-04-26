@@ -45,13 +45,19 @@ class RappelController extends Controller
             'rendez_vous_id' => 'required|exists:rendez_vous,id',
             'date_rappel' => 'required|date|after:now',
             'frequence' => 'required|in:Une fois,Quotidien,Hebdomadaire,Mensuel',
+            'destinataire' => 'required|in:Utilisateur,Client,Les deux',
+            'emails_cc' => ['nullable', 'string', $this->ccEmailsRule()],
         ]);
 
         // Verify the appointment belongs to the current user
         $rendezVous = RendezVous::where('user_id', Auth::id())
             ->findOrFail($validated['rendez_vous_id']);
 
-        Rappel::create($validated);
+        Rappel::create([
+            ...$validated,
+            'user_id' => Auth::id(),
+            'emails_cc' => $this->normalizeCcEmails($validated['emails_cc'] ?? null),
+        ]);
 
         return redirect()->route('rendez-vous.show', $rendezVous)
             ->with('success', __('Reminder created successfully'));
@@ -89,21 +95,63 @@ class RappelController extends Controller
         if ($rappel->rendezVous->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         $validated = $request->validate([
             'rendez_vous_id' => 'required|exists:rendez_vous,id',
             'date_rappel' => 'required|date|after:now',
             'frequence' => 'required|in:Une fois,Quotidien,Hebdomadaire,Mensuel',
+            'destinataire' => 'required|in:Utilisateur,Client,Les deux',
+            'emails_cc' => ['nullable', 'string', $this->ccEmailsRule()],
         ]);
 
         // Verify the new appointment belongs to the current user
         $rendezVous = RendezVous::where('user_id', Auth::id())
             ->findOrFail($validated['rendez_vous_id']);
 
-        $rappel->update($validated);
+        $rappel->update([
+            ...$validated,
+            'emails_cc' => $this->normalizeCcEmails($validated['emails_cc'] ?? null),
+        ]);
 
         return redirect()->route('rappels.show', $rappel)
             ->with('success', __('Reminder updated successfully'));
+    }
+
+    /**
+     * Validate that each comma-separated value in the CC field is a valid email.
+     */
+    private function ccEmailsRule(): \Closure
+    {
+        return function (string $attribute, mixed $value, \Closure $fail): void {
+            if (blank($value)) {
+                return;
+            }
+
+            foreach (preg_split('/[\s,;]+/', (string) $value, -1, PREG_SPLIT_NO_EMPTY) as $email) {
+                if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $fail(__('CC contains an invalid email address: :email', ['email' => $email]));
+
+                    return;
+                }
+            }
+        };
+    }
+
+    /**
+     * Normalize the CC field into a deduplicated, comma-separated string.
+     */
+    private function normalizeCcEmails(?string $value): ?string
+    {
+        if (blank($value)) {
+            return null;
+        }
+
+        $emails = collect(preg_split('/[\s,;]+/', $value, -1, PREG_SPLIT_NO_EMPTY))
+            ->map(fn (string $email) => strtolower(trim($email)))
+            ->unique()
+            ->values();
+
+        return $emails->isEmpty() ? null : $emails->implode(', ');
     }
 
     public function destroy(Rappel $rappel)

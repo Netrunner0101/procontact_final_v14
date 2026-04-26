@@ -663,5 +663,10 @@
     "to": "à",
     "vs last month": "vs le mois dernier",
     "← Back to list": "← Retour à la liste",
-    "← Back to login": "← Retour à la connexion"
+    "← Back to login": "← Retour à la connexion",
+    "Send the reminder to": "Envoyer le rappel à",
+    "Me (the user)": "Moi (l'utilisateur)",
+    "The client": "Le client",
+    "Both": "Les deux",
+    "CC contains an invalid email address: :email": "Le CC contient une adresse e-mail invalide : :email"
 }
