@@ -15,6 +15,8 @@ class Rappel extends Model
         'rendez_vous_id',
         'date_rappel',
         'frequence',
+        'destinataire',
+        'emails_cc',
     ];
 
     protected $casts = [

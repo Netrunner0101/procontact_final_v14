@@ -47,6 +47,25 @@
                         </div>
 
                         <div>
+                            <label class="text-sm font-medium text-gray-500">{{ __('Send the reminder to') }}</label>
+                            <p class="mt-1 text-gray-900">
+                                @switch($rappel->destinataire)
+                                    @case('Utilisateur') {{ __('Me (the user)') }} @break
+                                    @case('Client') {{ __('The client') }} @break
+                                    @case('Les deux') {{ __('Both') }} @break
+                                    @default {{ $rappel->destinataire }}
+                                @endswitch
+                            </p>
+                        </div>
+
+                        @if (! empty($rappel->emails_cc))
+                            <div>
+                                <label class="text-sm font-medium text-gray-500">{{ __('CC (optional)') }}</label>
+                                <p class="mt-1 text-gray-900 break-all">{{ $rappel->emails_cc }}</p>
+                            </div>
+                        @endif
+
+                        <div>
                             <label class="text-sm font-medium text-gray-500">{{ __('Status') }}</label>
                             @php
                                 $now = now();
