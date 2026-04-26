@@ -31,14 +31,42 @@
 
                         <!-- Content -->
                         <div>
-                            <label for="contenu" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Content') }} *</label>
-                            <textarea id="contenu" name="contenu" rows="12" required
-                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('contenu') border-red-500 @enderror"
-                                      placeholder="{{ __('Note content...') }}">{{ old('contenu') }}</textarea>
-                            @error('contenu')
+                            <label for="commentaire" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Content') }} *</label>
+                            <textarea id="commentaire" name="commentaire" rows="12" required
+                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 @error('commentaire') border-red-500 @enderror"
+                                      placeholder="{{ __('Note content...') }}">{{ old('commentaire') }}</textarea>
+                            @error('commentaire')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
                             <p class="text-sm text-gray-600 mt-1">{{ __('You can use formatted text, lists, etc.') }}</p>
+                        </div>
+
+                        <!-- Visibility (Private / Shared with client) -->
+                        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                            <span class="block text-sm font-medium text-gray-700 mb-3">{{ __('Visibility') }}</span>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <label class="relative cursor-pointer rounded-lg border border-gray-300 bg-white p-3 flex items-start gap-3 hover:border-indigo-400 has-[:checked]:border-indigo-600 has-[:checked]:ring-2 has-[:checked]:ring-indigo-200 transition">
+                                    <input type="radio" name="is_shared_with_client" value="0"
+                                           {{ old('is_shared_with_client', '0') === '0' ? 'checked' : '' }}
+                                           class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <span class="flex-1 min-w-0">
+                                        <span class="block text-sm font-semibold text-gray-900">🔒 {{ __('Private') }}</span>
+                                        <span class="block text-xs text-gray-600 mt-0.5">{{ __('Only you can see this note in the admin.') }}</span>
+                                    </span>
+                                </label>
+                                <label class="relative cursor-pointer rounded-lg border border-gray-300 bg-white p-3 flex items-start gap-3 hover:border-indigo-400 has-[:checked]:border-indigo-600 has-[:checked]:ring-2 has-[:checked]:ring-indigo-200 transition">
+                                    <input type="radio" name="is_shared_with_client" value="1"
+                                           {{ old('is_shared_with_client') === '1' ? 'checked' : '' }}
+                                           class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                    <span class="flex-1 min-w-0">
+                                        <span class="block text-sm font-semibold text-gray-900">🔓 {{ __('Shared with client') }}</span>
+                                        <span class="block text-xs text-gray-600 mt-0.5">{{ __('Visible to the linked client in their portal.') }}</span>
+                                    </span>
+                                </label>
+                            </div>
+                            @error('is_shared_with_client')
+                                <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -172,7 +200,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const titreInput = document.getElementById('titre');
-    const contenuTextarea = document.getElementById('contenu');
+    const contenuTextarea = document.getElementById('commentaire');
     const templateButtons = document.querySelectorAll('.template-btn');
 
     // Template buttons

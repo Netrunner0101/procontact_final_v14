@@ -105,12 +105,21 @@
                                             'Urgente' => 'bg-red-100 text-red-800'
                                         ];
                                     @endphp
-                                    <span class="px-2 py-1 text-xs font-medium rounded-full {{ $priorityColors[$note->priorite] }}">
+                                    <span class="px-2 py-1 text-xs font-medium rounded-full {{ $priorityColors[$note->priorite] ?? 'bg-gray-100 text-gray-800' }}">
                                         {{ $note->priorite }}
                                     </span>
+                                    @if($note->is_shared_with_client)
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800" title="{{ __('Visible to the linked client in their portal.') }}">
+                                            🔓 {{ __('Shared') }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-700" title="{{ __('Only you can see this note in the admin.') }}">
+                                            🔒 {{ __('Private') }}
+                                        </span>
+                                    @endif
                                 </div>
 
-                                <p class="text-gray-600 mb-3">{{ Str::limit($note->contenu, 150) }}</p>
+                                <p class="text-gray-600 mb-3">{{ Str::limit($note->commentaire, 150) }}</p>
 
                                 <!-- Associated Items -->
                                 <div class="flex flex-wrap gap-2 mb-3">

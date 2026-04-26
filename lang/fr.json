@@ -777,5 +777,8 @@
     "Note deleted.": "Note supprimée.",
     "Visible to client": "Visible par le client",
     "Private to you": "Privée — vous seul·e",
-    "Hide from client": "Masquer au client"
+    "Hide from client": "Masquer au client",
+    "Visibility": "Visibilité",
+    "Only you can see this note in the admin.": "Vous seul·e pouvez voir cette note dans l'administration.",
+    "Visible to the linked client in their portal.": "Visible par le client associé dans son portail."
 }
