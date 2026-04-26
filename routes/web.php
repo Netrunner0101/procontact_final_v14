@@ -27,7 +27,7 @@ Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('dashboard');
     }
-    return redirect()->route('login');
+    return view('welcome-production');
 })->name('home');
 
 // OAuth Test Route (for development)
