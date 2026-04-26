@@ -32,7 +32,11 @@
         <div class="max-w-md w-full auth-card p-8">
             <div class="text-center mb-8">
                 <h1 class="text-3xl font-bold" style="color: #1b1c1a;">Pro Contact</h1>
-                <p class="mt-2" style="color: #44483e;">{{ __('Create your account') }}</p>
+                @if (!empty($pendingOauth))
+                    <p class="mt-2" style="color: #44483e;">{{ __('Confirm your details to finish signing up with :provider', ['provider' => ucfirst($pendingOauth['provider'])]) }}</p>
+                @else
+                    <p class="mt-2" style="color: #44483e;">{{ __('Create your account') }}</p>
+                @endif
             </div>
 
             @if (session('status') || session('success'))
@@ -62,95 +66,149 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('register') }}">
-                @csrf
-
-                <div class="mb-4">
-                    <label for="nom" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Last name') }}</label>
-                    <input type="text" id="nom" name="nom" value="{{ old('nom') }}" required
-                           class="w-full px-3 py-2 auth-input @error('nom') border-red-500 @enderror">
-                    @error('nom')
-                        <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="prenom" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('First name') }}</label>
-                    <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" required
-                           class="w-full px-3 py-2 auth-input @error('prenom') border-red-500 @enderror">
-                    @error('prenom')
-                        <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Email') }}</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" required
-                           class="w-full px-3 py-2 auth-input @error('email') border-red-500 @enderror">
-                    @error('email')
-                        <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="telephone" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Phone (optional)') }}</label>
-                    <input type="tel" id="telephone" name="telephone" value="{{ old('telephone') }}"
-                           class="w-full px-3 py-2 auth-input @error('telephone') border-red-500 @enderror">
-                    @error('telephone')
-                        <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="password" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Password') }}</label>
-                    <input type="password" id="password" name="password" required
-                           class="w-full px-3 py-2 auth-input @error('password') border-red-500 @enderror">
-                    @error('password')
-                        <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="mb-6">
-                    <label for="password_confirmation" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Confirm password') }}</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation" required
-                           class="w-full px-3 py-2 auth-input">
-                </div>
-
-                <button type="submit" class="w-full auth-btn py-2 px-4">
-                    {{ __('Create my account') }}
-                </button>
-            </form>
-
-            <div class="mt-6 text-center">
-                <p class="text-sm" style="color: #44483e;">
-                    {{ __('Already have an account?') }}
-                    <a href="{{ route('login') }}" style="color: #843728; font-weight: 600;" class="hover:opacity-80">{{ __('Log in') }}</a>
-                </p>
-            </div>
-
-            <!-- Social Registration -->
-            <div class="mt-6">
-                <div class="relative">
-                    <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t divider-line"></div>
-                    </div>
-                    <div class="relative flex justify-center text-sm">
-                        <span class="px-2" style="background: #ffffff; color: #75786c;">{{ __('Or sign up with') }}</span>
+            @if (!empty($pendingOauth))
+                <div class="mb-6 flex items-center gap-3 p-3 rounded-lg" style="background: #f5f3f0;">
+                    @if (!empty($pendingOauth['avatar']))
+                        <img src="{{ $pendingOauth['avatar'] }}" alt="" class="w-10 h-10 rounded-full" referrerpolicy="no-referrer">
+                    @endif
+                    <div class="text-sm" style="color: #44483e;">
+                        <p class="font-medium" style="color: #1b1c1a;">{{ $pendingOauth['email'] }}</p>
+                        <p>{{ __('Verified by :provider', ['provider' => ucfirst($pendingOauth['provider'])]) }}</p>
                     </div>
                 </div>
 
-                <div class="mt-6 space-y-3">
-                    <a href="{{ route('auth.google') }}" class="w-full flex items-center justify-center px-4 py-2 social-btn text-sm font-medium" style="color: #44483e;">
-                        <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                        </svg>
-                        {{ __('Sign up with Google') }}
-                    </a>
+                <form method="POST" action="{{ route('register') }}">
+                    @csrf
+
+                    <div class="mb-4">
+                        <label for="prenom" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('First name') }}</label>
+                        <input type="text" id="prenom" name="prenom" value="{{ old('prenom', $pendingOauth['prenom'] ?? '') }}" required
+                               class="w-full px-3 py-2 auth-input @error('prenom') border-red-500 @enderror">
+                        @error('prenom')
+                            <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="nom" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Last name') }}</label>
+                        <input type="text" id="nom" name="nom" value="{{ old('nom', $pendingOauth['nom'] ?? '') }}" required
+                               class="w-full px-3 py-2 auth-input @error('nom') border-red-500 @enderror">
+                        @error('nom')
+                            <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="telephone" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Phone (optional)') }}</label>
+                        <input type="tel" id="telephone" name="telephone" value="{{ old('telephone') }}"
+                               class="w-full px-3 py-2 auth-input @error('telephone') border-red-500 @enderror">
+                        @error('telephone')
+                            <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <button type="submit" class="w-full auth-btn py-2 px-4">
+                        {{ __('Confirm and create my account') }}
+                    </button>
+                </form>
+
+                <form method="POST" action="{{ route('register.cancel-oauth') }}" class="mt-3">
+                    @csrf
+                    <button type="submit" class="w-full px-4 py-2 social-btn text-sm font-medium" style="color: #44483e;">
+                        {{ __('Cancel') }}
+                    </button>
+                </form>
+            @else
+                <form method="POST" action="{{ route('register') }}">
+                    @csrf
+
+                    <div class="mb-4">
+                        <label for="nom" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Last name') }}</label>
+                        <input type="text" id="nom" name="nom" value="{{ old('nom') }}" required
+                               class="w-full px-3 py-2 auth-input @error('nom') border-red-500 @enderror">
+                        @error('nom')
+                            <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="prenom" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('First name') }}</label>
+                        <input type="text" id="prenom" name="prenom" value="{{ old('prenom') }}" required
+                               class="w-full px-3 py-2 auth-input @error('prenom') border-red-500 @enderror">
+                        @error('prenom')
+                            <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="email" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Email') }}</label>
+                        <input type="email" id="email" name="email" value="{{ old('email') }}" required
+                               class="w-full px-3 py-2 auth-input @error('email') border-red-500 @enderror">
+                        @error('email')
+                            <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="telephone" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Phone (optional)') }}</label>
+                        <input type="tel" id="telephone" name="telephone" value="{{ old('telephone') }}"
+                               class="w-full px-3 py-2 auth-input @error('telephone') border-red-500 @enderror">
+                        @error('telephone')
+                            <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Password') }}</label>
+                        <input type="password" id="password" name="password" required
+                               class="w-full px-3 py-2 auth-input @error('password') border-red-500 @enderror">
+                        @error('password')
+                            <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="password_confirmation" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Confirm password') }}</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation" required
+                               class="w-full px-3 py-2 auth-input">
+                    </div>
+
+                    <button type="submit" class="w-full auth-btn py-2 px-4">
+                        {{ __('Create my account') }}
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <p class="text-sm" style="color: #44483e;">
+                        {{ __('Already have an account?') }}
+                        <a href="{{ route('login') }}" style="color: #843728; font-weight: 600;" class="hover:opacity-80">{{ __('Log in') }}</a>
+                    </p>
                 </div>
-            </div>
+
+                <!-- Social Registration -->
+                <div class="mt-6">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t divider-line"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2" style="background: #ffffff; color: #75786c;">{{ __('Or sign up with') }}</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 space-y-3">
+                        <a href="{{ route('auth.google') }}" class="w-full flex items-center justify-center px-4 py-2 social-btn text-sm font-medium" style="color: #44483e;">
+                            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            {{ __('Sign up with Google') }}
+                        </a>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </body>
