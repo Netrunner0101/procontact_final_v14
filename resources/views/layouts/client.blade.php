@@ -155,26 +155,10 @@
             </div>
         </nav>
 
+        @include('partials.toast')
+
         <!-- Page Content -->
         <main>
-            @if (session('success'))
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-                    <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium" style="background: #c0f0b8; color: #002204;">
-                        <i class="fas fa-check-circle"></i>
-                        {{ session('success') }}
-                    </div>
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-                    <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium" style="background: #ffdad6; color: #410002;">
-                        <i class="fas fa-exclamation-circle"></i>
-                        {{ session('error') }}
-                    </div>
-                </div>
-            @endif
-
             @yield('content')
         </main>
     </div>

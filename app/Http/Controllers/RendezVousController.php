@@ -7,6 +7,7 @@ use App\Models\Contact;
 use App\Models\Activite;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Jobs\SendAppointmentEmail;
 
 class RendezVousController extends Controller
@@ -117,15 +118,26 @@ class RendezVousController extends Controller
 
         $ccEmails = [];
         if (!empty($validated['cc_emails'])) {
-            $ccEmails = array_filter(
-                array_map('trim', explode(',', $validated['cc_emails'])),
+            $rawCc = preg_split('/[\s,;]+/', $validated['cc_emails'], -1, PREG_SPLIT_NO_EMPTY);
+            $ccEmails = array_values(array_filter(
+                array_map('trim', $rawCc),
                 fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL)
-            );
+            ));
         }
 
-        SendAppointmentEmail::dispatch($rendezVous, $validated['recipient_email'], $ccEmails);
+        try {
+            SendAppointmentEmail::dispatch($rendezVous, $validated['recipient_email'], $ccEmails);
+        } catch (\Throwable $e) {
+            Log::error('Failed to dispatch appointment email', [
+                'rendez_vous_id' => $rendezVous->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()->route('rendez-vous.show', $rendezVous)
+                ->with('error', __('The email could not be sent. Please try again.'));
+        }
 
         return redirect()->route('rendez-vous.show', $rendezVous)
-            ->with('success', __('Email is being sent'));
+            ->with('success', __('Email sent successfully.'));
     }
 }
