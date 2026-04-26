@@ -96,23 +96,8 @@
                     </div>
                 </div>
 
-                <!-- Notes Section -->
-                @if($rendezVous->notes && $rendezVous->notes->count() > 0)
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Associated notes') }}</h2>
-                        <div class="space-y-4">
-                            @foreach($rendezVous->notes as $note)
-                                <div class="border-l-4 border-purple-500 pl-4 py-2">
-                                    <h3 class="font-medium text-gray-900">{{ $note->titre }}</h3>
-                                    <p class="text-gray-600 mt-1">{{ $note->commentaire }}</p>
-                                    <p class="text-xs text-gray-500 mt-2">
-                                        {{ $note->date_create->format('d/m/Y à H:i') }}
-                                    </p>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
+                <!-- Notes Section (realtime, shared with client portal) -->
+                @livewire('appointment-notes', ['rendezVous' => $rendezVous], key('appointment-notes-'.$rendezVous->id))
 
                 <!-- Reminders Section -->
                 @if($rendezVous->rappels && $rendezVous->rappels->count() > 0)

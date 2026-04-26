@@ -44,4 +44,20 @@ class Note extends Model
     {
         return $this->belongsTo(Activite::class);
     }
+
+    /**
+     * Get the contact (client) the note is associated with, if any.
+     */
+    public function contact(): BelongsTo
+    {
+        return $this->belongsTo(Contact::class);
+    }
+
+    /**
+     * Get the entrepreneur (owner) of the note.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }
