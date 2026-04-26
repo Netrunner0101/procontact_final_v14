@@ -252,9 +252,10 @@
             </div>
             <div class="mb-4">
                 <label for="cc_emails" class="block text-sm font-medium text-gray-700 mb-2">{{ __('CC (optional)') }}</label>
-                <input type="email" id="cc_emails" name="cc_emails"
+                <input type="email" id="cc_emails" name="cc_emails" multiple
                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                        placeholder="{{ __('email1@example.com, email2@example.com') }}">
+                <p class="mt-1 text-xs text-gray-500">{{ __('Separate multiple emails with a comma.') }}</p>
             </div>
             <div class="flex justify-end space-x-3">
                 <button type="button" id="cancelEmail"
