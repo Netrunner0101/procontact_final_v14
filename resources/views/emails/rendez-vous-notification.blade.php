@@ -130,7 +130,7 @@
 
     <div class="footer">
         <p>{{ __('This email was sent automatically from Pro Contact.') }}</p>
-        <p>{{ __('Please do not reply directly to this email.') }}</p>
+        <p>{!! __('For any question, email us at <a href="mailto:contact@procontact.app">contact@procontact.app</a>.') !!}</p>
     </div>
 </body>
 </html>
