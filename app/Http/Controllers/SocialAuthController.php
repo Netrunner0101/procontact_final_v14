@@ -7,6 +7,7 @@ use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -23,27 +24,27 @@ class SocialAuthController extends Controller
     /**
      * Handle Google OAuth callback
      */
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(Request $request)
     {
         try {
             $googleUser = Socialite::driver('google')->user();
-            
+
             // Check if user already exists with this Google ID
             $user = User::where('google_id', $googleUser->id)->first();
-            
+
             if ($user) {
                 // Update user info
                 $user->update([
                     'avatar' => $googleUser->avatar,
                 ]);
-                
+
                 Auth::login($user);
-                return redirect()->route('dashboard');
+                return redirect()->route('dashboard')->with('success', __('Signed in with Google.'));
             }
-            
+
             // Check if user exists with this email
             $existingUser = User::where('email', $googleUser->email)->first();
-            
+
             if ($existingUser) {
                 // Link Google account to existing user
                 $existingUser->update([
@@ -51,11 +52,11 @@ class SocialAuthController extends Controller
                     'provider' => 'google',
                     'avatar' => $googleUser->avatar,
                 ]);
-                
+
                 Auth::login($existingUser);
-                return redirect()->route('dashboard');
+                return redirect()->route('dashboard')->with('success', __('Google account linked. Welcome back!'));
             }
-            
+
             // Create new user (admin role by default — entrepreneur)
             $adminRole = Role::where('nom', Role::ADMIN)->firstOrFail();
 
@@ -74,9 +75,20 @@ class SocialAuthController extends Controller
             $newUser->save();
 
             Auth::login($newUser);
-            return redirect()->route('dashboard');
-            
+            return redirect()->route('dashboard')->with('success', __('Account created with Google. Welcome!'));
+
         } catch (\Exception $e) {
+            Log::warning('Google OAuth callback failed', [
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'redirect_uri' => config('services.google.redirect'),
+                'has_code' => $request->filled('code'),
+                'has_state' => $request->filled('state'),
+                'oauth_error' => $request->query('error'),
+                'oauth_error_description' => $request->query('error_description'),
+                'file' => $e->getFile().':'.$e->getLine(),
+            ]);
+
             return redirect()->route('login')->with('error', __('Error connecting with Google: :error', ['error' => $e->getMessage()]));
         }
     }
@@ -92,33 +104,33 @@ class SocialAuthController extends Controller
     /**
      * Handle Apple OAuth callback
      */
-    public function handleAppleCallback()
+    public function handleAppleCallback(Request $request)
     {
         try {
             $appleUser = Socialite::driver('apple')->user();
-            
+
             // Check if user already exists with this Apple ID
             $user = User::where('apple_id', $appleUser->id)->first();
-            
+
             if ($user) {
                 Auth::login($user);
-                return redirect()->route('dashboard');
+                return redirect()->route('dashboard')->with('success', __('Signed in with Apple.'));
             }
-            
+
             // Check if user exists with this email
             $existingUser = User::where('email', $appleUser->email)->first();
-            
+
             if ($existingUser) {
                 // Link Apple account to existing user
                 $existingUser->update([
                     'apple_id' => $appleUser->id,
                     'provider' => 'apple',
                 ]);
-                
+
                 Auth::login($existingUser);
-                return redirect()->route('dashboard');
+                return redirect()->route('dashboard')->with('success', __('Apple account linked. Welcome back!'));
             }
-            
+
             // Create new user (admin role by default — entrepreneur)
             $adminRole = Role::where('nom', Role::ADMIN)->firstOrFail();
 
@@ -136,9 +148,20 @@ class SocialAuthController extends Controller
             $newUser->save();
 
             Auth::login($newUser);
-            return redirect()->route('dashboard');
-            
+            return redirect()->route('dashboard')->with('success', __('Account created with Apple. Welcome!'));
+
         } catch (\Exception $e) {
+            Log::warning('Apple OAuth callback failed', [
+                'exception' => get_class($e),
+                'message' => $e->getMessage(),
+                'redirect_uri' => config('services.apple.redirect'),
+                'has_code' => $request->filled('code'),
+                'has_state' => $request->filled('state'),
+                'oauth_error' => $request->query('error'),
+                'oauth_error_description' => $request->query('error_description'),
+                'file' => $e->getFile().':'.$e->getLine(),
+            ]);
+
             return redirect()->route('login')->with('error', __('Error connecting with Apple: :error', ['error' => $e->getMessage()]));
         }
     }
