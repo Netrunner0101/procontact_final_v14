@@ -148,7 +148,13 @@ CONTACT_ACTIVITE (
 
 ## Tables techniques Laravel
 
-`migrations`, `password_reset_tokens`, `sessions`, `cache`, `cache_locks`, `jobs`, `job_batches`, `failed_jobs`.
+| Table | Statut | Note |
+|-------|--------|------|
+| `migrations` | Active | Gérée par `php artisan migrate` |
+| `sessions` | Active | `SESSION_DRIVER=database` |
+| `cache`, `cache_locks` | Active | `CACHE_STORE=database` (utilisé par `Cache::remember` dans `StatistiqueController`, `ContactManager`) |
+| `jobs`, `job_batches`, `failed_jobs` | Active | `QUEUE_CONNECTION=database` (utilisé par `SendAppointmentEmail`, `PortalOtpMail`) |
+| `password_reset_tokens` | **Inerte** | Créée par défaut Laravel mais jamais lue/écrite : `AuthController::initiatePasswordReset()` stocke le jeton sur `users.password_reset_token` + `users.password_reset_expires` ; `Password::broker()` n'est jamais appelé |
 
 ## Cascade des suppressions (résumé)
 

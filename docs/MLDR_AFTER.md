@@ -130,6 +130,14 @@
 )
 ```
 
+### Tables inertes (Laravel framework) ⚠️
+
+| Table | Statut | Justification |
+|-------|--------|---------------|
+| `password_reset_tokens` | **Inerte** (jamais lue/écrite) | Le projet a sa propre implémentation de reset : `AuthController::initiatePasswordReset()` écrit `users.password_reset_token` + `users.password_reset_expires`, `AuthController::resetPassword()` les lit. `Password::broker()` n'est jamais invoqué, donc cette table reste vide. À conserver telle quelle (créée par défaut Laravel) ou à supprimer si on assume la divergence. |
+
+> Toutes les autres tables techniques (`migrations`, `sessions`, `cache`, `cache_locks`, `jobs`, `job_batches`, `failed_jobs`) restent activement utilisées par les drivers configurés en `database`.
+
 ## Diff récapitulatif
 
 | Δ | Table | Détail |
@@ -143,6 +151,7 @@
 | 🔁 | `rappels` | + `destinataire`, + `emails_cc` |
 | 🔁 | `contacts` | − `portal_token` (remplacé par jeton hashé) |
 | ❌ | `statistiques` | Code mort, supprimée |
+| ⚠️ | `password_reset_tokens` | Conservée (table Laravel par défaut) mais jamais lue/écrite — reset implémenté via `users.password_reset_token` |
 
 **Compte des tables métier : 12 → 16** (+5 portail/templates − 1 statistiques).
 
