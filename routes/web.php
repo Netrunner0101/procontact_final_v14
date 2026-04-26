@@ -153,7 +153,17 @@ Route::middleware(['auth', 'client'])->prefix('client')->name('client.')->group(
 Route::prefix('portal')->name('portal.')->group(function () {
     Route::get('/{token}', [PortalController::class, 'index'])->name('index');
     Route::get('/{token}/appointment/{appointmentId}', [PortalController::class, 'showAppointment'])->name('appointment');
+
+    // Notes CRUD — client-authored notes are shared with the entrepreneur and visible to the client
     Route::post('/{token}/appointment/{appointmentId}/note', [PortalController::class, 'storeNote'])->name('storeNote');
+    Route::patch('/{token}/note/{noteId}', [PortalController::class, 'updateNote'])->name('updateNote');
+    Route::delete('/{token}/note/{noteId}', [PortalController::class, 'deleteNote'])->name('deleteNote');
+
+    // Note templates
+    Route::get('/{token}/templates', [PortalController::class, 'templates'])->name('templates');
+    Route::post('/{token}/templates', [PortalController::class, 'storeTemplate'])->name('storeTemplate');
+    Route::patch('/{token}/templates/{templateId}', [PortalController::class, 'updateTemplate'])->name('updateTemplate');
+    Route::delete('/{token}/templates/{templateId}', [PortalController::class, 'deleteTemplate'])->name('deleteTemplate');
 });
 
 require __DIR__.'/auth.php';
