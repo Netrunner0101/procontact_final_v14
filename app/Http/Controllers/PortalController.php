@@ -7,29 +7,172 @@ use App\Models\Contact;
 use App\Models\Note;
 use App\Models\NoteTemplate;
 use App\Services\ClientPortalService;
+use App\Services\PortalAuthService;
 use App\Services\PortalTokenService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 
 class PortalController extends Controller
 {
     public function __construct(
         private PortalTokenService $tokenService,
         private ClientPortalService $portalService,
+        private PortalAuthService $authService,
     ) {}
 
     /**
-     * Display the client's appointment dashboard via magic-link.
-     * Includes upcoming appointments list + calendar data.
+     * Resolve the contact bound to the magic-link token.
+     * Returns null on invalid token (caller renders 403 view).
      */
-    public function index(string $token)
+    private function resolveContact(string $token): ?Contact
     {
         try {
-            $contact = $this->tokenService->validate($token);
+            return $this->tokenService->validate($token);
         } catch (InvalidTokenException $e) {
+            return null;
+        }
+    }
+
+    private function sessionKey(string $token): string
+    {
+        return 'portal_auth_' . substr(hash('sha256', $token), 0, 32);
+    }
+
+    /**
+     * Step 1: Magic-link landing.
+     * - Logs the visit.
+     * - If trusted device cookie validates → grant access immediately.
+     * - Otherwise → render the login page (email entry).
+     */
+    public function show(Request $request, string $token)
+    {
+        $contact = $this->resolveContact($token);
+        if (!$contact) {
             return response()->view('portal.error', [], 403);
         }
 
+        $this->authService->log($contact->id, 'token_visit', $request);
+
+        if ($request->session()->get($this->sessionKey($token))) {
+            return $this->dashboard($request, $token, $contact);
+        }
+
+        $rotated = $this->authService->validateTrustedDevice($contact, $request);
+        if ($rotated) {
+            $request->session()->put($this->sessionKey($token), true);
+            return $this->dashboard($request, $token, $contact)->withCookie($rotated);
+        }
+
+        return view('portal.login', [
+            'token' => $token,
+            'step' => 'email',
+        ]);
+    }
+
+    /**
+     * Step 2: Client submits their email.
+     * Always returns a generic "code sent" view to prevent enumeration.
+     */
+    public function requestOtp(Request $request, string $token)
+    {
+        $contact = $this->resolveContact($token);
+        if (!$contact) {
+            return response()->view('portal.error', [], 403);
+        }
+
+        $data = $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $this->authService->issueOtp($contact, $data['email'], $request);
+
+        return view('portal.login', [
+            'token' => $token,
+            'step' => 'otp',
+            'email' => $data['email'],
+        ]);
+    }
+
+    /**
+     * Step 3: Client submits the OTP. On success, set trusted-device cookie
+     * and redirect to the portal dashboard.
+     */
+    public function verifyOtp(Request $request, string $token)
+    {
+        $contact = $this->resolveContact($token);
+        if (!$contact) {
+            return response()->view('portal.error', [], 403);
+        }
+
+        $data = $request->validate([
+            'email' => 'required|email',
+            'code' => 'required|string|size:6',
+        ]);
+
+        $ok = $this->authService->verifyOtp($contact, $data['email'], $data['code'], $request);
+
+        if (!$ok) {
+            return back()
+                ->withInput(['email' => $data['email']])
+                ->withErrors(['code' => __('Invalid or expired code. Please try again.')])
+                ->with('portal_step', 'otp');
+        }
+
+        $cookie = $this->authService->issueTrustedDevice($contact, $request);
+        $request->session()->put($this->sessionKey($token), true);
+        $request->session()->regenerate();
+
+        return redirect()
+            ->route('portal.index', ['token' => $token])
+            ->withCookie($cookie);
+    }
+
+    /**
+     * Logout: revoke trusted device + clear session, return to login.
+     */
+    public function logout(Request $request, string $token)
+    {
+        $contact = $this->resolveContact($token);
+        if ($contact) {
+            $this->authService->revokeTrustedDevice($contact, $request);
+        }
+
+        $request->session()->forget($this->sessionKey($token));
+
+        return redirect()
+            ->route('portal.login', ['token' => $token])
+            ->withCookie(Cookie::forget(PortalAuthService::COOKIE_NAME, '/portal'));
+    }
+
+    /**
+     * Right-of-erasure entry point (Art. 17 GDPR).
+     * Revokes all access immediately and queues the entrepreneur notification.
+     */
+    public function requestErasure(Request $request, string $token)
+    {
+        $contact = $this->resolveContact($token);
+        if (!$contact) {
+            return response()->view('portal.error', [], 403);
+        }
+
+        $this->authService->log($contact->id, 'erasure_requested', $request);
+        $this->authService->revokeAllTokens($contact);
+        $this->authService->revokeAllTrustedDevices($contact);
+
+        $request->session()->forget($this->sessionKey($token));
+
+        return view('portal.erasure-confirmed', [
+            'contact' => $contact,
+        ]);
+    }
+
+    /**
+     * Authenticated dashboard — same logic as the previous index().
+     * Called from show() when the visitor is already authenticated.
+     */
+    private function dashboard(Request $request, string $token, Contact $contact)
+    {
         $appointments = $this->portalService->getAppointments($contact);
         $now = Carbon::now();
 
@@ -46,7 +189,7 @@ class PortalController extends Controller
             ->sortByDesc('date_debut')
             ->values();
 
-        return view('portal.index', [
+        return response()->view('portal.index', [
             'contact' => $contact,
             'appointments' => $appointments,
             'upcoming' => $upcoming,
@@ -56,13 +199,33 @@ class PortalController extends Controller
     }
 
     /**
-     * Display appointment details with shared notes and CRUD form.
+     * Index — kept for the route name; now just delegates to show().
      */
-    public function showAppointment(string $token, int $appointmentId)
+    public function index(Request $request, string $token)
     {
-        try {
-            $contact = $this->tokenService->validate($token);
-        } catch (InvalidTokenException $e) {
+        return $this->show($request, $token);
+    }
+
+    /**
+     * Login page (no-auth GET helper used by middleware redirects).
+     */
+    public function login(Request $request, string $token)
+    {
+        if (!$this->resolveContact($token)) {
+            return response()->view('portal.error', [], 403);
+        }
+
+        return view('portal.login', [
+            'token' => $token,
+            'step' => session('portal_step', 'email'),
+            'email' => session('email'),
+        ]);
+    }
+
+    public function showAppointment(Request $request, string $token, int $appointmentId)
+    {
+        $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
+        if (!$contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -88,14 +251,10 @@ class PortalController extends Controller
         ]);
     }
 
-    /**
-     * Store a new note from the client (shared with the entrepreneur AND visible to client).
-     */
     public function storeNote(Request $request, string $token, int $appointmentId)
     {
-        try {
-            $contact = $this->tokenService->validate($token);
-        } catch (InvalidTokenException $e) {
+        $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
+        if (!$contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -124,14 +283,10 @@ class PortalController extends Controller
             ->with('success', __('Your note has been added.'));
     }
 
-    /**
-     * Update an existing note created by this client.
-     */
     public function updateNote(Request $request, string $token, int $noteId)
     {
-        try {
-            $contact = $this->tokenService->validate($token);
-        } catch (InvalidTokenException $e) {
+        $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
+        if (!$contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -158,14 +313,10 @@ class PortalController extends Controller
             ->with('success', __('Your note has been updated.'));
     }
 
-    /**
-     * Delete a note created by this client.
-     */
-    public function deleteNote(string $token, int $noteId)
+    public function deleteNote(Request $request, string $token, int $noteId)
     {
-        try {
-            $contact = $this->tokenService->validate($token);
-        } catch (InvalidTokenException $e) {
+        $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
+        if (!$contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -182,14 +333,10 @@ class PortalController extends Controller
             ->with('success', __('Your note has been deleted.'));
     }
 
-    /**
-     * List the client's note templates.
-     */
-    public function templates(string $token)
+    public function templates(Request $request, string $token)
     {
-        try {
-            $contact = $this->tokenService->validate($token);
-        } catch (InvalidTokenException $e) {
+        $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
+        if (!$contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -204,14 +351,10 @@ class PortalController extends Controller
         ]);
     }
 
-    /**
-     * Create a new note template owned by this client.
-     */
     public function storeTemplate(Request $request, string $token)
     {
-        try {
-            $contact = $this->tokenService->validate($token);
-        } catch (InvalidTokenException $e) {
+        $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
+        if (!$contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -235,14 +378,10 @@ class PortalController extends Controller
             ->with('success', __('Template created.'));
     }
 
-    /**
-     * Update one of the client's templates.
-     */
     public function updateTemplate(Request $request, string $token, int $templateId)
     {
-        try {
-            $contact = $this->tokenService->validate($token);
-        } catch (InvalidTokenException $e) {
+        $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
+        if (!$contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -265,14 +404,10 @@ class PortalController extends Controller
             ->with('success', __('Template updated.'));
     }
 
-    /**
-     * Delete one of the client's templates.
-     */
-    public function deleteTemplate(string $token, int $templateId)
+    public function deleteTemplate(Request $request, string $token, int $templateId)
     {
-        try {
-            $contact = $this->tokenService->validate($token);
-        } catch (InvalidTokenException $e) {
+        $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
+        if (!$contact) {
             return response()->view('portal.error', [], 403);
         }
 

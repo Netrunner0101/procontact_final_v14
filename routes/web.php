@@ -101,6 +101,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
         return view('statistics-dashboard');
     })->name('statistics.dashboard');
     
+    // Portal access management (admin view of access log + revoke)
+    Route::get('contacts/{contact}/portal-access', [\App\Http\Controllers\AdminPortalAccessController::class, 'show'])->name('contacts.portal-access');
+    Route::post('contacts/{contact}/portal-access/revoke', [\App\Http\Controllers\AdminPortalAccessController::class, 'revoke'])->name('contacts.portal-access.revoke');
+
     Route::resource('contacts', ContactController::class);
     Route::resource('activites', ActiviteController::class);
     Route::resource('rendez-vous', RendezVousController::class)->parameters(['rendez-vous' => 'rendezVous']);
@@ -149,21 +153,46 @@ Route::middleware(['auth', 'client'])->prefix('client')->name('client.')->group(
 
 
 
-// Client Portal — Magic-Link (public, no auth required)
-Route::prefix('portal')->name('portal.')->group(function () {
-    Route::get('/{token}', [PortalController::class, 'index'])->name('index');
-    Route::get('/{token}/appointment/{appointmentId}', [PortalController::class, 'showAppointment'])->name('appointment');
+// Client Portal — Magic-Link + OTP-verified access (public, no Laravel auth)
+Route::prefix('portal')->name('portal.')->middleware('portal.headers')->group(function () {
 
-    // Notes CRUD — client-authored notes are shared with the entrepreneur and visible to the client
-    Route::post('/{token}/appointment/{appointmentId}/note', [PortalController::class, 'storeNote'])->name('storeNote');
-    Route::patch('/{token}/note/{noteId}', [PortalController::class, 'updateNote'])->name('updateNote');
-    Route::delete('/{token}/note/{noteId}', [PortalController::class, 'deleteNote'])->name('deleteNote');
+    // Magic-link landing — show() decides login vs dashboard based on session/cookie state
+    Route::get('/{token}', [PortalController::class, 'show'])
+        ->middleware('throttle:portal-token-visit')
+        ->name('index');
 
-    // Note templates
-    Route::get('/{token}/templates', [PortalController::class, 'templates'])->name('templates');
-    Route::post('/{token}/templates', [PortalController::class, 'storeTemplate'])->name('storeTemplate');
-    Route::patch('/{token}/templates/{templateId}', [PortalController::class, 'updateTemplate'])->name('updateTemplate');
-    Route::delete('/{token}/templates/{templateId}', [PortalController::class, 'deleteTemplate'])->name('deleteTemplate');
+    Route::get('/{token}/login', [PortalController::class, 'login'])
+        ->middleware('throttle:portal-token-visit')
+        ->name('login');
+
+    Route::post('/{token}/request-otp', [PortalController::class, 'requestOtp'])
+        ->middleware('throttle:portal-otp-request')
+        ->name('requestOtp');
+
+    Route::post('/{token}/verify-otp', [PortalController::class, 'verifyOtp'])
+        ->middleware('throttle:portal-otp-verify')
+        ->name('verifyOtp');
+
+    Route::post('/{token}/logout', [PortalController::class, 'logout'])->name('logout');
+
+    Route::get('/{token}/privacy', [\App\Http\Controllers\PortalPrivacyController::class, 'show'])->name('privacy');
+    Route::post('/{token}/erasure', [PortalController::class, 'requestErasure'])->name('erasure');
+
+    // Authenticated portal pages — require valid OTP session OR trusted-device cookie
+    Route::middleware('portal.auth')->group(function () {
+        Route::get('/{token}/appointment/{appointmentId}', [PortalController::class, 'showAppointment'])->name('appointment');
+
+        // Notes CRUD
+        Route::post('/{token}/appointment/{appointmentId}/note', [PortalController::class, 'storeNote'])->name('storeNote');
+        Route::patch('/{token}/note/{noteId}', [PortalController::class, 'updateNote'])->name('updateNote');
+        Route::delete('/{token}/note/{noteId}', [PortalController::class, 'deleteNote'])->name('deleteNote');
+
+        // Note templates
+        Route::get('/{token}/templates', [PortalController::class, 'templates'])->name('templates');
+        Route::post('/{token}/templates', [PortalController::class, 'storeTemplate'])->name('storeTemplate');
+        Route::patch('/{token}/templates/{templateId}', [PortalController::class, 'updateTemplate'])->name('updateTemplate');
+        Route::delete('/{token}/templates/{templateId}', [PortalController::class, 'deleteTemplate'])->name('deleteTemplate');
+    });
 });
 
 require __DIR__.'/auth.php';
