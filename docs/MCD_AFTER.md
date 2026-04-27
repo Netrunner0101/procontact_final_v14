@@ -1,8 +1,10 @@
 # MCD — AFTER update
 
-**Pro Contact — Modèle Conceptuel de Données (état actuel + nettoyage `statistiques`)**
+**Pro Contact — Modèle Conceptuel de Données (état actuel)**
 
 Stack: Laravel 11 / PostgreSQL
+
+> `STATISTIQUE` est conservée comme entité réservée — schéma stable, prête pour des agrégats matérialisés futurs. Aujourd'hui les chiffres sont calculés à la volée par `StatistiqueController`, mais l'entité reste dans le modèle.
 
 ---
 
@@ -29,6 +31,9 @@ erDiagram
     CONTACT }o--o{ ACTIVITE : "participer N:M"
     RENDEZ_VOUS ||--o{ NOTE : "avoir (0,N)"
     RENDEZ_VOUS ||--o{ RAPPEL : "avoir (0,N)"
+    RENDEZ_VOUS ||--o{ STATISTIQUE : "generer-reserve (0,N)"
+    ACTIVITE ||--o{ STATISTIQUE : "generer-reserve (0,N)"
+    CONTACT ||--o{ STATISTIQUE : "generer-reserve (0,N)"
 
     ROLE { string nom; string description }
     UTILISATEUR {
@@ -83,6 +88,11 @@ erDiagram
     }
     EMAIL { string email }
     NUMERO_TELEPHONE { string numero_telephone }
+    STATISTIQUE {
+        int activite_id
+        int rendez_vous_id
+        int contact_id
+    }
     CLIENT_PORTAL_TOKEN {
         uuid id
         string token_hash
@@ -126,7 +136,7 @@ erDiagram
 | vérifier | CONTACT | 1,1 | CLIENT_PORTAL_OTP | 0,N | **+** |
 | mémoriser | CONTACT | 1,1 | CLIENT_PORTAL_TRUSTED_DEVICE | 0,N | **+** |
 | tracer | CONTACT | 0,1 | CLIENT_PORTAL_ACCESS_LOG | 0,N | **+** |
-| générer | RENDEZ_VOUS / ACTIVITE / CONTACT | — | STATISTIQUE | — | **— (supprimé)** |
+| générer | RENDEZ_VOUS / ACTIVITE / CONTACT | — | STATISTIQUE | — | **réservée (non alimentée à ce jour)** |
 
 ## 3. Changements vs. état initial
 
@@ -140,11 +150,11 @@ erDiagram
 | `CLIENT_PORTAL_TRUSTED_DEVICE` | Cookie « se souvenir de cet appareil » — empreinte du cookie + UA, expire après 30 j |
 | `CLIENT_PORTAL_ACCESS_LOG` | Journal RGPD des événements portail (login, échec OTP, révocation…) |
 
-### Entités supprimées (1)
+### Entités réservées (1)
 
 | Entité | Raison |
 |--------|--------|
-| `STATISTIQUE` | Aucun code n'écrit ni ne lit cette table. Les statistiques sont calculées à la volée à partir de `CONTACTS / ACTIVITES / RENDEZ_VOUS / RAPPELS / NOTES` via des agrégats SQL. |
+| `STATISTIQUE` | Conservée mais non alimentée. Aucun code n'écrit ni ne lit la table aujourd'hui ; les statistiques sont calculées à la volée à partir de `CONTACTS / ACTIVITES / RENDEZ_VOUS / RAPPELS / NOTES`. Schéma stable pour matérialisation future (snapshots historiques, cache d'agrégats). |
 
 ### Attributs ajoutés / modifiés
 

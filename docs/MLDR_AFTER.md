@@ -1,6 +1,8 @@
 # MLDR — AFTER update
 
-**Pro Contact — Modèle Logique de Données Relationnel (état actuel + nettoyage `statistiques`)**
+**Pro Contact — Modèle Logique de Données Relationnel (état actuel)**
+
+> `statistiques` est **conservée** comme table réservée (schéma stable, non alimentée à ce jour). `password_reset_tokens` est **conservée** mais inerte — le projet utilise une implémentation custom sur `users.password_reset_token / password_reset_expires` (voir `TABLES_USAGE_AUDIT.md`).
 
 ---
 
@@ -120,21 +122,29 @@
 )
 ```
 
-### Tables supprimées ❌
+### Tables réservées 🟡
 
 ```
-❌ STATISTIQUES (
-    Aucun code n'écrit ni ne lit cette table.
-    Les agrégats sont calculés à la volée par StatistiqueController via selectRaw
-    sur CONTACTS / ACTIVITES / RENDEZ_VOUS / RAPPELS / NOTES.
+🟡 STATISTIQUES (
+    id              : BIGINT UNSIGNED  PK,
+    #activite_id    : BIGINT UNSIGNED  NOT NULL  FK -> ACTIVITES(id) CASCADE,
+    #rendez_vous_id : BIGINT UNSIGNED  NOT NULL  FK -> RENDEZ_VOUS(id) CASCADE,
+    #contact_id     : BIGINT UNSIGNED  NOT NULL  FK -> CONTACTS(id) CASCADE,
+    timestamps
 )
+
+Statut : conservée mais non alimentée.
+Les agrégats sont calculés à la volée par StatistiqueController via selectRaw
+sur CONTACTS / ACTIVITES / RENDEZ_VOUS / RAPPELS / NOTES.
+Schéma stable pour matérialisation future (snapshots historiques,
+cache pré-calculé pour dashboards lourds).
 ```
 
 ### Tables inertes (Laravel framework) ⚠️
 
 | Table | Statut | Justification |
 |-------|--------|---------------|
-| `password_reset_tokens` | **Inerte** (jamais lue/écrite) | Le projet a sa propre implémentation de reset : `AuthController::initiatePasswordReset()` écrit `users.password_reset_token` + `users.password_reset_expires`, `AuthController::resetPassword()` les lit. `Password::broker()` n'est jamais invoqué, donc cette table reste vide. À conserver telle quelle (créée par défaut Laravel) ou à supprimer si on assume la divergence. |
+| `password_reset_tokens` | **Inerte** (jamais lue/écrite) | Le projet a sa propre implémentation de reset : `AuthController::initiatePasswordReset()` écrit `users.password_reset_token` + `users.password_reset_expires`, `AuthController::resetPassword()` les lit. `Password::broker()` n'est jamais invoqué, donc cette table reste vide. **Conservée** (créée par défaut Laravel, sans coût tant qu'elle est vide). Voir `TABLES_USAGE_AUDIT.md` pour le diagramme de séquence du reset. |
 
 > Toutes les autres tables techniques (`migrations`, `sessions`, `cache`, `cache_locks`, `jobs`, `job_batches`, `failed_jobs`) restent activement utilisées par les drivers configurés en `database`.
 
@@ -150,10 +160,10 @@
 | 🔁 | `rendez_vous` | + `statut` (default `'scheduled'`) |
 | 🔁 | `rappels` | + `destinataire`, + `emails_cc` |
 | 🔁 | `contacts` | − `portal_token` (remplacé par jeton hashé) |
-| ❌ | `statistiques` | Code mort, supprimée |
+| 🟡 | `statistiques` | Conservée comme table réservée — non alimentée à ce jour (stats calculées à la volée) |
 | ⚠️ | `password_reset_tokens` | Conservée (table Laravel par défaut) mais jamais lue/écrite — reset implémenté via `users.password_reset_token` |
 
-**Compte des tables métier : 12 → 16** (+5 portail/templates − 1 statistiques).
+**Compte des tables métier : 12 → 17** (+5 portail/templates ; `statistiques` conservée).
 
 ## Cascade des suppressions (mis à jour)
 
@@ -163,7 +173,8 @@ DELETE CONTACT     -> EMAILS / NUMERO_TELEPHONES / CONTACT_ACTIVITE / RENDEZ_VOU
                       / NOTE_TEMPLATES / CLIENT_PORTAL_TOKENS
                       / CLIENT_PORTAL_OTPS / CLIENT_PORTAL_TRUSTED_DEVICES
                       / CLIENT_PORTAL_ACCESS_LOG (SET NULL)
-DELETE RENDEZ_VOUS -> NOTES / RAPPELS
-DELETE ACTIVITE    -> CONTACT_ACTIVITE / RENDEZ_VOUS
+                      / STATISTIQUES (cascade conservée pour future utilisation)
+DELETE RENDEZ_VOUS -> NOTES / RAPPELS / STATISTIQUES
+DELETE ACTIVITE    -> CONTACT_ACTIVITE / RENDEZ_VOUS / STATISTIQUES
 DELETE ROLE        -> RESTRICT
 ```
