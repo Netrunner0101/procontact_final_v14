@@ -3,91 +3,301 @@
 @section('title', $activite->nom . ' - Pro Contact')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-4xl mx-auto">
+<div class="container mx-auto px-4 py-8" x-data="{ tab: 'rendezVous' }">
+    <div class="max-w-6xl mx-auto">
         <!-- Header -->
-        <div class="flex justify-between items-start mb-8">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900">{{ $activite->nom }}</h1>
-                <p class="text-gray-600 mt-2">{{ __('Activity details') }}</p>
+        <div class="flex flex-wrap justify-between items-start gap-4 mb-8">
+            <div class="flex items-start gap-4">
+                <a href="{{ route('dashboard') }}"
+                   class="inline-flex items-center px-3 py-2 rounded-lg transition-colors mt-1"
+                   style="background: #f5f3f0; color: #44483e;"
+                   title="{{ __('Back') }}">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="text-3xl font-bold" style="color: #1b1c1a;">{{ $activite->nom }}</h1>
+                    <p class="text-sm mt-1" style="color: #75786c;">{{ __('Activity details') }}</p>
+                </div>
             </div>
             <div class="flex space-x-3">
-                <a href="{{ route('activites.edit', $activite) }}" 
-                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-200">
-                    {{ __('Edit') }}
+                <a href="{{ route('activites.edit', $activite) }}"
+                   class="inline-flex items-center text-white px-4 py-2 rounded-lg transition-colors"
+                   style="background: #843728;">
+                    <i class="fas fa-edit mr-2"></i>{{ __('Edit') }}
                 </a>
                 <form action="{{ route('activites.destroy', $activite) }}" method="POST" class="inline">
                     @csrf
                     @method('DELETE')
                     <button type="submit"
-                            class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200"
+                            class="inline-flex items-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
                             onclick="return confirm('{{ __('Are you sure you want to delete this activity?') }}')">
-                        {{ __('Delete') }}
+                        <i class="fas fa-trash mr-2"></i>{{ __('Delete') }}
                     </button>
                 </form>
             </div>
         </div>
 
+        <!-- KPI Strip (always visible) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="rounded-xl p-4 flex items-center gap-3" style="background: white; box-shadow: 0 2px 8px rgba(27,28,26,0.04);">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style="background: #fef5f3;">
+                    <i class="fas fa-users" style="color: #843728;"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-2xl font-bold leading-none" style="color: #843728;">{{ $stats['contacts_count'] }}</p>
+                    <p class="text-xs font-medium mt-1" style="color: #44483e;">{{ __('Linked contacts') }}</p>
+                </div>
+            </div>
+            <div class="rounded-xl p-4 flex items-center gap-3" style="background: white; box-shadow: 0 2px 8px rgba(27,28,26,0.04);">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style="background: #f0faf0;">
+                    <i class="fas fa-calendar-alt" style="color: #3a6a3a;"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-2xl font-bold leading-none" style="color: #3a6a3a;">{{ $stats['total_rdv'] }}</p>
+                    <p class="text-xs font-medium mt-1" style="color: #44483e;">{{ __('Appointments') }}</p>
+                </div>
+            </div>
+            <div class="rounded-xl p-4 flex items-center gap-3" style="background: white; box-shadow: 0 2px 8px rgba(27,28,26,0.04);">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style="background: #fbf1d8;">
+                    <i class="fas fa-calendar-day" style="color: #8a6e2e;"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-2xl font-bold leading-none" style="color: #8a6e2e;">{{ $stats['upcoming_rdv'] }}</p>
+                    <p class="text-xs font-medium mt-1" style="color: #44483e;">{{ __('Upcoming') }}</p>
+                </div>
+            </div>
+            <div class="rounded-xl p-4 flex items-center gap-3" style="background: white; box-shadow: 0 2px 8px rgba(27,28,26,0.04);">
+                <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style="background: #ece7f7;">
+                    <i class="fas fa-sticky-note" style="color: #5d4ba1;"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-2xl font-bold leading-none" style="color: #5d4ba1;">{{ $stats['notes_count'] }}</p>
+                    <p class="text-xs font-medium mt-1" style="color: #44483e;">{{ __('Notes') }}</p>
+                </div>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Main Information -->
+            <!-- Main column -->
             <div class="lg:col-span-2 space-y-6">
-                <!-- Activity Details Card -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Activity information') }}</h2>
-                    
+                <!-- Activity Information Card -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h2 class="text-lg font-semibold mb-4" style="color: #1b1c1a;">{{ __('Activity information') }}</h2>
+
                     @if($activite->image)
                         <div class="mb-6">
-                            <img src="{{ Storage::url($activite->image) }}" alt="{{ $activite->nom }}" 
+                            <img src="{{ Storage::url($activite->image) }}" alt="{{ $activite->nom }}"
                                  class="w-full h-48 object-cover rounded-lg">
                         </div>
                     @endif
 
-                    <div class="space-y-4">
+                    <dl class="space-y-4">
                         <div>
-                            <label class="text-sm font-medium text-gray-500">{{ __('Description') }}</label>
-                            <p class="mt-1 text-gray-900">{{ $activite->description }}</p>
+                            <dt class="text-xs font-semibold uppercase tracking-wider" style="color: #75786c;">{{ __('Description') }}</dt>
+                            <dd class="mt-1" style="color: #1b1c1a;">{{ $activite->description }}</dd>
                         </div>
 
                         @if($activite->email)
                             <div>
-                                <label class="text-sm font-medium text-gray-500">{{ __('Email') }}</label>
-                                <p class="mt-1 text-gray-900">
-                                    <a href="mailto:{{ $activite->email }}" class="text-blue-600 hover:text-blue-800">
+                                <dt class="text-xs font-semibold uppercase tracking-wider" style="color: #75786c;">{{ __('Email') }}</dt>
+                                <dd class="mt-1">
+                                    <a href="mailto:{{ $activite->email }}" class="hover:underline" style="color: #843728;">
                                         {{ $activite->email }}
                                     </a>
-                                </p>
+                                </dd>
                             </div>
                         @endif
 
                         @if($activite->numero_telephone)
                             <div>
-                                <label class="text-sm font-medium text-gray-500">{{ __('Phone') }}</label>
-                                <p class="mt-1 text-gray-900">
-                                    <a href="tel:{{ $activite->numero_telephone }}" class="text-blue-600 hover:text-blue-800">
+                                <dt class="text-xs font-semibold uppercase tracking-wider" style="color: #75786c;">{{ __('Phone') }}</dt>
+                                <dd class="mt-1">
+                                    <a href="tel:{{ $activite->numero_telephone }}" class="hover:underline" style="color: #843728;">
                                         {{ $activite->numero_telephone }}
                                     </a>
-                                </p>
+                                </dd>
                             </div>
                         @endif
 
                         <div>
-                            <label class="text-sm font-medium text-gray-500">{{ __('Created on') }}</label>
-                            <p class="mt-1 text-gray-900">{{ $activite->created_at->format('m/d/Y \a\t H:i') }}</p>
+                            <dt class="text-xs font-semibold uppercase tracking-wider" style="color: #75786c;">{{ __('Created on') }}</dt>
+                            <dd class="mt-1" style="color: #1b1c1a;">{{ $activite->created_at->format('m/d/Y') }} {{ __('at') }} {{ $activite->created_at->format('H:i') }}</dd>
                         </div>
+                    </dl>
+                </div>
+
+                <!-- Tabs: Appointments + Statistics -->
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                    <!-- Tab Navigation -->
+                    <div class="flex border-b" style="border-color: rgba(27,28,26,0.06);" role="tablist">
+                        <button type="button"
+                                role="tab"
+                                @click="tab = 'rendezVous'"
+                                :aria-selected="tab === 'rendezVous'"
+                                class="flex-1 flex items-center justify-center gap-2 px-4 py-4 text-sm font-semibold transition-colors"
+                                :class="tab === 'rendezVous' ? 'tab-active' : 'tab-inactive'">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>{{ __('Appointments') }}</span>
+                            <span class="ml-1 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1.5 rounded-full text-xs font-bold"
+                                  style="background: #f5f3f0; color: #44483e;">{{ $stats['total_rdv'] }}</span>
+                        </button>
+                        <button type="button"
+                                role="tab"
+                                @click="tab = 'stats'"
+                                :aria-selected="tab === 'stats'"
+                                class="flex-1 flex items-center justify-center gap-2 px-4 py-4 text-sm font-semibold transition-colors"
+                                :class="tab === 'stats' ? 'tab-active' : 'tab-inactive'">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>{{ __('Statistics') }}</span>
+                        </button>
+                    </div>
+
+                    <!-- Appointments Tab -->
+                    <div x-show="tab === 'rendezVous'" x-cloak role="tabpanel" class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-lg" style="color: #1b1c1a;">{{ __('Appointments') }}</h3>
+                            <a href="{{ route('rendez-vous.create', ['activite_id' => $activite->id]) }}"
+                               class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white rounded-lg transition-colors"
+                               style="background: #843728;">
+                                <i class="fas fa-plus mr-1.5"></i>{{ __('New appointment') }}
+                            </a>
+                        </div>
+
+                        @if($activite->rendezVous->count() > 0)
+                            @php
+                                $upcoming = $activite->rendezVous
+                                    ->filter(fn ($r) => $r->date_debut && $r->date_debut->gte(now()->startOfDay()))
+                                    ->sortBy([['date_debut', 'asc'], ['heure_debut', 'asc']])
+                                    ->values();
+                                $past = $activite->rendezVous
+                                    ->filter(fn ($r) => $r->date_debut && $r->date_debut->lt(now()->startOfDay()))
+                                    ->sortByDesc('date_debut')
+                                    ->values();
+                            @endphp
+
+                            @if($upcoming->count() > 0)
+                                <h4 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #75786c;">
+                                    {{ __('Upcoming') }} ({{ $upcoming->count() }})
+                                </h4>
+                                <ul class="space-y-2 mb-6">
+                                    @foreach($upcoming as $rdv)
+                                        @include('activites.partials.rdv-row', ['rdv' => $rdv])
+                                    @endforeach
+                                </ul>
+                            @endif
+
+                            @if($past->count() > 0)
+                                <h4 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #75786c;">
+                                    {{ __('Past') }} ({{ $past->count() }})
+                                </h4>
+                                <ul class="space-y-2">
+                                    @foreach($past->take(10) as $rdv)
+                                        @include('activites.partials.rdv-row', ['rdv' => $rdv, 'isPast' => true])
+                                    @endforeach
+                                </ul>
+                                @if($past->count() > 10)
+                                    <p class="mt-3 text-xs text-center" style="color: #75786c;">
+                                        {{ __('Showing the 10 most recent past appointments.') }}
+                                    </p>
+                                @endif
+                            @endif
+                        @else
+                            <div class="text-center py-12 rounded-lg" style="background: #fbf9f5; border: 1px dashed rgba(27,28,26,0.08);">
+                                <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-3" style="background: white;">
+                                    <i class="far fa-calendar text-2xl" style="color: #c5c8b9;"></i>
+                                </div>
+                                <p class="font-medium mb-1" style="color: #1b1c1a;">{{ __('No appointments') }}</p>
+                                <p class="text-sm mb-4" style="color: #75786c;">{{ __('Start by creating your first appointment.') }}</p>
+                                <a href="{{ route('rendez-vous.create', ['activite_id' => $activite->id]) }}"
+                                   class="inline-flex items-center px-4 py-2 text-sm font-semibold text-white rounded-lg transition-colors"
+                                   style="background: #843728;">
+                                    <i class="fas fa-plus mr-2"></i>{{ __('New appointment') }}
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Statistics Tab -->
+                    <div x-show="tab === 'stats'" x-cloak role="tabpanel" class="p-6">
+                        <h3 class="font-semibold text-lg mb-4" style="color: #1b1c1a;">{{ __('Statistics') }}</h3>
+
+                        <!-- Snapshot grid -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                            <div class="rounded-lg p-4 text-center" style="background: #fbf9f5;">
+                                <p class="text-2xl font-bold" style="color: #843728;">{{ $stats['total_rdv'] }}</p>
+                                <p class="text-xs font-medium mt-1" style="color: #44483e;">{{ __('Appointments') }}</p>
+                            </div>
+                            <div class="rounded-lg p-4 text-center" style="background: #fbf9f5;">
+                                <p class="text-2xl font-bold" style="color: #3a6a3a;">{{ $stats['upcoming_rdv'] }}</p>
+                                <p class="text-xs font-medium mt-1" style="color: #44483e;">{{ __('Upcoming') }}</p>
+                            </div>
+                            <div class="rounded-lg p-4 text-center" style="background: #fbf9f5;">
+                                <p class="text-2xl font-bold" style="color: #8a6e2e;">{{ $stats['today_rdv'] }}</p>
+                                <p class="text-xs font-medium mt-1" style="color: #44483e;">{{ __('Today') }}</p>
+                            </div>
+                            <div class="rounded-lg p-4 text-center" style="background: #fbf9f5;">
+                                <p class="text-2xl font-bold" style="color: #75786c;">{{ $stats['past_rdv'] }}</p>
+                                <p class="text-xs font-medium mt-1" style="color: #44483e;">{{ __('Past') }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Status distribution -->
+                        @if($stats['rdv_by_status']->count() > 0)
+                            <h4 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #75786c;">
+                                {{ __('Status Distribution') }}
+                            </h4>
+                            @php
+                                $statusColors = [
+                                    'scheduled' => '#8a6e2e',
+                                    'confirmed' => '#3a6a3a',
+                                    'completed' => '#5d4ba1',
+                                    'cancelled' => '#b54848',
+                                    'no_show'   => '#75786c',
+                                ];
+                            @endphp
+                            <div class="space-y-3 mb-6">
+                                @foreach(\App\Models\RendezVous::STATUTS as $statusKey => $statusLabel)
+                                    @php
+                                        $count = $stats['rdv_by_status'][$statusKey] ?? 0;
+                                        $pct = $stats['total_rdv'] > 0 ? round(($count / $stats['total_rdv']) * 100) : 0;
+                                        $color = $statusColors[$statusKey] ?? '#843728';
+                                    @endphp
+                                    <div>
+                                        <div class="flex items-center justify-between text-sm mb-1">
+                                            <span style="color: #1b1c1a;">{{ __($statusLabel) }}</span>
+                                            <span class="font-semibold" style="color: #44483e;">{{ $count }} <span class="text-xs" style="color: #75786c;">({{ $pct }}%)</span></span>
+                                        </div>
+                                        <div class="h-2 rounded-full overflow-hidden" style="background: #f5f3f0;">
+                                            <div class="h-full rounded-full transition-all"
+                                                 style="width: {{ $pct }}%; background: {{ $color }};"></div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        <!-- Detailed report link -->
+                        <a href="{{ route('statistiques.activite', $activite) }}"
+                           class="inline-flex items-center justify-center w-full px-4 py-3 rounded-lg font-semibold text-sm transition-colors"
+                           style="background: #fbf9f5; color: #843728;">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            {{ __('Detailed activity analysis') }}
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
                     </div>
                 </div>
 
                 <!-- Associated Notes -->
                 @if($activite->notes->count() > 0)
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h2 class="text-xl font-semibold text-gray-900 mb-4">{{ __('Associated notes') }}</h2>
-                        <div class="space-y-4">
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h2 class="text-lg font-semibold mb-4" style="color: #1b1c1a;">{{ __('Associated notes') }}</h2>
+                        <div class="space-y-3">
                             @foreach($activite->notes as $note)
-                                <div class="border-l-4 border-blue-500 pl-4 py-2">
-                                    <h3 class="font-medium text-gray-900">{{ $note->titre }}</h3>
-                                    <p class="text-gray-600 mt-1">{{ $note->commentaire }}</p>
-                                    <p class="text-xs text-gray-500 mt-2">
-                                        {{ $note->date_create->format('m/d/Y \a\t H:i') }}
+                                <div class="border-l-4 pl-4 py-2" style="border-color: #843728;">
+                                    <h3 class="font-medium" style="color: #1b1c1a;">{{ $note->titre }}</h3>
+                                    <p class="mt-1" style="color: #44483e;">{{ $note->commentaire }}</p>
+                                    <p class="text-xs mt-2" style="color: #75786c;">
+                                        {{ $note->date_create->format('m/d/Y') }} {{ __('at') }} {{ $note->date_create->format('H:i') }}
                                     </p>
                                 </div>
                             @endforeach
@@ -98,83 +308,65 @@
 
             <!-- Sidebar -->
             <div class="space-y-6">
-                <!-- Quick Stats -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Statistics') }}</h3>
-                    <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">{{ __('Linked contacts') }}</span>
-                            <span class="font-medium">{{ $activite->contacts->count() }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">{{ __('Appointments') }}</span>
-                            <span class="font-medium">{{ $activite->rendezVous->count() }}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">{{ __('Notes') }}</span>
-                            <span class="font-medium">{{ $activite->notes->count() }}</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Linked Contacts -->
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="bg-white rounded-xl shadow-sm p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900">{{ __('Linked contacts') }}</h3>
+                        <h3 class="text-lg font-semibold" style="color: #1b1c1a;">{{ __('Linked contacts') }}</h3>
                         <button type="button" id="addContactBtn"
-                                class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition duration-200">
-                            {{ __('+ Add') }}
+                                class="inline-flex items-center text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                                style="background: #3a6a3a;">
+                            <i class="fas fa-plus mr-1"></i>{{ __('Add') }}
                         </button>
                     </div>
 
                     @if($activite->contacts->count() > 0)
-                        <div class="space-y-3">
+                        <ul class="space-y-2">
                             @foreach($activite->contacts as $contact)
-                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                    <div>
-                                        <p class="font-medium text-gray-900">
+                                <li class="flex items-center justify-between p-3 rounded-lg" style="background: #fbf9f5;">
+                                    <div class="min-w-0">
+                                        <p class="font-medium truncate" style="color: #1b1c1a;">
                                             {{ $contact->prenom }} {{ $contact->nom }}
                                         </p>
-                                        <p class="text-sm text-gray-600">{{ $contact->ville ?? __('City not specified') }}</p>
+                                        <p class="text-xs truncate" style="color: #75786c;">{{ $contact->ville ?? __('City not specified') }}</p>
                                     </div>
-                                    <div class="flex space-x-2">
-                                        <a href="{{ route('contacts.show', $contact) }}" 
-                                           class="text-blue-600 hover:text-blue-800 text-sm">{{ __('View') }}</a>
+                                    <div class="flex items-center gap-2 flex-shrink-0">
+                                        <a href="{{ route('contacts.show', $contact) }}"
+                                           class="text-xs font-medium hover:underline"
+                                           style="color: #843728;">{{ __('View') }}</a>
                                         <form action="{{ route('activites.contacts.detach', [$activite, $contact]) }}" method="POST" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-800 text-sm">
+                                            <button type="submit" class="text-xs font-medium hover:underline text-red-600">
                                                 {{ __('Remove') }}
                                             </button>
                                         </form>
                                     </div>
-                                </div>
+                                </li>
                             @endforeach
-                        </div>
+                        </ul>
                     @else
-                        <p class="text-gray-500 text-center py-4">{{ __('No contacts linked to this activity') }}</p>
+                        <p class="text-sm text-center py-4" style="color: #75786c;">{{ __('No contacts linked to this activity') }}</p>
                     @endif
                 </div>
 
-                <!-- Quick Actions -->
-                <div class="bg-white rounded-lg shadow p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ __('Quick actions') }}</h3>
-                    <div class="space-y-3">
-                        <a href="{{ route('rendez-vous.create', ['activite_id' => $activite->id]) }}" 
-                           class="block w-full bg-purple-600 hover:bg-purple-700 text-white text-center px-4 py-2 rounded transition duration-200">
-                            {{ __('New appointment') }}
+                <!-- Quick Actions (no Statistics button - it's now a tab) -->
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h3 class="text-lg font-semibold mb-4" style="color: #1b1c1a;">{{ __('Quick actions') }}</h3>
+                    <div class="space-y-2">
+                        <a href="{{ route('rendez-vous.create', ['activite_id' => $activite->id]) }}"
+                           class="flex items-center w-full px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+                           style="background: #fef5f3; color: #843728;">
+                            <i class="fas fa-calendar-plus w-5 mr-2"></i>{{ __('New appointment') }}
                         </a>
-                        <a href="{{ route('notes.create', ['activite_id' => $activite->id]) }}" 
-                           class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center px-4 py-2 rounded transition duration-200">
-                            {{ __('New note') }}
+                        <a href="{{ route('notes.create', ['activite_id' => $activite->id]) }}"
+                           class="flex items-center w-full px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+                           style="background: #ece7f7; color: #5d4ba1;">
+                            <i class="fas fa-pen-to-square w-5 mr-2"></i>{{ __('New note') }}
                         </a>
-                        <a href="{{ route('statistiques.activite', $activite) }}" 
-                           class="block w-full bg-gray-600 hover:bg-gray-700 text-white text-center px-4 py-2 rounded transition duration-200">
-                            {{ __('Statistics') }}
-                        </a>
-                        <a href="{{ route('activites.edit', $activite) }}" 
-                           class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center px-4 py-2 rounded transition duration-200">
-                            {{ __('Edit activity') }}
+                        <a href="{{ route('activites.edit', $activite) }}"
+                           class="flex items-center w-full px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors"
+                           style="background: #f5f3f0; color: #44483e;">
+                            <i class="fas fa-pen w-5 mr-2"></i>{{ __('Edit activity') }}
                         </a>
                     </div>
                 </div>
@@ -252,6 +444,27 @@
         </div>
     </div>
 </div>
+
+<style>
+    [x-cloak] { display: none !important; }
+
+    .tab-active {
+        color: #843728;
+        background: #fbf9f5;
+        border-bottom: 2px solid #843728;
+    }
+
+    .tab-inactive {
+        color: #75786c;
+        background: white;
+        border-bottom: 2px solid transparent;
+    }
+
+    .tab-inactive:hover {
+        color: #1b1c1a;
+        background: #fbf9f5;
+    }
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

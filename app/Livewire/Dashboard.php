@@ -2,22 +2,26 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
+use App\Models\Activite;
 use App\Models\Contact;
-use App\Models\RendezVous;
 use App\Models\Note;
 use App\Models\Rappel;
-use App\Models\Activite;
-use Carbon\Carbon;
+use App\Models\RendezVous;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class Dashboard extends Component
 {
     public $stats = [];
+
     public $upcomingAppointments = [];
+
     public $recentContacts = [];
+
     public $upcomingReminders = [];
+
     public $activities = [];
+
     public $lastLogin;
 
     public function mount()
@@ -80,6 +84,11 @@ class Dashboard extends Component
     {
         $this->activities = Activite::where('user_id', Auth::id())
             ->withCount(['contacts', 'rendezVous'])
+            ->with(['rendezVous' => function ($query) {
+                $query->with('contact')
+                    ->orderBy('date_debut', 'desc')
+                    ->orderBy('heure_debut', 'desc');
+            }])
             ->orderBy('nom')
             ->get();
     }
