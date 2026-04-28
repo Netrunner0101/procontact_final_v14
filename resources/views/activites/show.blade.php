@@ -3,7 +3,7 @@
 @section('title', $activite->nom . ' - Pro Contact')
 
 @section('content')
-<div class="container mx-auto px-4 py-8" x-data="{ tab: 'rendezVous' }">
+<div class="container mx-auto px-4 py-8">
     <div class="max-w-6xl mx-auto">
         <!-- Header -->
         <div class="flex flex-wrap justify-between items-start gap-4 mb-8">
@@ -126,43 +126,26 @@
                     </dl>
                 </div>
 
-                <!-- Tabs: Appointments + Statistics -->
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                    <!-- Tab Navigation -->
-                    <div class="flex border-b" style="border-color: rgba(27,28,26,0.06);" role="tablist">
-                        <button type="button"
-                                role="tab"
-                                @click="tab = 'rendezVous'"
-                                :aria-selected="tab === 'rendezVous'"
-                                class="flex-1 flex items-center justify-center gap-2 px-4 py-4 text-sm font-semibold transition-colors"
-                                :class="tab === 'rendezVous' ? 'tab-active' : 'tab-inactive'">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>{{ __('Appointments') }}</span>
-                            <span class="ml-1 inline-flex items-center justify-center min-w-[1.5rem] h-5 px-1.5 rounded-full text-xs font-bold"
-                                  style="background: #f5f3f0; color: #44483e;">{{ $stats['total_rdv'] }}</span>
-                        </button>
-                        <button type="button"
-                                role="tab"
-                                @click="tab = 'stats'"
-                                :aria-selected="tab === 'stats'"
-                                class="flex-1 flex items-center justify-center gap-2 px-4 py-4 text-sm font-semibold transition-colors"
-                                :class="tab === 'stats' ? 'tab-active' : 'tab-inactive'">
-                            <i class="fas fa-chart-bar"></i>
-                            <span>{{ __('Statistics') }}</span>
-                        </button>
-                    </div>
-
-                    <!-- Appointments Tab -->
-                    <div x-show="tab === 'rendezVous'" x-cloak role="tabpanel" class="p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-semibold text-lg" style="color: #1b1c1a;">{{ __('Appointments') }}</h3>
-                            <a href="{{ route('rendez-vous.create', ['activite_id' => $activite->id]) }}"
-                               class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white rounded-lg transition-colors"
-                               style="background: #843728;">
-                                <i class="fas fa-plus mr-1.5"></i>{{ __('New appointment') }}
-                            </a>
+                <!-- Container 1: Appointments -->
+                <section class="bg-white rounded-xl shadow-sm overflow-hidden" aria-labelledby="appointments-heading">
+                    <header class="flex items-center justify-between px-6 py-4 border-b" style="border-color: rgba(27,28,26,0.06); background: #fbf9f5;">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background: #fef5f3;">
+                                <i class="fas fa-calendar-alt" style="color: #843728;"></i>
+                            </div>
+                            <div>
+                                <h2 id="appointments-heading" class="font-semibold text-lg leading-tight" style="color: #1b1c1a;">{{ __('Appointments') }}</h2>
+                                <p class="text-xs" style="color: #75786c;">{{ $stats['total_rdv'] }} {{ __('Total') }}</p>
+                            </div>
                         </div>
+                        <a href="{{ route('rendez-vous.create', ['activite_id' => $activite->id]) }}"
+                           class="inline-flex items-center px-3 py-1.5 text-xs font-semibold text-white rounded-lg transition-colors"
+                           style="background: #843728;">
+                            <i class="fas fa-plus mr-1.5"></i>{{ __('New appointment') }}
+                        </a>
+                    </header>
 
+                    <div class="p-6">
                         @if($activite->rendezVous->count() > 0)
                             @php
                                 $upcoming = $activite->rendezVous
@@ -176,9 +159,9 @@
                             @endphp
 
                             @if($upcoming->count() > 0)
-                                <h4 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #75786c;">
+                                <h3 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #75786c;">
                                     {{ __('Upcoming') }} ({{ $upcoming->count() }})
-                                </h4>
+                                </h3>
                                 <ul class="space-y-2 mb-6">
                                     @foreach($upcoming as $rdv)
                                         @include('activites.partials.rdv-row', ['rdv' => $rdv])
@@ -187,9 +170,9 @@
                             @endif
 
                             @if($past->count() > 0)
-                                <h4 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #75786c;">
+                                <h3 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #75786c;">
                                     {{ __('Past') }} ({{ $past->count() }})
-                                </h4>
+                                </h3>
                                 <ul class="space-y-2">
                                     @foreach($past->take(10) as $rdv)
                                         @include('activites.partials.rdv-row', ['rdv' => $rdv, 'isPast' => true])
@@ -216,11 +199,29 @@
                             </div>
                         @endif
                     </div>
+                </section>
 
-                    <!-- Statistics Tab -->
-                    <div x-show="tab === 'stats'" x-cloak role="tabpanel" class="p-6">
-                        <h3 class="font-semibold text-lg mb-4" style="color: #1b1c1a;">{{ __('Statistics') }}</h3>
+                <!-- Container 2: Statistics -->
+                <section class="bg-white rounded-xl shadow-sm overflow-hidden" aria-labelledby="stats-heading">
+                    <header class="flex items-center justify-between px-6 py-4 border-b" style="border-color: rgba(27,28,26,0.06); background: #fbf9f5;">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background: #fbf1d8;">
+                                <i class="fas fa-chart-bar" style="color: #8a6e2e;"></i>
+                            </div>
+                            <div>
+                                <h2 id="stats-heading" class="font-semibold text-lg leading-tight" style="color: #1b1c1a;">{{ __('Statistics') }}</h2>
+                                <p class="text-xs" style="color: #75786c;">{{ __('Detailed activity analysis') }}</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('statistiques.activite', $activite) }}"
+                           class="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors"
+                           style="background: #fef5f3; color: #843728;"
+                           title="{{ __('Detailed activity analysis') }}">
+                            <i class="fas fa-chart-line mr-1.5"></i>{{ __('View all') }}
+                        </a>
+                    </header>
 
+                    <div class="p-6">
                         <!-- Snapshot grid -->
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                             <div class="rounded-lg p-4 text-center" style="background: #fbf9f5;">
@@ -243,19 +244,19 @@
 
                         <!-- Status distribution -->
                         @if($stats['rdv_by_status']->count() > 0)
-                            <h4 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #75786c;">
+                            <h3 class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: #75786c;">
                                 {{ __('Status Distribution') }}
-                            </h4>
+                            </h3>
                             @php
                                 $statusColors = [
                                     'scheduled' => '#8a6e2e',
                                     'confirmed' => '#3a6a3a',
                                     'completed' => '#5d4ba1',
                                     'cancelled' => '#b54848',
-                                    'no_show'   => '#75786c',
+                                    'no_show' => '#75786c',
                                 ];
                             @endphp
-                            <div class="space-y-3 mb-6">
+                            <div class="space-y-3">
                                 @foreach(\App\Models\RendezVous::STATUTS as $statusKey => $statusLabel)
                                     @php
                                         $count = $stats['rdv_by_status'][$statusKey] ?? 0;
@@ -274,18 +275,14 @@
                                     </div>
                                 @endforeach
                             </div>
+                        @else
+                            <div class="text-center py-8" style="color: #75786c;">
+                                <i class="fas fa-chart-pie text-2xl mb-2" style="color: #c5c8b9;"></i>
+                                <p class="text-sm">{{ __('No status data') }}</p>
+                            </div>
                         @endif
-
-                        <!-- Detailed report link -->
-                        <a href="{{ route('statistiques.activite', $activite) }}"
-                           class="inline-flex items-center justify-center w-full px-4 py-3 rounded-lg font-semibold text-sm transition-colors"
-                           style="background: #fbf9f5; color: #843728;">
-                            <i class="fas fa-chart-line mr-2"></i>
-                            {{ __('Detailed activity analysis') }}
-                            <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
                     </div>
-                </div>
+                </section>
 
                 <!-- Associated Notes -->
                 @if($activite->notes->count() > 0)
@@ -447,23 +444,6 @@
 
 <style>
     [x-cloak] { display: none !important; }
-
-    .tab-active {
-        color: #843728;
-        background: #fbf9f5;
-        border-bottom: 2px solid #843728;
-    }
-
-    .tab-inactive {
-        color: #75786c;
-        background: white;
-        border-bottom: 2px solid transparent;
-    }
-
-    .tab-inactive:hover {
-        color: #1b1c1a;
-        background: #fbf9f5;
-    }
 </style>
 
 <script>

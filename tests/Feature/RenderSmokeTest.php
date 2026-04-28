@@ -14,7 +14,7 @@ class RenderSmokeTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_activity_show_page_renders_with_tabs_and_no_stats_button(): void
+    public function test_activity_show_page_renders_two_separate_containers_and_no_stats_button(): void
     {
         $role = Role::firstOrCreate(['nom' => 'admin']);
         $user = User::factory()->create(['role_id' => $role->id]);
@@ -43,12 +43,16 @@ class RenderSmokeTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Garden Test');
-        $response->assertSee("tab = 'rendezVous'", false);
-        $response->assertSee("tab = 'stats'", false);
+        // Two separate containers, both visible at once (no tabs)
+        $response->assertSee('id="appointments-heading"', false);
+        $response->assertSee('id="stats-heading"', false);
+        $response->assertDontSee('role="tablist"', false);
+        // Both appointment lists are rendered
         $response->assertSee('Future RDV');
         $response->assertSee('Past RDV');
-        // Quick Actions sidebar should no longer contain the removed "Statistics" button.
-        // The detailed-report link still exists inside the Stats tab.
+        // Status Distribution comes from the Stats container
+        $response->assertSee('Status Distribution');
+        // Quick Actions sidebar should no longer contain the removed Statistics button.
         $response->assertDontSee('block w-full bg-gray-600', false);
     }
 
