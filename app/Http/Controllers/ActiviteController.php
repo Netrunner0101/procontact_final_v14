@@ -13,6 +13,7 @@ class ActiviteController extends Controller
     public function index()
     {
         $activites = Activite::where('user_id', Auth::id())->paginate(15);
+
         return view('activites.index', compact('activites'));
     }
 
@@ -44,13 +45,35 @@ class ActiviteController extends Controller
     public function show(Activite $activite)
     {
         $this->authorize('view', $activite);
-        $activite->load(['rendezVous', 'contacts']);
-        return view('activites.show', compact('activite'));
+
+        $activite->load([
+            'rendezVous' => fn ($q) => $q->with('contact')
+                ->orderBy('date_debut', 'desc')
+                ->orderBy('heure_debut', 'desc'),
+            'contacts',
+            'notes',
+        ]);
+
+        $today = now()->startOfDay();
+        $rendezVous = $activite->rendezVous;
+
+        $stats = [
+            'total_rdv' => $rendezVous->count(),
+            'upcoming_rdv' => $rendezVous->filter(fn ($r) => $r->date_debut && $r->date_debut->gte($today))->count(),
+            'past_rdv' => $rendezVous->filter(fn ($r) => $r->date_debut && $r->date_debut->lt($today))->count(),
+            'today_rdv' => $rendezVous->filter(fn ($r) => $r->date_debut && $r->date_debut->isSameDay($today))->count(),
+            'contacts_count' => $activite->contacts->count(),
+            'notes_count' => $activite->notes->count(),
+            'rdv_by_status' => $rendezVous->groupBy('statut')->map->count(),
+        ];
+
+        return view('activites.show', compact('activite', 'stats'));
     }
 
     public function edit(Activite $activite)
     {
         $this->authorize('update', $activite);
+
         return view('activites.edit', compact('activite'));
     }
 
@@ -74,6 +97,7 @@ class ActiviteController extends Controller
         }
 
         $activite->update($validated);
+
         return redirect()->route('activites.show', $activite)->with('success', __('Activity updated successfully'));
     }
 
@@ -84,26 +108,27 @@ class ActiviteController extends Controller
             Storage::disk('public')->delete($activite->image);
         }
         $activite->delete();
+
         return redirect()->route('activites.index')->with('success', __('Activity deleted successfully'));
     }
 
     public function attachContact(Request $request, Activite $activite)
     {
         $this->authorize('update', $activite);
-        
+
         $request->validate([
-            'contact_id' => 'required|exists:contacts,id'
+            'contact_id' => 'required|exists:contacts,id',
         ]);
 
         $contact = Contact::findOrFail($request->contact_id);
-        
+
         // Verify the contact belongs to the same user
         if ($contact->user_id !== Auth::id()) {
             abort(403);
         }
 
         $activite->contacts()->syncWithoutDetaching([$contact->id]);
-        
+
         return redirect()->route('activites.show', $activite)
             ->with('success', __('Contact added to the activity successfully'));
     }
@@ -111,9 +136,9 @@ class ActiviteController extends Controller
     public function detachContact(Activite $activite, Contact $contact)
     {
         $this->authorize('update', $activite);
-        
+
         $activite->contacts()->detach($contact->id);
-        
+
         return redirect()->route('activites.show', $activite)
             ->with('success', __('Contact removed from the activity successfully'));
     }
