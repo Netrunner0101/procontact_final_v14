@@ -9,7 +9,7 @@ This document captures the production setup for `procontact.app`, common operati
 | Layer | Provider | Notes |
 |---|---|---|
 | App | Laravel (PHP 8.4) | Repo: `Netrunner0101/procontact_final_v14`, branch `main` |
-| Server | Hetzner via Laravel Forge | Site: `procontact_final_v14-evouuipp.on-forge.com` |
+| Server | Laravel Managed (via Laravel Forge) | Region: Frankfurt — server provisioned and billed through Forge, no separate cloud account. Site: `procontact_final_v14-evouuipp.on-forge.com` |
 | DNS | Cloudflare | Apex `procontact.app` proxied (orange cloud) |
 | SSL | Let's Encrypt via Forge | Auto-renews every ~60 days |
 | Database | PostgreSQL on Forge server | DB: `Procontact_Prod_Database`, user: `procontact` |
@@ -285,7 +285,7 @@ Wrong DB connected. Verify: `php artisan tinker` → `DB::connection()->getDatab
 
 ## Quick reference: Forge resources
 
-- Server: `gorgeous-beijing` (Hetzner)
+- Server: `gorgeous-beijing` (Laravel Managed, region Frankfurt — Ubuntu 24.04, PHP 8.4, PostgreSQL 18)
 - Site: `procontact_final_v14-evouuipp.on-forge.com` with custom domain `procontact.app`
 - Repo branch: `main`
 - Quick Deploy: enabled (push to `main` triggers deploy)
