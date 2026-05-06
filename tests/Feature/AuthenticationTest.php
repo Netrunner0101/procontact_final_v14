@@ -28,6 +28,8 @@ class AuthenticationTest extends TestCase
 
     public function test_user_can_register_with_valid_data()
     {
+        \App\Models\Role::firstOrCreate(['nom' => \App\Models\Role::ADMIN], ['description' => 'Administrator']);
+
         $userData = [
             'nom' => 'Dupont',
             'prenom' => 'Jean',
@@ -37,13 +39,15 @@ class AuthenticationTest extends TestCase
         ];
 
         $response = $this->post('/register', $userData);
-        
-        $response->assertRedirect('/dashboard');
+
+        $response->assertRedirect(route('register.success'));
         $this->assertDatabaseHas('users', [
             'nom' => 'Dupont',
             'prenom' => 'Jean',
             'email' => 'jean.dupont@example.com',
+            'email_verified_at' => null,
         ]);
+        $this->assertGuest();
     }
 
     public function test_user_cannot_register_with_invalid_email()
@@ -109,9 +113,9 @@ class AuthenticationTest extends TestCase
     public function test_authenticated_user_can_logout()
     {
         $user = User::factory()->create();
-        
+
         $response = $this->actingAs($user)->post('/logout');
-        
+
         $response->assertRedirect('/login');
         $this->assertGuest();
     }
@@ -146,7 +150,7 @@ class AuthenticationTest extends TestCase
     public function test_authenticated_user_can_access_dashboard()
     {
         $user = User::factory()->create();
-        
+
         $response = $this->actingAs($user)->get('/dashboard');
         $response->assertStatus(200);
     }

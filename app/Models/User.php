@@ -38,6 +38,10 @@ class User extends Authenticatable
         'last_login_at',
         'password_reset_token',
         'password_reset_expires',
+        'email_verification_token',
+        'email_verification_expires',
+        'email_verification_sent_at',
+        'email_verified_at',
         'google_id',
         'apple_id',
         'provider',
@@ -68,6 +72,8 @@ class User extends Authenticatable
             'password' => 'hashed',
             'last_login_at' => 'datetime',
             'password_reset_expires' => 'datetime',
+            'email_verification_expires' => 'datetime',
+            'email_verification_sent_at' => 'datetime',
         ];
     }
 
@@ -125,6 +131,15 @@ class User extends Authenticatable
     public function clients(): HasMany
     {
         return $this->hasMany(User::class, 'admin_user_id');
+    }
+
+    /**
+     * Whether this user is required to verify their email before logging in.
+     * OAuth users (Google, Apple) are pre-verified by their provider.
+     */
+    public function requiresEmailVerification(): bool
+    {
+        return $this->email_verified_at === null && empty($this->provider);
     }
 
     /**
