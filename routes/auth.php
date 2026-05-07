@@ -9,7 +9,15 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('register', [AuthController::class, 'register']);
     Route::post('register/cancel-oauth', [AuthController::class, 'cancelOauthRegistration'])->name('register.cancel-oauth');
-    
+    Route::get('register/success', [AuthController::class, 'showRegisterSuccess'])->name('register.success');
+
+    // Email verification routes
+    Route::get('email/verify', [AuthController::class, 'showVerificationNotice'])->name('verification.notice');
+    Route::get('email/verify/{token}', [AuthController::class, 'verifyEmail'])->name('verification.verify');
+    Route::post('email/verify/resend', [AuthController::class, 'resendVerification'])
+        ->middleware('throttle:6,1')
+        ->name('verification.resend');
+
     // Password Reset Routes
     Route::get('forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
     Route::post('forgot-password', [AuthController::class, 'forgotPassword'])->name('password.email');
