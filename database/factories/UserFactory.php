@@ -31,6 +31,8 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'role_id' => 1,
+            'terms_accepted_at' => now(),
+            'terms_accepted_version' => '2026-05',
         ];
     }
 
@@ -41,6 +43,17 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    /**
+     * Indicate that the user has not yet accepted the current GDPR/Terms.
+     */
+    public function withoutGdprConsent(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'terms_accepted_at' => null,
+            'terms_accepted_version' => null,
         ]);
     }
 }

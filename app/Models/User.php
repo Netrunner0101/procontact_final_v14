@@ -42,6 +42,8 @@ class User extends Authenticatable
         'email_verification_expires',
         'email_verification_sent_at',
         'email_verified_at',
+        'terms_accepted_at',
+        'terms_accepted_version',
         'google_id',
         'apple_id',
         'provider',
@@ -74,6 +76,7 @@ class User extends Authenticatable
             'password_reset_expires' => 'datetime',
             'email_verification_expires' => 'datetime',
             'email_verification_sent_at' => 'datetime',
+            'terms_accepted_at' => 'datetime',
         ];
     }
 

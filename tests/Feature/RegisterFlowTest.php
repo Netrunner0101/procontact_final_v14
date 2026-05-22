@@ -35,6 +35,7 @@ class RegisterFlowTest extends TestCase
             'email' => 'testregister@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
+            'terms' => '1',
         ]);
 
         // User should be redirected to the success page (NOT auto-logged-in into dashboard)

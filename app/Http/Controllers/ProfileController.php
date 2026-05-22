@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\RgpdAccountDeletedMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -19,6 +21,7 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
+
         return view('profile.show', compact('user'));
     }
 
@@ -28,11 +31,11 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
             'telephone' => 'nullable|string|max:20',
             'rue' => 'nullable|string|max:255',
             'numero_rue' => 'nullable|string|max:10',
@@ -40,12 +43,12 @@ class ProfileController extends Controller
             'code_postal' => 'nullable|string|max:10',
             'pays' => 'nullable|string|max:255',
         ]);
-        
+
         $user->update($request->only([
-            'nom', 'prenom', 'email', 'telephone', 'rue', 
-            'numero_rue', 'ville', 'code_postal', 'pays'
+            'nom', 'prenom', 'email', 'telephone', 'rue',
+            'numero_rue', 'ville', 'code_postal', 'pays',
         ]));
-        
+
         return back()->with('success', __('Profile updated successfully.'));
     }
 
@@ -58,15 +61,15 @@ class ProfileController extends Controller
             'current_password' => 'required',
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
-        
+
         $user = Auth::user();
-        
-        if (!Hash::check($request->current_password, $user->password)) {
+
+        if (! Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => __('The current password is incorrect.')]);
         }
-        
+
         $user->update([
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
         ]);
 
         return back()->with('success', __('Password updated successfully.'));
@@ -92,10 +95,10 @@ class ProfileController extends Controller
             'rendez_vous' => $user->rendezVous()->with(['notes', 'rappels'])->get()->toArray(),
         ];
 
-        $filename = 'procontact-data-export-' . now()->format('Y-m-d') . '.json';
+        $filename = 'procontact-data-export-'.now()->format('Y-m-d').'.json';
 
         return response()->streamDownload(
-            fn () => print(json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)),
+            fn () => print (json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)),
             $filename,
             ['Content-Type' => 'application/json']
         );
@@ -150,11 +153,25 @@ class ProfileController extends Controller
         // keeping any personal data. The hashed identifier lets us prove the
         // deletion ran for a specific account if challenged, but cannot be
         // reversed back into an email address.
+        $userHash = hash('sha256', $user->id.'|'.$user->email);
         Log::info('GDPR account deletion executed', [
-            'user_hash' => hash('sha256', $user->id . '|' . $user->email),
+            'user_hash' => $userHash,
             'occurred_at' => now()->toIso8601String(),
             'ip' => $request->ip(),
         ]);
+        Log::channel('rgpd')->info('GDPR account deletion executed', [
+            'user_hash' => $userHash,
+            'occurred_at' => now()->toIso8601String(),
+            'ip' => $request->ip(),
+        ]);
+
+        // Send the deletion confirmation email BEFORE deleting the account,
+        // because afterwards we no longer have the email address on record.
+        try {
+            Mail::to($user->email)->send(new RgpdAccountDeletedMail($user));
+        } catch (\Exception $e) {
+            Log::error('Failed to send GDPR deletion email: '.$e->getMessage());
+        }
 
         DB::transaction(function () use ($user, $request) {
             Auth::logout();

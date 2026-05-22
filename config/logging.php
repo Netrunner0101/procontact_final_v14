@@ -127,6 +127,14 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'rgpd' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/rgpd.log'),
+            'level' => 'info',
+            'days' => env('RGPD_LOG_DAYS', 365),
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];

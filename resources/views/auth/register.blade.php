@@ -107,6 +107,21 @@
                         @enderror
                     </div>
 
+                    <div class="mb-6">
+                        <label class="flex items-start gap-2 text-sm" style="color: #44483e;">
+                            <input type="checkbox" id="terms" name="terms" value="1" {{ old('terms') ? 'checked' : '' }} required class="mt-1">
+                            <span>
+                                {!! __('I have read and accept the :privacy and the :terms.', [
+                                    'privacy' => '<a href="'.route('legal.privacy').'" target="_blank" rel="noopener" style="color:#843728;font-weight:600;">'.__('Privacy Policy').'</a>',
+                                    'terms' => '<a href="'.route('legal.terms').'" target="_blank" rel="noopener" style="color:#843728;font-weight:600;">'.__('Terms of Service').'</a>',
+                                ]) !!}
+                            </span>
+                        </label>
+                        @error('terms')
+                            <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <button type="submit" class="w-full auth-btn py-2 px-4">
                         {{ __('Confirm and create my account') }}
                     </button>
@@ -171,6 +186,21 @@
                         <label for="password_confirmation" class="block text-sm font-medium mb-2" style="color: #44483e;">{{ __('Confirm password') }}</label>
                         <input type="password" id="password_confirmation" name="password_confirmation" required
                                class="w-full px-3 py-2 auth-input">
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="flex items-start gap-2 text-sm" style="color: #44483e;">
+                            <input type="checkbox" id="terms" name="terms" value="1" {{ old('terms') ? 'checked' : '' }} required class="mt-1">
+                            <span>
+                                {!! __('I have read and accept the :privacy and the :terms.', [
+                                    'privacy' => '<a href="'.route('legal.privacy').'" target="_blank" rel="noopener" style="color:#843728;font-weight:600;">'.__('Privacy Policy').'</a>',
+                                    'terms' => '<a href="'.route('legal.terms').'" target="_blank" rel="noopener" style="color:#843728;font-weight:600;">'.__('Terms of Service').'</a>',
+                                ]) !!}
+                            </span>
+                        </label>
+                        @error('terms')
+                            <p class="text-sm mt-1" style="color: #ba1a1a;">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <button type="submit" class="w-full auth-btn py-2 px-4">
