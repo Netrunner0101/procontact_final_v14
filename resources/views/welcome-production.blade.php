@@ -553,9 +553,9 @@
                 </div>
                 <!-- EDITABLE: Footer Links -->
                 <div class="flex flex-wrap gap-8 lg:gap-12 text-sm font-medium uppercase tracking-wide">
-                    <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Privacy Policy') }}</a>
-                    <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Terms of Service') }}</a>
-                    <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Cookie Settings') }}</a>
+                    <a href="{{ route('legal.privacy') }}" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Privacy Policy') }}</a>
+                    <a href="{{ route('legal.terms') }}" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Terms of Service') }}</a>
+                    <a href="{{ route('legal.cookies') }}" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Cookie Policy') }}</a>
                     <a href="mailto:contact@procontact.app" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Contact Support') }}</a>
                 </div>
             </div>

@@ -1,26 +1,28 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ActiviteController;
-use App\Http\Controllers\RendezVousController;
-use App\Http\Controllers\RappelController;
-use App\Http\Controllers\NoteController;
-use App\Http\Controllers\StatistiqueController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientManagementController;
-use App\Http\Controllers\SocialAuthController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MockOAuthController;
+use App\Http\Controllers\NoteController;
 use App\Http\Controllers\PortalController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RappelController;
+use App\Http\Controllers\RendezVousController;
+use App\Http\Controllers\RgpdConsentController;
 use App\Http\Controllers\SessionController;
+use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\StatistiqueController;
+use Illuminate\Support\Facades\Route;
 
 // Language switch route
 Route::get('/lang/{locale}', function (string $locale) {
     if (in_array($locale, ['en', 'fr'])) {
         session()->put('locale', $locale);
     }
+
     return redirect()->back();
 })->name('lang.switch');
 
@@ -28,6 +30,7 @@ Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('dashboard');
     }
+
     return view('welcome-production');
 })->name('home');
 
@@ -36,16 +39,29 @@ Route::get('/oauth-test', function () {
     return view('oauth-test');
 })->name('oauth.test');
 
+// Public legal pages (GDPR / CGU / cookies)
+Route::prefix('legal')->name('legal.')->group(function () {
+    Route::view('/privacy', 'legal.privacy')->name('privacy');
+    Route::view('/terms', 'legal.terms')->name('terms');
+    Route::view('/cookies', 'legal.cookies')->name('cookies');
+});
+
+// GDPR consent reminder for users who pre-date the consent flow
+Route::middleware('auth')->group(function () {
+    Route::get('/rgpd/consent', [RgpdConsentController::class, 'show'])->name('rgpd.consent.show');
+    Route::post('/rgpd/consent', [RgpdConsentController::class, 'store'])->name('rgpd.consent.store');
+});
+
 // Social Authentication Routes
 Route::prefix('auth')->name('auth.')->group(function () {
     // Google OAuth
     Route::get('/google', [SocialAuthController::class, 'redirectToGoogle'])->name('google');
     Route::get('/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->name('google.callback');
-    
+
     // Apple OAuth
     Route::get('/apple', [SocialAuthController::class, 'redirectToApple'])->name('apple');
     Route::get('/apple/callback', [SocialAuthController::class, 'handleAppleCallback'])->name('apple.callback');
-    
+
     // Unlink social accounts
     Route::post('/unlink', [SocialAuthController::class, 'unlinkSocialAccount'])->name('unlink')->middleware('auth');
 });
@@ -72,35 +88,35 @@ Route::middleware('auth')->group(function () {
 });
 
 // Admin routes (protected for admin users only)
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'rgpd.consent', 'admin'])->group(function () {
     // Dashboard - now using Livewire
     Route::get('/dashboard', function () {
         return view('dashboard-livewire');
     })->name('dashboard');
-    
+
     // Alternative traditional dashboard route
     Route::get('/dashboard-old', [DashboardController::class, 'index'])->name('dashboard.old');
-    
+
     // Livewire Contact Manager
     Route::get('/contacts-manager', function () {
         return view('contacts-manager');
     })->name('contacts.manager');
-    
+
     // Livewire Appointment Manager
     Route::get('/appointments-manager', function () {
         return view('appointments-manager');
     })->name('appointments.manager');
-    
+
     // Livewire Notes Manager
     Route::get('/notes-manager', function () {
         return view('notes-manager');
     })->name('notes.manager');
-    
+
     // Livewire Statistics Dashboard
     Route::get('/statistics-dashboard', function () {
         return view('statistics-dashboard');
     })->name('statistics.dashboard');
-    
+
     // Portal access management (admin view of access log + revoke)
     Route::get('contacts/{contact}/portal-access', [\App\Http\Controllers\AdminPortalAccessController::class, 'show'])->name('contacts.portal-access');
     Route::post('contacts/{contact}/portal-access/revoke', [\App\Http\Controllers\AdminPortalAccessController::class, 'revoke'])->name('contacts.portal-access.revoke');
@@ -108,11 +124,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::resource('contacts', ContactController::class);
     Route::resource('activites', ActiviteController::class);
     Route::resource('rendez-vous', RendezVousController::class)->parameters(['rendez-vous' => 'rendezVous']);
-    
+
     // Contact-Activity relationship routes
     Route::post('activites/{activite}/contacts', [ActiviteController::class, 'attachContact'])->name('activites.contacts.attach');
     Route::delete('activites/{activite}/contacts/{contact}', [ActiviteController::class, 'detachContact'])->name('activites.contacts.detach');
-    
+
     // Update appointment status (manual lifecycle status)
     Route::patch('rendez-vous/{rendezVous}/status', [RendezVousController::class, 'updateStatus'])->name('rendez-vous.status');
 
@@ -122,16 +138,16 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Reminder routes
     Route::resource('rappels', RappelController::class);
-    
+
     // Note routes
     Route::resource('notes', NoteController::class);
-    
+
     // Statistics routes
     Route::get('/statistiques', [StatistiqueController::class, 'index'])->name('statistiques.index');
     Route::get('/statistiques/activite/{activite}', [StatistiqueController::class, 'activite'])->name('statistiques.activite');
     Route::get('/statistiques/export/global', [StatistiqueController::class, 'exportGlobal'])->name('statistiques.export.global');
     Route::get('/statistiques/export/activite/{activite}', [StatistiqueController::class, 'exportActivite'])->name('statistiques.export.activite');
-    
+
     // Client Management routes (for admins to manage their clients)
     Route::prefix('admin/clients')->name('admin.clients.')->group(function () {
         Route::get('/', [ClientManagementController::class, 'index'])->name('index');
@@ -145,13 +161,11 @@ Route::middleware(['auth', 'admin'])->group(function () {
 });
 
 // Client routes (for client users)
-Route::middleware(['auth', 'client'])->prefix('client')->name('client.')->group(function () {
+Route::middleware(['auth', 'rgpd.consent', 'client'])->prefix('client')->name('client.')->group(function () {
     Route::get('/dashboard', [ClientController::class, 'dashboard'])->name('dashboard');
     Route::get('/appointments', [ClientController::class, 'appointments'])->name('appointments');
     Route::get('/appointment/{rendezVous}', [ClientController::class, 'showAppointment'])->name('appointment');
 });
-
-
 
 // Client Portal — Magic-Link + OTP-verified access (public, no Laravel auth)
 Route::prefix('portal')->name('portal.')->middleware('portal.headers')->group(function () {
