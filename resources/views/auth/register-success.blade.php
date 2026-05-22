@@ -53,6 +53,18 @@
                 {{ __('The link expires in 24 hours. Until your email is confirmed, you will not be able to log in.') }}
             </div>
 
+            <div class="mb-6 p-4 rounded-lg text-xs" style="background: #f5f3f0; color: #44483e;">
+                <p class="font-medium mb-1" style="color: #1b1c1a;">{{ __('GDPR consent recorded') }}</p>
+                <p>{{ __('We just emailed you a signed record of your consent (user, email, date, accepted documents). Please keep it for your records. Review the documents any time:') }}</p>
+                <p class="mt-2">
+                    <a href="{{ route('legal.privacy') }}" target="_blank" rel="noopener" style="color: #843728; font-weight: 600;">{{ __('Privacy Policy') }}</a>
+                    ·
+                    <a href="{{ route('legal.terms') }}" target="_blank" rel="noopener" style="color: #843728; font-weight: 600;">{{ __('Terms of Service') }}</a>
+                    ·
+                    <a href="{{ route('legal.cookies') }}" target="_blank" rel="noopener" style="color: #843728; font-weight: 600;">{{ __('Cookie Policy') }}</a>
+                </p>
+            </div>
+
             @if (session('status'))
                 <div class="mb-4 flex items-start gap-3 p-3 rounded-lg text-sm font-medium badge-success">
                     <span>{{ session('status') }}</span>

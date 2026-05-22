@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'rgpd_version' => env('RGPD_VERSION', '2026-05'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

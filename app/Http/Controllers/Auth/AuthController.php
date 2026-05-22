@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Mail\EmailVerificationMail;
 use App\Mail\PasswordResetMail;
+use App\Mail\RgpdConsentMail;
 use App\Models\Role;
 use App\Models\User;
 use Carbon\Carbon;
@@ -121,10 +122,12 @@ class AuthController extends Controller
             'email' => $emailRules,
             'telephone' => ['nullable', 'string', 'max:50', 'regex:/^[0-9+\s().\-]*$/'],
             'password' => ['required', 'string', 'confirmed', Password::min(8)->letters()->numbers()],
+            'terms' => ['accepted'],
         ], [
             'nom.regex' => __('The last name may only contain letters, spaces, apostrophes and hyphens.'),
             'prenom.regex' => __('The first name may only contain letters, spaces, apostrophes and hyphens.'),
             'telephone.regex' => __('The phone number contains invalid characters.'),
+            'terms.accepted' => __('You must accept the Privacy Policy and Terms of Service to create an account.'),
         ]);
 
         $adminRole = Role::where('nom', Role::ADMIN)->first();
@@ -134,6 +137,7 @@ class AuthController extends Controller
         }
 
         $token = Str::random(64);
+        $rgpdVersion = config('app.rgpd_version', '2026-05');
 
         $user = User::create([
             'nom' => $validated['nom'],
@@ -146,9 +150,13 @@ class AuthController extends Controller
             'email_verification_token' => $token,
             'email_verification_expires' => Carbon::now()->addHours(24),
             'email_verification_sent_at' => Carbon::now(),
+            'terms_accepted_at' => Carbon::now(),
+            'terms_accepted_version' => $rgpdVersion,
         ]);
 
+        $this->recordGdprConsent($user, true, $request, $rgpdVersion);
         $this->sendVerificationEmail($user, $token);
+        $this->sendRgpdConsentEmail($user, true, $rgpdVersion);
 
         // Do NOT log the user in — they must confirm the email first.
         $request->session()->put('verification.email', $user->email);
@@ -162,6 +170,9 @@ class AuthController extends Controller
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
             'telephone' => 'nullable|string|max:50',
+            'terms' => ['accepted'],
+        ], [
+            'terms.accepted' => __('You must accept the Privacy Policy and Terms of Service to create an account.'),
         ]);
 
         // The email is verified by the OAuth provider and not editable in the
@@ -180,6 +191,8 @@ class AuthController extends Controller
             return back()->withErrors(['email' => __('The system is not yet configured. Please contact the administrator.')]);
         }
 
+        $rgpdVersion = config('app.rgpd_version', '2026-05');
+
         $userData = [
             'nom' => $validated['nom'],
             'prenom' => $validated['prenom'],
@@ -190,6 +203,8 @@ class AuthController extends Controller
             'avatar' => $pending['avatar'] ?? null,
             'email_verified_at' => Carbon::now(),
             'role_id' => $adminRole->id,
+            'terms_accepted_at' => Carbon::now(),
+            'terms_accepted_version' => $rgpdVersion,
         ];
 
         if ($pending['provider'] === 'google' && isset($pending['google_id'])) {
@@ -201,6 +216,9 @@ class AuthController extends Controller
         }
 
         $user = User::create($userData);
+
+        $this->recordGdprConsent($user, true, $request, $rgpdVersion);
+        $this->sendRgpdConsentEmail($user, true, $rgpdVersion);
 
         $request->session()->forget('pending_oauth');
         Auth::login($user);
@@ -368,6 +386,28 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to send email verification: '.$e->getMessage());
         }
+    }
+
+    private function sendRgpdConsentEmail(User $user, bool $consent, string $version): void
+    {
+        try {
+            Mail::to($user->email)->send(new RgpdConsentMail($user, $consent, $version));
+        } catch (\Exception $e) {
+            Log::error('Failed to send GDPR consent email: '.$e->getMessage());
+        }
+    }
+
+    private function recordGdprConsent(User $user, bool $consent, Request $request, string $version): void
+    {
+        Log::channel('rgpd')->info('GDPR consent recorded', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'consent' => $consent,
+            'version' => $version,
+            'accepted_at' => optional($user->terms_accepted_at)->toIso8601String() ?? now()->toIso8601String(),
+            'ip' => $request->ip(),
+            'user_agent' => substr((string) $request->userAgent(), 0, 255),
+        ]);
     }
 
     private function initiatePasswordReset(User $user)
