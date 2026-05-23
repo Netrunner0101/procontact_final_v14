@@ -50,7 +50,7 @@ class ContactDeletionNotificationMail extends Mailable
         }
 
         return new Envelope(
-            subject: __('Your data has been deleted — Pro Contact'),
+            subject: __('GDPR data deletion for :name — Pro Contact', ['name' => $this->contactName]),
             cc: [$this->adminEmail],
             bcc: $bcc,
         );
