@@ -209,7 +209,7 @@
                         <h3 class="text-lg font-semibold text-gray-900">{{ $user->prenom }} {{ $user->nom }}</h3>
                         <p class="text-gray-600">{{ $user->email }}</p>
                         @if($user->role)
-                            <span class="badge badge-primary mt-2">{{ ucfirst($user->role) }}</span>
+                            <span class="badge badge-primary mt-2">{{ ucfirst(strtolower($user->role->nom)) }}</span>
                         @endif
                     </div>
                 </div>
