@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Contact extends Model
 {
@@ -24,7 +24,36 @@ class Contact extends Model
         'state_client',
         'status_id',
         'portal_token',
+        'gdpr_consent_token',
+        'gdpr_consent_requested_at',
+        'gdpr_consent_signed_at',
+        'gdpr_consent_declined_at',
+        'gdpr_consent_version',
+        'gdpr_consent_ip',
     ];
+
+    protected $casts = [
+        'gdpr_consent_requested_at' => 'datetime',
+        'gdpr_consent_signed_at' => 'datetime',
+        'gdpr_consent_declined_at' => 'datetime',
+    ];
+
+    public function hasSignedGdprConsent(): bool
+    {
+        return $this->gdpr_consent_signed_at !== null;
+    }
+
+    public function hasDeclinedGdprConsent(): bool
+    {
+        return $this->gdpr_consent_declined_at !== null;
+    }
+
+    public function isGdprConsentPending(): bool
+    {
+        return $this->gdpr_consent_requested_at !== null
+            && $this->gdpr_consent_signed_at === null
+            && $this->gdpr_consent_declined_at === null;
+    }
 
     /**
      * Get the user that owns the contact.
@@ -82,5 +111,4 @@ class Contact extends Model
     {
         return $this->rendezVous()->exists();
     }
-
 }

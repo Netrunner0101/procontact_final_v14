@@ -52,6 +52,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/rgpd/consent', [RgpdConsentController::class, 'store'])->name('rgpd.consent.store');
 });
 
+// Contact GDPR consent — public, tokenized link emailed to the contact
+Route::prefix('consent')->name('contact.consent.')->group(function () {
+    Route::get('/{token}', [\App\Http\Controllers\ContactConsentController::class, 'show'])->name('show');
+    Route::post('/{token}/accept', [\App\Http\Controllers\ContactConsentController::class, 'accept'])->name('accept');
+    Route::post('/{token}/decline', [\App\Http\Controllers\ContactConsentController::class, 'decline'])->name('decline');
+});
+
 // Social Authentication Routes
 Route::prefix('auth')->name('auth.')->group(function () {
     // Google OAuth
