@@ -32,8 +32,17 @@ class ContactConsentRequestMail extends Mailable
 
     public function envelope(): Envelope
     {
+        $contactName = trim(($this->contact->prenom ?? '').' '.($this->contact->nom ?? '')) ?: '—';
+
+        $bcc = [];
+        if ($auditEmail = config('app.rgpd_audit_email')) {
+            $bcc[] = $auditEmail;
+        }
+
         return new Envelope(
-            subject: __('Action required: confirm how your data is processed — Pro Contact'),
+            subject: __('Action required for :name — confirm GDPR processing — Pro Contact', ['name' => $contactName]),
+            cc: [$this->admin->email],
+            bcc: $bcc,
         );
     }
 
