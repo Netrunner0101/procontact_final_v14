@@ -180,11 +180,17 @@ notes, rappels) est effacé en cascade dans la même transaction.
 `.env` :
 
 ```dotenv
-RGPD_VERSION=2026-05        # version des documents légaux
-RGPD_LOG_DAYS=365           # rétention du log rgpd (jours)
+RGPD_VERSION=2026-05                       # version des documents légaux
+RGPD_LOG_DAYS=365                          # rétention du log rgpd (jours)
+RGPD_AUDIT_EMAIL=contact@procontact.app    # BCC sur les mails RGPD (laisser vide pour désactiver)
 ```
 
-`config/app.php` lit `RGPD_VERSION` (défaut `2026-05`).
+`config/app.php` lit `RGPD_VERSION` (défaut `2026-05`) et `RGPD_AUDIT_EMAIL`
+(défaut `contact@procontact.app`). Si la valeur est non vide, les deux
+mailables RGPD (`RgpdConsentMail` et `RgpdAccountDeletedMail`) ajoutent
+cette adresse en **BCC** pour conserver une copie côté entreprise sans
+l'exposer à l'utilisateur.
+
 `config/logging.php` lit `RGPD_LOG_DAYS` (défaut `365`).
 
 ---

@@ -17,6 +17,8 @@ return [
 
     'rgpd_version' => env('RGPD_VERSION', '2026-05'),
 
+    'rgpd_audit_email' => env('RGPD_AUDIT_EMAIL', 'contact@procontact.app'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
