@@ -85,8 +85,8 @@ class ContactConsentConfirmationMail extends Mailable
 
         return new Envelope(
             subject: $this->consent
-                ? __('Consent recorded — Pro Contact')
-                : __('Refusal recorded — Pro Contact'),
+                ? __('GDPR consent recorded for :name — Pro Contact', ['name' => $this->contactName])
+                : __('GDPR refusal recorded for :name — Pro Contact', ['name' => $this->contactName]),
             cc: [$this->admin->email],
             bcc: $bcc,
         );
