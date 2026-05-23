@@ -118,7 +118,50 @@ Cas d'usage typique : vous mettez à jour les CGU → vous incrémentez
 `RGPD_VERSION` dans `.env` → un script SQL passe `terms_accepted_at = NULL`
 sur les comptes concernés → ils sont automatiquement invités à reconsentir.
 
-### 2.3 Suppression de compte
+### 2.3 Consentement des contacts (clients de l’admin)
+
+Quand un admin crée un nouveau contact via `ContactController@store` :
+
+1. Un token aléatoire `gdpr_consent_token` (64 caractères) est généré et
+   stocké sur le contact, avec `gdpr_consent_requested_at = now()`.
+2. Un mail `ContactConsentRequestMail` est envoyé à l’adresse email
+   principale du contact. Il contient un lien public
+   `/consent/{token}` (sans authentification).
+3. Sur la page `/consent/{token}` le contact voit :
+   - Qui est le responsable du traitement (l’admin)
+   - Quelles données sont traitées et pour quelles finalités
+   - Ses droits (accès, rectification, effacement)
+   - Les liens vers les pages légales de la plateforme
+   - Deux boutons : **Accepter** ou **Refuser** (case à cocher requise)
+4. À la décision :
+   - `gdpr_consent_signed_at` ou `gdpr_consent_declined_at` est défini
+   - `gdpr_consent_ip` et `gdpr_consent_version` sont enregistrés
+   - Un log `Contact GDPR decision recorded` est écrit dans `rgpd.log`
+   - Un mail `ContactConsentConfirmationMail` est envoyé avec :
+     - **To** : le contact (preuve principale)
+     - **CC** : l’admin (notification au responsable)
+     - **BCC** : `contact@procontact.app` (audit plateforme)
+     - Signature SHA-256 sur (contact_id|contact_email|admin_id|admin_email|date|consent|version|APP_KEY)
+
+Si le contact n’a pas encore décidé et revient sur le lien, il revoit la
+page de décision. S’il a déjà décidé, il voit la page de confirmation
+correspondante.
+
+### 2.4 Suppression d’un contact par l’admin
+
+Quand l’admin supprime un contact via `ContactController@destroy` :
+
+1. Un mail `ContactDeletionNotificationMail` est envoyé **avant** la
+   suppression :
+   - **To** : le contact (information sur la suppression)
+   - **CC** : l’admin (confirmation de l’action effectuée)
+   - **BCC** : `contact@procontact.app` (audit)
+2. Un log `Contact GDPR deletion executed` est écrit avec un hash
+   anonymisé `SHA-256(contact_id|email)`.
+3. Suppression effective du contact (cascade sur emails, téléphones,
+   rendez-vous, notes…).
+
+### 2.5 Suppression de compte (admin)
 
 `ProfileController@destroy` :
 
