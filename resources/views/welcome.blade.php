@@ -125,30 +125,46 @@
                 </div>
             </div>
 
-            <!-- Right Column: App Preview -->
+            <!-- Right Column: App Preview (Desktop + Phone) -->
             <div class="lg:col-span-5 relative">
-                <div class="relative z-10 rounded-3xl overflow-hidden shadow-2xl" style="border: 8px solid rgba(27,28,26,0.05);">
-                    <!-- EDITABLE: Hero Image (replace src with your app screenshot) -->
-                    <div class="w-full aspect-[9/16] flex items-center justify-center" style="background: linear-gradient(135deg, var(--surface-container-low), var(--surface-container-high));">
-                        <div class="text-center px-8">
-                            <span class="material-symbols-outlined text-6xl mb-4" style="color: var(--primary); opacity: 0.5;">smartphone</span>
-                            <p class="text-sm font-medium" style="color: var(--on-surface-variant);">{{ __('App Preview') }}</p>
-                        </div>
+                <!-- EDITABLE: Desktop Screen Mockup (statistics dashboard) -->
+                <div class="relative z-10 rounded-2xl overflow-hidden shadow-2xl" style="border: 1px solid rgba(27,28,26,0.08); background: var(--surface);">
+                    <!-- Browser-style top bar -->
+                    <div class="flex items-center gap-2 px-4 py-3" style="background: var(--surface-container); border-bottom: 1px solid rgba(27,28,26,0.06);">
+                        <span class="w-3 h-3 rounded-full" style="background: #ed6a5e;"></span>
+                        <span class="w-3 h-3 rounded-full" style="background: #f5bf4f;"></span>
+                        <span class="w-3 h-3 rounded-full" style="background: #62c554;"></span>
+                        <div class="ml-3 flex-1 h-6 rounded-md flex items-center justify-center text-[10px] font-medium" style="background: var(--surface); color: var(--on-surface-variant);">app.procontact.be/statistics</div>
                     </div>
-
-                    <!-- EDITABLE: Floating Contact Card Overlay -->
-                    <div class="absolute bottom-12 left-6 right-6 p-4 rounded-2xl flex items-center gap-4" style="background: rgba(255,255,255,0.90); backdrop-filter: blur(12px); box-shadow: var(--shadow-xl); border: 1px solid rgba(197,200,185,0.2);">
-                        <!-- EDITABLE: Contact initials, name, label -->
-                        <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm" style="background: var(--tertiary-container); color: var(--on-tertiary-container);">TJ</div>
-                        <div>
-                            <div class="font-bold text-sm" style="color: var(--on-surface);">Thomas Janssen</div>
-                            <div class="text-xs uppercase tracking-tight" style="color: var(--on-surface-variant);">{{ __('Last Contact: Yesterday') }}</div>
-                        </div>
-                        <div class="ml-auto">
-                            <span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase" style="background: var(--secondary-container); color: var(--on-secondary-container);">{{ __('Prospect') }}</span>
+                    <!-- EDITABLE: Dashboard screenshot (replace src with your file at /public/images/dashboard-preview.png) -->
+                    <img src="{{ asset('images/dashboard-preview.png') }}" alt="{{ __('ProContact statistics dashboard') }}" class="w-full block" style="aspect-ratio: 16/10; object-fit: cover; object-position: top;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <!-- Fallback if image not present -->
+                    <div class="w-full items-center justify-center" style="display: none; aspect-ratio: 16/10; background: linear-gradient(135deg, var(--surface-container-low), var(--surface-container-high));">
+                        <div class="text-center px-8">
+                            <span class="material-symbols-outlined text-6xl mb-4" style="color: var(--primary); opacity: 0.5;">monitoring</span>
+                            <p class="text-sm font-medium" style="color: var(--on-surface-variant);">{{ __('Dashboard Preview') }}</p>
                         </div>
                     </div>
                 </div>
+
+                <!-- EDITABLE: Phone Mockup overlapping the desktop -->
+                <div class="absolute -bottom-10 -right-4 sm:-right-6 w-32 sm:w-40 lg:w-44 z-20 rounded-3xl overflow-hidden shadow-2xl" style="border: 6px solid #1b1c1a; background: var(--surface);">
+                    <div class="w-full aspect-[9/16] flex items-center justify-center relative" style="background: linear-gradient(135deg, var(--surface-container-low), var(--surface-container-high));">
+                        <div class="text-center px-3">
+                            <span class="material-symbols-outlined text-4xl mb-2" style="color: var(--primary); opacity: 0.5;">smartphone</span>
+                            <p class="text-[10px] font-medium" style="color: var(--on-surface-variant);">{{ __('App Preview') }}</p>
+                        </div>
+                        <!-- EDITABLE: Floating Contact Card Overlay -->
+                        <div class="absolute bottom-3 left-2 right-2 p-2 rounded-xl flex items-center gap-2" style="background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); box-shadow: var(--shadow-xl); border: 1px solid rgba(197,200,185,0.2);">
+                            <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-[10px]" style="background: var(--tertiary-container); color: var(--on-tertiary-container);">TJ</div>
+                            <div class="min-w-0">
+                                <div class="font-bold text-[10px] truncate" style="color: var(--on-surface);">Thomas Janssen</div>
+                                <div class="text-[8px] uppercase tracking-tight truncate" style="color: var(--on-surface-variant);">{{ __('Last Contact: Yesterday') }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Decorative background glow -->
                 <div class="absolute -top-12 -right-12 w-64 h-64 rounded-full blur-3xl -z-10" style="background: rgba(132,55,40,0.05);"></div>
             </div>
