@@ -35,8 +35,14 @@ class RgpdAccountDeletedMail extends Mailable
 
     public function envelope(): Envelope
     {
+        $bcc = [];
+        if ($auditEmail = config('app.rgpd_audit_email')) {
+            $bcc[] = $auditEmail;
+        }
+
         return new Envelope(
             subject: __('Your Pro Contact account has been deleted'),
+            bcc: $bcc,
         );
     }
 

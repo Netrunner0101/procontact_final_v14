@@ -57,8 +57,14 @@ class RgpdConsentMail extends Mailable
 
     public function envelope(): Envelope
     {
+        $bcc = [];
+        if ($auditEmail = config('app.rgpd_audit_email')) {
+            $bcc[] = $auditEmail;
+        }
+
         return new Envelope(
             subject: __('Your GDPR consent record — Pro Contact'),
+            bcc: $bcc,
         );
     }
 
