@@ -6,6 +6,8 @@ use App\Mail\ContactConsentRequestMail;
 use App\Mail\ContactDeletionNotificationMail;
 use App\Models\Activite;
 use App\Models\Contact;
+use App\Models\Pays;
+use App\Services\AdresseSyncer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -16,7 +18,7 @@ class ContactController extends Controller
 {
     public function index()
     {
-        $contacts = Contact::with(['emails', 'numeroTelephones'])
+        $contacts = Contact::with(['emails', 'numeroTelephones', 'adressePrincipale'])
             ->withCount('rendezVous')
             ->where('user_id', Auth::id())
             ->paginate(15);
@@ -28,11 +30,12 @@ class ContactController extends Controller
     {
         $activites = Activite::where('user_id', Auth::id())->get();
         $selectedActiviteId = request('activite_id');
+        $paysList = Pays::orderBy('nom')->get();
 
-        return view('contacts.create', compact('activites', 'selectedActiviteId'));
+        return view('contacts.create', compact('activites', 'selectedActiviteId', 'paysList'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, AdresseSyncer $adresseSyncer)
     {
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
@@ -41,21 +44,26 @@ class ContactController extends Controller
             'emails.*' => 'required|email|max:255',
             'phones' => 'required|array|min:1',
             'phones.*' => ['required', 'regex:/^[0-9+\s()-]+$/', 'max:20'],
-            'rue' => 'nullable|string|max:255',
-            'numero' => 'nullable|string|max:50',
-            'ville' => 'nullable|string|max:255',
-            'code_postal' => 'nullable|string|max:20',
-            'pays' => 'nullable|string|max:255',
+            'adresses' => 'nullable|array',
+            'adresses.*.rue' => 'nullable|string|max:255',
+            'adresses.*.numero_rue' => 'nullable|string|max:20',
+            'adresses.*.ville' => 'nullable|string|max:255',
+            'adresses.*.code_postal' => 'nullable|string|max:20',
+            'adresses.*.pays_code' => 'nullable|string|size:2|exists:pays,code',
+            'adresses.*.is_principale' => 'nullable|boolean',
             'activite_id' => 'nullable|exists:activites,id',
         ], [
             'emails.*.email' => __('The email address is not valid.'),
             'phones.*.regex' => __('The phone number must contain only digits, +, spaces, dashes and parentheses.'),
         ]);
 
-        $validated['user_id'] = Auth::id();
-        $validated['gdpr_consent_token'] = Str::random(64);
-        $validated['gdpr_consent_requested_at'] = now();
-        $contact = Contact::create($validated);
+        $contact = Contact::create([
+            'user_id' => Auth::id(),
+            'nom' => $validated['nom'],
+            'prenom' => $validated['prenom'],
+            'gdpr_consent_token' => Str::random(64),
+            'gdpr_consent_requested_at' => now(),
+        ]);
 
         // Save emails
         foreach ($validated['emails'] as $email) {
@@ -68,6 +76,8 @@ class ContactController extends Controller
         foreach ($validated['phones'] as $phone) {
             $contact->numeroTelephones()->create(['numero_telephone' => $phone, 'user_id' => Auth::id()]);
         }
+
+        $adresseSyncer->sync($contact, $validated['adresses'] ?? []);
 
         // Link to activity if provided
         if ($request->filled('activite_id')) {
@@ -86,7 +96,7 @@ class ContactController extends Controller
     public function show(Contact $contact)
     {
         $this->authorize('view', $contact);
-        $contact->load(['emails', 'numeroTelephones', 'rendezVous']);
+        $contact->load(['emails', 'numeroTelephones', 'rendezVous', 'adresses.pays']);
         $contact->loadCount('rendezVous');
 
         return view('contacts.show', compact('contact'));
@@ -95,12 +105,13 @@ class ContactController extends Controller
     public function edit(Contact $contact)
     {
         $this->authorize('update', $contact);
-        $contact->load(['emails', 'numeroTelephones']);
+        $contact->load(['emails', 'numeroTelephones', 'adresses.pays']);
+        $paysList = Pays::orderBy('nom')->get();
 
-        return view('contacts.edit', compact('contact'));
+        return view('contacts.edit', compact('contact', 'paysList'));
     }
 
-    public function update(Request $request, Contact $contact)
+    public function update(Request $request, Contact $contact, AdresseSyncer $adresseSyncer)
     {
         $this->authorize('update', $contact);
 
@@ -111,17 +122,24 @@ class ContactController extends Controller
             'emails.*' => 'required|email|max:255',
             'phones' => 'required|array|min:1',
             'phones.*' => ['required', 'regex:/^[0-9+\s()-]+$/', 'max:20'],
-            'rue' => 'nullable|string|max:255',
-            'numero' => 'nullable|string|max:50',
-            'ville' => 'nullable|string|max:255',
-            'code_postal' => 'nullable|string|max:20',
-            'pays' => 'nullable|string|max:255',
+            'adresses' => 'nullable|array',
+            'adresses.*.rue' => 'nullable|string|max:255',
+            'adresses.*.numero_rue' => 'nullable|string|max:20',
+            'adresses.*.ville' => 'nullable|string|max:255',
+            'adresses.*.code_postal' => 'nullable|string|max:20',
+            'adresses.*.pays_code' => 'nullable|string|size:2|exists:pays,code',
+            'adresses.*.is_principale' => 'nullable|boolean',
         ], [
             'emails.*.email' => __('The email address is not valid.'),
             'phones.*.regex' => __('The phone number must contain only digits, +, spaces, dashes and parentheses.'),
         ]);
 
-        $contact->update($validated);
+        $contact->update([
+            'nom' => $validated['nom'],
+            'prenom' => $validated['prenom'],
+        ]);
+
+        $adresseSyncer->sync($contact, $validated['adresses'] ?? []);
 
         // Sync emails: delete old ones and create new
         $contact->emails()->delete();

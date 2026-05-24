@@ -21,8 +21,10 @@ class ProfileController extends Controller
     public function show()
     {
         $user = Auth::user();
+        $user->load('adresses.pays');
+        $paysList = \App\Models\Pays::orderBy('nom')->get();
 
-        return view('profile.show', compact('user'));
+        return view('profile.show', compact('user', 'paysList'));
     }
 
     /**
@@ -32,22 +34,23 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        $request->validate([
+        $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
             'telephone' => 'nullable|string|max:20',
-            'rue' => 'nullable|string|max:255',
-            'numero_rue' => 'nullable|string|max:10',
-            'ville' => 'nullable|string|max:255',
-            'code_postal' => 'nullable|string|max:10',
-            'pays' => 'nullable|string|max:255',
+            'adresses' => 'nullable|array',
+            'adresses.*.rue' => 'nullable|string|max:255',
+            'adresses.*.numero_rue' => 'nullable|string|max:20',
+            'adresses.*.code_postal' => 'nullable|string|max:20',
+            'adresses.*.ville' => 'nullable|string|max:255',
+            'adresses.*.pays_code' => 'nullable|string|size:2|exists:pays,code',
+            'adresses.*.is_principale' => 'nullable|boolean',
         ]);
 
-        $user->update($request->only([
-            'nom', 'prenom', 'email', 'telephone', 'rue',
-            'numero_rue', 'ville', 'code_postal', 'pays',
-        ]));
+        $user->update($request->only(['nom', 'prenom', 'email', 'telephone']));
+
+        app(\App\Services\AdresseSyncer::class)->sync($user, $validated['adresses'] ?? []);
 
         return back()->with('success', __('Profile updated successfully.'));
     }
@@ -87,10 +90,10 @@ class ProfileController extends Controller
             'gdpr_notice' => __('This file contains all personal data we hold about you. You may request deletion of this data at any time from your profile.'),
             'profile' => $user->only([
                 'id', 'nom', 'prenom', 'email', 'telephone',
-                'rue', 'numero_rue', 'ville', 'code_postal', 'pays',
                 'provider', 'created_at', 'last_login_at',
             ]),
-            'contacts' => $user->contacts()->with(['emails', 'numeroTelephones'])->get()->toArray(),
+            'adresses' => $user->adresses()->with('pays')->get()->toArray(),
+            'contacts' => $user->contacts()->with(['emails', 'numeroTelephones', 'adresses.pays'])->get()->toArray(),
             'activites' => $user->activites()->get()->toArray(),
             'rendez_vous' => $user->rendezVous()->with(['notes', 'rappels'])->get()->toArray(),
         ];

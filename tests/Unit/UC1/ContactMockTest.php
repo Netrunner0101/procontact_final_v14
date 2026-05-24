@@ -21,6 +21,7 @@ class ContactMockTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Status $status;
 
     protected function setUp(): void
@@ -34,6 +35,7 @@ class ContactMockTest extends TestCase
 
     /**
      * M1.1 — ContactService::create() appelle bien save() (vérifie l'interaction sans DB)
+     *
      * @test
      */
     public function it_persists_contact_via_create(): void
@@ -54,6 +56,7 @@ class ContactMockTest extends TestCase
 
     /**
      * M1.2 — Le service délègue la validation email (découplage)
+     *
      * @test
      */
     public function it_validates_email_format_before_saving(): void
@@ -76,6 +79,7 @@ class ContactMockTest extends TestCase
 
     /**
      * M1.3 — Rollback si l'ajout d'un email échoue après création du contact
+     *
      * @test
      */
     public function it_rolls_back_on_email_failure(): void
@@ -95,6 +99,7 @@ class ContactMockTest extends TestCase
 
     /**
      * M1.4 — Événement ContactCreated dispatché après création
+     *
      * @test
      */
     public function it_dispatches_contact_created_event(): void
@@ -115,6 +120,7 @@ class ContactMockTest extends TestCase
 
     /**
      * M1.5 — Le formulaire Livewire appelle bien le ContactService (test Livewire en isolation)
+     *
      * @test
      */
     public function livewire_contact_manager_renders(): void

@@ -4,9 +4,9 @@ namespace Tests\Browser;
 
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class AuthTest extends DuskTestCase
 {
@@ -29,7 +29,7 @@ class AuthTest extends DuskTestCase
     /**
      * Nominal login: valid credentials redirect to /dashboard.
      */
-    public function testLoginNominal(): void
+    public function test_login_nominal(): void
     {
         $user = $this->createAdminUser();
 
@@ -47,7 +47,7 @@ class AuthTest extends DuskTestCase
     /**
      * Invalid credentials: wrong password shows an error message.
      */
-    public function testLoginInvalidCredentials(): void
+    public function test_login_invalid_credentials(): void
     {
         $user = $this->createAdminUser();
 
@@ -64,7 +64,7 @@ class AuthTest extends DuskTestCase
     /**
      * Register: fill the registration form and end up on /dashboard.
      */
-    public function testRegister(): void
+    public function test_register(): void
     {
         // Ensure the admin role exists so registration can assign it.
         Role::firstOrCreate(['nom' => 'admin']);
@@ -86,7 +86,7 @@ class AuthTest extends DuskTestCase
     /**
      * Logout: authenticated user logs out and is redirected to /login.
      */
-    public function testLogout(): void
+    public function test_logout(): void
     {
         $user = $this->createAdminUser();
 

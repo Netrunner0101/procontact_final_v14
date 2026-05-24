@@ -8,7 +8,6 @@ use App\Models\ClientPortalOtp;
 use App\Models\ClientPortalToken;
 use App\Models\ClientPortalTrustedDevice;
 use App\Models\Contact;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
@@ -18,11 +17,17 @@ use Illuminate\Support\Facades\Mail;
 class PortalAuthService
 {
     public const COOKIE_NAME = 'portal_td';
+
     public const COOKIE_LIFETIME_DAYS = 60;
+
     public const OTP_TTL_MINUTES = 10;
+
     public const OTP_MAX_ATTEMPTS = 5;
+
     public const LOCKOUT_FAILED_THRESHOLD = 10;
+
     public const LOCKOUT_WINDOW_MINUTES = 60;
+
     public const LOCKOUT_DURATION_MINUTES = 60;
 
     /**
@@ -44,6 +49,7 @@ class PortalAuthService
 
         if ($row) {
             $row->forceFill(['last_used_at' => now()])->save();
+
             return $row->contact;
         }
 
@@ -94,15 +100,17 @@ class PortalAuthService
     {
         $submittedEmail = strtolower(trim($submittedEmail));
 
-        if (!$this->emailMatchesContact($contact, $submittedEmail)) {
+        if (! $this->emailMatchesContact($contact, $submittedEmail)) {
             $this->log($contact->id, 'otp_email_mismatch', $request, [
                 'email_hash' => hash('sha256', $submittedEmail),
             ]);
+
             return;
         }
 
         if ($this->isContactLockedOut($contact)) {
             $this->log($contact->id, 'otp_blocked_lockout', $request);
+
             return;
         }
 
@@ -138,13 +146,15 @@ class PortalAuthService
         $submittedEmail = strtolower(trim($submittedEmail));
         $code = trim($code);
 
-        if (!$this->emailMatchesContact($contact, $submittedEmail)) {
+        if (! $this->emailMatchesContact($contact, $submittedEmail)) {
             $this->log($contact->id, 'otp_failed', $request, ['reason' => 'email_mismatch']);
+
             return false;
         }
 
         if ($this->isContactLockedOut($contact)) {
             $this->log($contact->id, 'otp_blocked_lockout', $request);
+
             return false;
         }
 
@@ -155,20 +165,22 @@ class PortalAuthService
             ->orderByDesc('created_at')
             ->first();
 
-        if (!$otp) {
+        if (! $otp) {
             $this->log($contact->id, 'otp_failed', $request, ['reason' => 'no_active_otp']);
+
             return false;
         }
 
         if ($otp->attempts >= self::OTP_MAX_ATTEMPTS) {
             $otp->update(['consumed_at' => now()]);
             $this->log($contact->id, 'otp_failed', $request, ['reason' => 'max_attempts']);
+
             return false;
         }
 
         $otp->increment('attempts');
 
-        if (!Hash::check($code, $otp->code_hash)) {
+        if (! Hash::check($code, $otp->code_hash)) {
             $this->log($contact->id, 'otp_failed', $request, ['reason' => 'wrong_code']);
 
             if ($this->countRecentFailures($contact) >= self::LOCKOUT_FAILED_THRESHOLD) {
@@ -223,7 +235,7 @@ class PortalAuthService
     public function validateTrustedDevice(Contact $contact, Request $request): ?\Symfony\Component\HttpFoundation\Cookie
     {
         $raw = $request->cookie(self::COOKIE_NAME);
-        if (!$raw || !is_string($raw)) {
+        if (! $raw || ! is_string($raw)) {
             return null;
         }
 
@@ -233,13 +245,14 @@ class PortalAuthService
             ->where('expires_at', '>', now())
             ->first();
 
-        if (!$row) {
+        if (! $row) {
             return null;
         }
 
         if ($row->user_agent_hash && $row->user_agent_hash !== $this->hashUserAgent($request)) {
             $row->update(['revoked_at' => now()]);
             $this->log($contact->id, 'trusted_device_ua_mismatch', $request);
+
             return null;
         }
 

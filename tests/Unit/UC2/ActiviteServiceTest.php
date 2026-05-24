@@ -21,6 +21,7 @@ class ActiviteServiceTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected ActiviteService $service;
 
     protected function setUp(): void
@@ -34,6 +35,7 @@ class ActiviteServiceTest extends TestCase
 
     /**
      * U2.1 — Champs obligatoires valides (nom + description) → persisté en DB avec user_id
+     *
      * @test
      */
     public function it_creates_activity_with_required_fields(): void
@@ -52,6 +54,7 @@ class ActiviteServiceTest extends TestCase
 
     /**
      * U2.2 — Champ `nom` vide → ValidationException
+     *
      * @test
      */
     public function it_rejects_empty_nom(): void
@@ -66,6 +69,7 @@ class ActiviteServiceTest extends TestCase
 
     /**
      * U2.3 — Champ `description` vide → ValidationException
+     *
      * @test
      */
     public function it_rejects_empty_description(): void
@@ -80,6 +84,7 @@ class ActiviteServiceTest extends TestCase
 
     /**
      * U2.4 — Avec email optionnel valide → email enregistré
+     *
      * @test
      */
     public function it_creates_activity_with_optional_email(): void
@@ -98,6 +103,7 @@ class ActiviteServiceTest extends TestCase
 
     /**
      * U2.5 — Avec email optionnel invalide → rejeté
+     *
      * @test
      */
     public function it_rejects_invalid_optional_email(): void
@@ -113,6 +119,7 @@ class ActiviteServiceTest extends TestCase
 
     /**
      * U2.6 — Avec image (upload) → fichier stocké
+     *
      * @test
      */
     public function it_creates_activity_with_image(): void
@@ -133,6 +140,7 @@ class ActiviteServiceTest extends TestCase
 
     /**
      * U2.7 — Nom d'activité en doublon pour le même user → rejeté
+     *
      * @test
      */
     public function it_rejects_duplicate_name_for_same_user(): void
@@ -152,6 +160,7 @@ class ActiviteServiceTest extends TestCase
 
     /**
      * U2.8 — findByUser retourne uniquement les activités de l'user
+     *
      * @test
      */
     public function it_returns_only_activities_for_the_user(): void
@@ -165,6 +174,6 @@ class ActiviteServiceTest extends TestCase
         $activites = $this->service->findByUser($this->user);
 
         $this->assertCount(2, $activites);
-        $activites->each(fn($a) => $this->assertEquals($this->user->id, $a->user_id));
+        $activites->each(fn ($a) => $this->assertEquals($this->user->id, $a->user_id));
     }
 }

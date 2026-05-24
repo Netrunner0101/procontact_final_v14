@@ -10,7 +10,5 @@ class ActiviteCreated
 {
     use Dispatchable, SerializesModels;
 
-    public function __construct(public Activite $activite)
-    {
-    }
+    public function __construct(public Activite $activite) {}
 }

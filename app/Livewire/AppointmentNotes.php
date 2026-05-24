@@ -23,6 +23,7 @@ class AppointmentNotes extends Component
     public RendezVous $rendezVous;
 
     public bool $showForm = false;
+
     public ?int $editingNoteId = null;
 
     #[Validate('nullable|string|max:255')]
@@ -35,6 +36,7 @@ class AppointmentNotes extends Component
     public bool $is_shared_with_client = true;
 
     public int $lastSeenCount = 0;
+
     public bool $hasNew = false;
 
     public function mount(RendezVous $rendezVous): void
@@ -129,7 +131,7 @@ class AppointmentNotes extends Component
     {
         $note = $this->notesQuery()->findOrFail($noteId);
         $note->update([
-            'is_shared_with_client' => !$note->is_shared_with_client,
+            'is_shared_with_client' => ! $note->is_shared_with_client,
             'date_update' => now(),
         ]);
     }

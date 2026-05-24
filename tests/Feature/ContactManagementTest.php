@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Contact;
 use App\Models\Status;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -14,18 +14,19 @@ class ContactManagementTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     protected $user;
+
     protected $status;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create([
-            'role_id' => 1
+            'role_id' => 1,
         ]);
-        
+
         $this->status = Status::factory()->create([
-            'status_client' => 'Prospect'
+            'status_client' => 'Prospect',
         ]);
     }
 
@@ -59,7 +60,7 @@ class ContactManagementTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->post('/contacts', $contactData);
-        
+
         $response->assertRedirect('/contacts');
         $this->assertDatabaseHas('contacts', [
             'nom' => 'Dupont',
@@ -72,7 +73,7 @@ class ContactManagementTest extends TestCase
     public function test_contact_creation_requires_required_fields()
     {
         $response = $this->actingAs($this->user)->post('/contacts', []);
-        
+
         $response->assertSessionHasErrors(['nom', 'prenom', 'status_id']);
     }
 
@@ -122,7 +123,7 @@ class ContactManagementTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->put("/contacts/{$contact->id}", $updateData);
-        
+
         $response->assertRedirect("/contacts/{$contact->id}");
         $this->assertDatabaseHas('contacts', [
             'id' => $contact->id,
@@ -140,7 +141,7 @@ class ContactManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)->delete("/contacts/{$contact->id}");
-        
+
         $response->assertRedirect('/contacts');
         $this->assertDatabaseMissing('contacts', ['id' => $contact->id]);
     }
@@ -178,13 +179,13 @@ class ContactManagementTest extends TestCase
     public function test_contacts_are_filtered_by_user()
     {
         $otherUser = User::factory()->create();
-        
+
         // Create contacts for current user
         Contact::factory()->count(3)->create([
             'user_id' => $this->user->id,
             'status_id' => $this->status->id,
         ]);
-        
+
         // Create contacts for other user
         Contact::factory()->count(2)->create([
             'user_id' => $otherUser->id,
@@ -193,7 +194,7 @@ class ContactManagementTest extends TestCase
 
         $response = $this->actingAs($this->user)->get('/contacts');
         $response->assertStatus(200);
-        
+
         // Should only see own contacts (3)
         $contacts = $response->viewData('contacts');
         $this->assertCount(3, $contacts);

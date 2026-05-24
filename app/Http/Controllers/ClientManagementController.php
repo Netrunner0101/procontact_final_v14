@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Role;
 use App\Models\Contact;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -21,7 +21,7 @@ class ClientManagementController extends Controller
             ->with(['admin', 'role', 'contact'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
-        
+
         return view('admin.clients.index', compact('clients'));
     }
 
@@ -34,7 +34,7 @@ class ClientManagementController extends Controller
             ->orderBy('nom')
             ->orderBy('prenom')
             ->get();
-        
+
         return view('admin.clients.create', compact('contacts'));
     }
 
@@ -55,7 +55,7 @@ class ClientManagementController extends Controller
         $contactId = null;
 
         // If contact is selected, verify it belongs to the current admin
-        if (!empty($validated['contact_id'])) {
+        if (! empty($validated['contact_id'])) {
             $contact = Contact::where('user_id', Auth::id())->findOrFail($validated['contact_id']);
             $validated['nom'] = $contact->nom;
             $validated['prenom'] = $contact->prenom;
@@ -98,7 +98,7 @@ class ClientManagementController extends Controller
         }
 
         $client->load(['admin', 'role', 'contact']);
-        
+
         // Get client's appointments
         $appointments = $client->visibleRendezVous()
             ->with(['contact', 'activite'])
@@ -140,7 +140,7 @@ class ClientManagementController extends Controller
         $validated = $request->validate([
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $client->id,
+            'email' => 'required|string|email|max:255|unique:users,email,'.$client->id,
             'telephone' => 'nullable|string|max:20',
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
             'contact_id' => 'nullable|exists:contacts,id',

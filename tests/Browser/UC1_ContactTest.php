@@ -5,9 +5,9 @@ namespace Tests\Browser;
 use App\Models\Role;
 use App\Models\Status;
 use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class UC1_ContactTest extends DuskTestCase
 {
@@ -31,7 +31,7 @@ class UC1_ContactTest extends DuskTestCase
     /**
      * Nominal scenario: create a contact with nom, prenom, email, phone.
      */
-    public function testCreateContactNominal(): void
+    public function test_create_contact_nominal(): void
     {
         $user = $this->createAdminUser();
 
@@ -53,7 +53,7 @@ class UC1_ContactTest extends DuskTestCase
     /**
      * Validation: submitting an empty form shows required-field errors.
      */
-    public function testCreateContactValidation(): void
+    public function test_create_contact_validation(): void
     {
         $user = $this->createAdminUser();
 
@@ -75,7 +75,7 @@ class UC1_ContactTest extends DuskTestCase
     /**
      * Invalid email: submitting a malformed email address shows an error.
      */
-    public function testCreateContactInvalidEmail(): void
+    public function test_create_contact_invalid_email(): void
     {
         $user = $this->createAdminUser();
 
@@ -97,7 +97,7 @@ class UC1_ContactTest extends DuskTestCase
     /**
      * Cancel: clicking the cancel link returns to the contact list.
      */
-    public function testCancelCreateContact(): void
+    public function test_cancel_create_contact(): void
     {
         $user = $this->createAdminUser();
 

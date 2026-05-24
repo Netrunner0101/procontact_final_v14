@@ -32,6 +32,7 @@ class ActiviteMockTest extends TestCase
 
     /**
      * M2.1 — create() appelle save() une fois (pas de DB directe)
+     *
      * @test
      */
     public function it_persists_activity_via_create(): void
@@ -48,6 +49,7 @@ class ActiviteMockTest extends TestCase
 
     /**
      * M2.2 — L'image est stockée si fournie (Storage::fake)
+     *
      * @test
      */
     public function it_stores_image_when_provided(): void
@@ -63,11 +65,12 @@ class ActiviteMockTest extends TestCase
             'image' => $file,
         ]);
 
-        Storage::disk('public')->assertExists('activites/' . $file->hashName());
+        Storage::disk('public')->assertExists('activites/'.$file->hashName());
     }
 
     /**
      * M2.3 — Pas d'appel à Storage si aucune image
+     *
      * @test
      */
     public function it_does_not_call_storage_without_image(): void
@@ -86,6 +89,7 @@ class ActiviteMockTest extends TestCase
 
     /**
      * M2.4 — Événement ActiviteCreated dispatché
+     *
      * @test
      */
     public function it_dispatches_activite_created_event(): void
@@ -103,6 +107,7 @@ class ActiviteMockTest extends TestCase
 
     /**
      * M2.5 — Le dashboard se rafraîchit après création (test assertSee)
+     *
      * @test
      */
     public function dashboard_shows_created_activity(): void

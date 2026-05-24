@@ -23,11 +23,17 @@ class ClientPortalScenarioTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected User $client;
+
     protected Contact $contact;
+
     protected Activite $activite;
+
     protected RendezVous $rdv;
+
     protected Role $adminRole;
+
     protected Role $clientRole;
 
     protected function setUp(): void
@@ -75,6 +81,7 @@ class ClientPortalScenarioTest extends TestCase
 
     /**
      * S3.1 — Nominal : Accès via portail client → liste des RDVs (200)
+     *
      * @test
      */
     public function client_can_access_dashboard(): void
@@ -85,6 +92,7 @@ class ClientPortalScenarioTest extends TestCase
 
     /**
      * S3.2 — Nominal : Clic sur un RDV → page de détail (titre, date, heure, activité affichés)
+     *
      * @test
      */
     public function client_can_view_appointment_detail(): void
@@ -95,6 +103,7 @@ class ClientPortalScenarioTest extends TestCase
 
     /**
      * S3.3 — Nominal : Notes partagées visibles sur détail RDV
+     *
      * @test
      */
     public function shared_notes_are_visible_to_client(): void
@@ -120,6 +129,7 @@ class ClientPortalScenarioTest extends TestCase
 
     /**
      * S3.4 — Nominal : Client peut accéder à ses rendez-vous
+     *
      * @test
      */
     public function client_can_access_appointments_list(): void
@@ -130,6 +140,7 @@ class ClientPortalScenarioTest extends TestCase
 
     /**
      * S3.5 — A1 : Aucune note partagée → pas d'erreur
+     *
      * @test
      */
     public function no_shared_notes_shows_empty(): void
@@ -143,6 +154,7 @@ class ClientPortalScenarioTest extends TestCase
 
     /**
      * S3.6 — E1 : Token invalide/accès non autorisé → 403
+     *
      * @test
      */
     public function unauthenticated_user_cannot_access_portal(): void
@@ -153,6 +165,7 @@ class ClientPortalScenarioTest extends TestCase
 
     /**
      * S3.7 — E1 : Admin ne peut pas accéder au portail client → redirigé
+     *
      * @test
      */
     public function admin_cannot_access_client_portal(): void
@@ -163,6 +176,7 @@ class ClientPortalScenarioTest extends TestCase
 
     /**
      * S3.8 — E2 : Vérification de la validation des données
+     *
      * @test
      */
     public function client_notes_require_content(): void
@@ -179,6 +193,7 @@ class ClientPortalScenarioTest extends TestCase
 
     /**
      * S3.9 — Sécurité : Token A ne peut pas accéder aux RDVs du token B
+     *
      * @test
      */
     public function client_cannot_access_other_clients_appointments(): void
@@ -208,6 +223,7 @@ class ClientPortalScenarioTest extends TestCase
 
     /**
      * S3.10 — Sécurité : Note privée non visible via portail
+     *
      * @test
      */
     public function private_notes_not_visible_via_portal(): void

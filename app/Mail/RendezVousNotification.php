@@ -20,12 +20,12 @@ class RendezVousNotification extends Mailable
 
     public function build()
     {
-        return $this->subject('Confirmation de rendez-vous - ' . $this->rendezVous->titre)
-                    ->view('emails.rendez-vous-notification')
-                    ->with([
-                        'rendezVous' => $this->rendezVous,
-                        'contact' => $this->rendezVous->contact,
-                        'activite' => $this->rendezVous->activite,
-                    ]);
+        return $this->subject('Confirmation de rendez-vous - '.$this->rendezVous->titre)
+            ->view('emails.rendez-vous-notification')
+            ->with([
+                'rendezVous' => $this->rendezVous,
+                'contact' => $this->rendezVous->contact,
+                'activite' => $this->rendezVous->activite,
+            ]);
     }
 }

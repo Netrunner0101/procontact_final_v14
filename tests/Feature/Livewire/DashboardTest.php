@@ -3,14 +3,12 @@
 namespace Tests\Feature\Livewire;
 
 use App\Livewire\Dashboard;
-use App\Models\User;
+use App\Models\Activite;
 use App\Models\Contact;
 use App\Models\RendezVous;
-use App\Models\Activite;
-use App\Models\Note;
-use App\Models\Rappel;
 use App\Models\Role;
 use App\Models\Status;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -29,7 +27,7 @@ class DashboardTest extends TestCase
         Role::firstOrCreate(['nom' => Role::CLIENT], ['description' => 'Client']);
 
         $this->user = User::factory()->create([
-            'role_id' => $adminRole->id
+            'role_id' => $adminRole->id,
         ]);
     }
 
@@ -60,7 +58,7 @@ class DashboardTest extends TestCase
             'contact_id' => $contact->id,
             'activite_id' => $activite->id,
             'date_debut' => now()->addDay(),
-            'heure_debut' => '09:00'
+            'heure_debut' => '09:00',
         ]);
 
         $component = Livewire::test(Dashboard::class);
@@ -89,7 +87,7 @@ class DashboardTest extends TestCase
             'activite_id' => $activite->id,
             'date_debut' => now()->addDay(),
             'heure_debut' => '09:00',
-            'titre' => 'Test Appointment'
+            'titre' => 'Test Appointment',
         ]);
 
         $component = Livewire::test(Dashboard::class)

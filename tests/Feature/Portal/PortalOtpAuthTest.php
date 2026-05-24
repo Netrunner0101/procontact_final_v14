@@ -5,7 +5,6 @@ namespace Tests\Feature\Portal;
 use App\Mail\PortalOtpMail;
 use App\Models\ClientPortalAccessLog;
 use App\Models\ClientPortalOtp;
-use App\Models\ClientPortalToken;
 use App\Models\ClientPortalTrustedDevice;
 use App\Models\Contact;
 use App\Models\Email;
@@ -24,8 +23,11 @@ class PortalOtpAuthTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected Contact $contact;
+
     protected string $token = 'test-portal-token-abc';
+
     protected string $contactEmail = 'client@example.com';
 
     protected function setUp(): void
@@ -79,7 +81,7 @@ class PortalOtpAuthTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertDatabaseCount('client_portal_otps', 1);
-        Mail::assertQueued(PortalOtpMail::class, fn($mail) => $mail->hasTo($this->contactEmail));
+        Mail::assertQueued(PortalOtpMail::class, fn ($mail) => $mail->hasTo($this->contactEmail));
     }
 
     public function test_request_otp_with_non_matching_email_does_not_send_but_returns_same_view(): void

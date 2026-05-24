@@ -21,8 +21,8 @@ class PortalTokenService
     {
         $contact = $this->auth()->findContactByToken($token);
 
-        if (!$contact) {
-            throw new InvalidTokenException();
+        if (! $contact) {
+            throw new InvalidTokenException;
         }
 
         return $contact;

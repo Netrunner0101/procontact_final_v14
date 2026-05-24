@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Models\Activite;
 use App\Models\Contact;
 use App\Models\RendezVous;
 use App\Models\Status;
-use App\Models\Activite;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -16,18 +16,19 @@ class ApiTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     protected $user;
+
     protected $status;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create([
-            'role_id' => 1
+            'role_id' => 1,
         ]);
-        
+
         $this->status = Status::factory()->create([
-            'status_client' => 'Prospect'
+            'status_client' => 'Prospect',
         ]);
     }
 
@@ -53,10 +54,10 @@ class ApiTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-                         ->getJson('/api/contacts');
+            ->getJson('/api/contacts');
 
         $response->assertStatus(200)
-                 ->assertJsonCount(3, 'data');
+            ->assertJsonCount(3, 'data');
     }
 
     public function test_api_can_create_contact()
@@ -70,14 +71,14 @@ class ApiTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
-                         ->postJson('/api/contacts', $contactData);
+            ->postJson('/api/contacts', $contactData);
 
         $response->assertStatus(201)
-                 ->assertJsonFragment([
-                     'nom' => 'Dupont',
-                     'prenom' => 'Jean',
-                     'email' => 'jean.dupont@example.com',
-                 ]);
+            ->assertJsonFragment([
+                'nom' => 'Dupont',
+                'prenom' => 'Jean',
+                'email' => 'jean.dupont@example.com',
+            ]);
 
         $this->assertDatabaseHas('contacts', [
             'nom' => 'Dupont',
@@ -100,13 +101,13 @@ class ApiTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
-                         ->putJson("/api/contacts/{$contact->id}", $updateData);
+            ->putJson("/api/contacts/{$contact->id}", $updateData);
 
         $response->assertStatus(200)
-                 ->assertJsonFragment([
-                     'nom' => 'Martin',
-                     'prenom' => 'Marie',
-                 ]);
+            ->assertJsonFragment([
+                'nom' => 'Martin',
+                'prenom' => 'Marie',
+            ]);
 
         $this->assertDatabaseHas('contacts', [
             'id' => $contact->id,
@@ -123,7 +124,7 @@ class ApiTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-                         ->deleteJson("/api/contacts/{$contact->id}");
+            ->deleteJson("/api/contacts/{$contact->id}");
 
         $response->assertStatus(204);
         $this->assertDatabaseMissing('contacts', ['id' => $contact->id]);
@@ -148,10 +149,10 @@ class ApiTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-                         ->getJson('/api/rendez-vous');
+            ->getJson('/api/rendez-vous');
 
         $response->assertStatus(200)
-                 ->assertJsonCount(3, 'data');
+            ->assertJsonCount(3, 'data');
     }
 
     public function test_api_can_create_appointment()
@@ -177,13 +178,13 @@ class ApiTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user, 'sanctum')
-                         ->postJson('/api/rendez-vous', $appointmentData);
+            ->postJson('/api/rendez-vous', $appointmentData);
 
         $response->assertStatus(201)
-                 ->assertJsonFragment([
-                     'titre' => 'Consultation API',
-                     'description' => 'Test via API',
-                 ]);
+            ->assertJsonFragment([
+                'titre' => 'Consultation API',
+                'description' => 'Test via API',
+            ]);
 
         $this->assertDatabaseHas('rendez_vous', [
             'titre' => 'Consultation API',
@@ -194,12 +195,12 @@ class ApiTest extends TestCase
     public function test_api_validates_appointment_data()
     {
         $response = $this->actingAs($this->user, 'sanctum')
-                         ->postJson('/api/rendez-vous', []);
+            ->postJson('/api/rendez-vous', []);
 
         $response->assertStatus(422)
-                 ->assertJsonValidationErrors([
-                     'titre', 'date_heure', 'contact_id', 'activite_id'
-                 ]);
+            ->assertJsonValidationErrors([
+                'titre', 'date_heure', 'contact_id', 'activite_id',
+            ]);
     }
 
     public function test_api_cannot_access_other_user_data()
@@ -211,7 +212,7 @@ class ApiTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-                         ->getJson("/api/contacts/{$otherContact->id}");
+            ->getJson("/api/contacts/{$otherContact->id}");
 
         $response->assertStatus(403);
     }
@@ -234,15 +235,15 @@ class ApiTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-                         ->getJson('/api/statistics');
+            ->getJson('/api/statistics');
 
         $response->assertStatus(200)
-                 ->assertJsonStructure([
-                     'contacts_count',
-                     'appointments_count',
-                     'activities_count',
-                     'monthly_stats',
-                 ]);
+            ->assertJsonStructure([
+                'contacts_count',
+                'appointments_count',
+                'activities_count',
+                'monthly_stats',
+            ]);
     }
 
     public function test_api_export_functionality()
@@ -253,9 +254,9 @@ class ApiTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user, 'sanctum')
-                         ->getJson('/api/export/contacts');
+            ->getJson('/api/export/contacts');
 
         $response->assertStatus(200)
-                 ->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
+            ->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
     }
 }

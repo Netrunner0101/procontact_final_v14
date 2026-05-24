@@ -162,34 +162,14 @@
                 </div>
 
                 <!-- Address Fields -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div>
-                        <label for="rue" class="block text-sm font-semibold mb-2" style="color: #374151;">{{ __('Street') }}</label>
-                        <input type="text" id="rue" name="rue" value="{{ old('rue', $contact->rue) }}"
-                               class="w-full px-3 py-2 rounded-lg" style="border: 2px solid #efecea;">
-                    </div>
-                    <div>
-                        <label for="numero" class="block text-sm font-semibold mb-2" style="color: #374151;">{{ __('Number') }}</label>
-                        <input type="text" id="numero" name="numero" value="{{ old('numero', $contact->numero) }}"
-                               class="w-full px-3 py-2 rounded-lg" style="border: 2px solid #efecea;">
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div>
-                        <label for="ville" class="block text-sm font-semibold mb-2" style="color: #374151;">{{ __('City') }}</label>
-                        <input type="text" id="ville" name="ville" value="{{ old('ville', $contact->ville) }}"
-                               class="w-full px-3 py-2 rounded-lg" style="border: 2px solid #efecea;">
-                    </div>
-                    <div>
-                        <label for="code_postal" class="block text-sm font-semibold mb-2" style="color: #374151;">{{ __('Postal Code') }}</label>
-                        <input type="text" id="code_postal" name="code_postal" value="{{ old('code_postal', $contact->code_postal) }}"
-                               class="w-full px-3 py-2 rounded-lg" style="border: 2px solid #efecea;">
-                    </div>
-                    <div>
-                        <label for="pays" class="block text-sm font-semibold mb-2" style="color: #374151;">{{ __('Country') }}</label>
-                        <input type="text" id="pays" name="pays" value="{{ old('pays', $contact->pays ?? 'France') }}"
-                               class="w-full px-3 py-2 rounded-lg" style="border: 2px solid #efecea;">
-                    </div>
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-4" style="color: #374151;">
+                        <i class="fas fa-map-marker-alt mr-2"></i>{{ __('Addresses') }}
+                    </h3>
+                    @include('partials.adresse-repeater', [
+                        'adresses' => $contact->adresses,
+                        'paysList' => $paysList,
+                    ])
                 </div>
 
                 <!-- Buttons -->

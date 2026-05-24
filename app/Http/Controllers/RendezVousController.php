@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RendezVous;
-use App\Models\Contact;
+use App\Jobs\SendAppointmentEmail;
 use App\Models\Activite;
+use App\Models\Contact;
+use App\Models\RendezVous;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use App\Jobs\SendAppointmentEmail;
 
 class RendezVousController extends Controller
 {
@@ -18,7 +18,7 @@ class RendezVousController extends Controller
             ->where('user_id', Auth::id())
             ->orderBy('date_debut', 'desc')
             ->paginate(15);
-        
+
         return view('rendez-vous.index', compact('rendezVous'));
     }
 
@@ -27,6 +27,7 @@ class RendezVousController extends Controller
         $contacts = Contact::where('user_id', Auth::id())->get();
         $activites = Activite::where('user_id', Auth::id())->get();
         $selectedActiviteId = request('activite_id');
+
         return view('rendez-vous.create', compact('contacts', 'activites', 'selectedActiviteId'));
     }
 
@@ -55,7 +56,8 @@ class RendezVousController extends Controller
     public function show(RendezVous $rendezVous)
     {
         $this->authorize('view', $rendezVous);
-        $rendezVous->load(['contact.emails', 'contact.numeroTelephones', 'activite', 'notes', 'rappels']);
+        $rendezVous->load(['contact.emails', 'contact.numeroTelephones', 'contact.adressePrincipale', 'activite', 'notes', 'rappels']);
+
         return view('rendez-vous.show', compact('rendezVous'));
     }
 
@@ -64,13 +66,14 @@ class RendezVousController extends Controller
         $this->authorize('update', $rendezVous);
         $contacts = Contact::where('user_id', Auth::id())->get();
         $activites = Activite::where('user_id', Auth::id())->get();
+
         return view('rendez-vous.edit', compact('rendezVous', 'contacts', 'activites'));
     }
 
     public function update(Request $request, RendezVous $rendezVous)
     {
         $this->authorize('update', $rendezVous);
-        
+
         $validated = $request->validate([
             'contact_id' => 'required|exists:contacts,id',
             'activite_id' => 'required|exists:activites,id',
@@ -83,6 +86,7 @@ class RendezVousController extends Controller
         ]);
 
         $rendezVous->update($validated);
+
         return redirect()->route('rendez-vous.show', $rendezVous)->with('success', __('Appointment updated successfully'));
     }
 
@@ -90,6 +94,7 @@ class RendezVousController extends Controller
     {
         $this->authorize('delete', $rendezVous);
         $rendezVous->delete();
+
         return redirect()->route('rendez-vous.index')->with('success', __('Appointment deleted successfully'));
     }
 
@@ -117,7 +122,7 @@ class RendezVousController extends Controller
         ]);
 
         $ccEmails = [];
-        if (!empty($validated['cc_emails'])) {
+        if (! empty($validated['cc_emails'])) {
             $rawCc = preg_split('/[\s,;]+/', $validated['cc_emails'], -1, PREG_SPLIT_NO_EMPTY);
             $ccEmails = array_values(array_filter(
                 array_map('trim', $rawCc),

@@ -2,25 +2,29 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use App\Models\Contact;
-use App\Models\RendezVous;
-use App\Models\Note;
-use App\Models\Rappel;
 use App\Models\Activite;
-use Carbon\Carbon;
+use App\Models\Contact;
+use App\Models\Note;
+use App\Models\RendezVous;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Livewire\Component;
 
 class StatisticsDashboard extends Component
 {
     public $dateRange = '12'; // months
+
     public $selectedActivity = '';
+
     public $chartData = [];
+
     public $monthlyStats = [];
+
     public $activityStats = [];
+
     public $statusDistribution = [];
+
     public $priorityDistribution = [];
 
     public function mount()
@@ -48,7 +52,7 @@ class StatisticsDashboard extends Component
 
     private function loadMonthlyStats()
     {
-        $months = (int)$this->dateRange;
+        $months = (int) $this->dateRange;
         $userId = Auth::id();
         $cacheKey = "livewire_monthly_stats_{$userId}_{$months}";
 
@@ -90,11 +94,11 @@ class StatisticsDashboard extends Component
     {
         $query = Activite::withCount(['rendezVous'])
             ->where('user_id', Auth::id());
-            
+
         if ($this->selectedActivity) {
             $query->where('id', $this->selectedActivity);
         }
-        
+
         $this->activityStats = $query->orderBy('rendez_vous_count', 'desc')->get();
     }
 
@@ -107,23 +111,23 @@ class StatisticsDashboard extends Component
         }
 
         $today = now()->toDateString();
-        $stats = $query->selectRaw("
+        $stats = $query->selectRaw('
             count(*) filter (where date_debut >= ?) as upcoming,
             count(*) filter (where date_debut < ?) as past,
             count(*) filter (where date_debut::date = ?) as today
-        ", [$today, $today, $today])->first();
+        ', [$today, $today, $today])->first();
 
         $this->statusDistribution = collect([
-            (object)['statut' => __('Upcoming'), 'count' => $stats->upcoming ?? 0],
-            (object)['statut' => __('Today'), 'count' => $stats->today ?? 0],
-            (object)['statut' => __('Past'), 'count' => $stats->past ?? 0],
-        ])->filter(fn($item) => $item->count > 0)->values();
+            (object) ['statut' => __('Upcoming'), 'count' => $stats->upcoming ?? 0],
+            (object) ['statut' => __('Today'), 'count' => $stats->today ?? 0],
+            (object) ['statut' => __('Past'), 'count' => $stats->past ?? 0],
+        ])->filter(fn ($item) => $item->count > 0)->values();
     }
 
     private function loadPriorityDistribution()
     {
         // Compute note sharing distribution (no priorite column in DB)
-        $baseQuery = Note::whereHas('rendezVous', function($q) {
+        $baseQuery = Note::whereHas('rendezVous', function ($q) {
             $q->where('user_id', Auth::id());
             if ($this->selectedActivity) {
                 $q->where('activite_id', $this->selectedActivity);
@@ -134,26 +138,26 @@ class StatisticsDashboard extends Component
         $private = (clone $baseQuery)->where('is_shared_with_client', false)->count();
 
         $this->priorityDistribution = collect([
-            (object)['priorite' => __('Shared'), 'count' => $shared],
-            (object)['priorite' => __('Private'), 'count' => $private],
-        ])->filter(fn($item) => $item->count > 0)->values();
+            (object) ['priorite' => __('Shared'), 'count' => $shared],
+            (object) ['priorite' => __('Private'), 'count' => $private],
+        ])->filter(fn ($item) => $item->count > 0)->values();
     }
 
     public function exportData($type = 'global')
     {
-        $filename = 'statistiques_' . now()->format('Y-m-d_H-i-s') . '.csv';
-        
+        $filename = 'statistiques_'.now()->format('Y-m-d_H-i-s').'.csv';
+
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ];
-        
-        $callback = function() use ($type) {
+
+        $callback = function () use ($type) {
             $file = fopen('php://output', 'w');
-            
+
             // Add BOM for UTF-8
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
+
             if ($type === 'global') {
                 // Global export
                 fputcsv($file, [__('Type'), __('Month'), __('Count')], ';');
@@ -164,17 +168,17 @@ class StatisticsDashboard extends Component
                     fputcsv($file, [__('Notes'), $month['month'], $month['notes']], ';');
                 }
             }
-            
+
             fclose($file);
         };
-        
+
         return response()->stream($callback, 200, $headers);
     }
 
     public function render()
     {
         $activities = Activite::where('user_id', Auth::id())->orderBy('nom')->get();
-        
+
         return view('livewire.statistics-dashboard', [
             'activities' => $activities,
         ]);

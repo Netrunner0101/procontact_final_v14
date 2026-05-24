@@ -2,32 +2,43 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\Note;
 use App\Models\RendezVous;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class NotesManager extends Component
 {
     use WithPagination;
 
     public $search = '';
+
     public $sharingFilter = '';
+
     public $appointmentFilter = '';
+
     public $sortBy = 'created_at';
+
     public $sortDirection = 'desc';
 
     public $showCreateModal = false;
+
     public $showEditModal = false;
+
     public $showDeleteModal = false;
+
     public $selectedNote = null;
+
     public $appointmentsList = [];
 
     // Form fields
     public $rendez_vous_id = '';
+
     public $titre = '';
+
     public $commentaire = '';
+
     public $is_shared_with_client = false;
 
     protected $rules = [
@@ -81,7 +92,7 @@ class NotesManager extends Component
 
     public function openEditModal($noteId)
     {
-        $note = Note::whereHas('rendezVous', fn($q) => $q->where('user_id', Auth::id()))->findOrFail($noteId);
+        $note = Note::whereHas('rendezVous', fn ($q) => $q->where('user_id', Auth::id()))->findOrFail($noteId);
         $this->selectedNote = $note;
         $this->fillForm($note);
         $this->showEditModal = true;
@@ -89,7 +100,7 @@ class NotesManager extends Component
 
     public function openDeleteModal($noteId)
     {
-        $this->selectedNote = Note::whereHas('rendezVous', fn($q) => $q->where('user_id', Auth::id()))->findOrFail($noteId);
+        $this->selectedNote = Note::whereHas('rendezVous', fn ($q) => $q->where('user_id', Auth::id()))->findOrFail($noteId);
         $this->showDeleteModal = true;
     }
 
@@ -162,17 +173,17 @@ class NotesManager extends Component
     public function render()
     {
         $notes = Note::with(['rendezVous.contact', 'rendezVous.activite'])
-            ->whereHas('rendezVous', function($query) {
+            ->whereHas('rendezVous', function ($query) {
                 $query->where('user_id', Auth::id());
             })
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('titre', 'like', '%' . $this->search . '%')
-                      ->orWhere('commentaire', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('rendezVous.contact', function($subQ) {
-                          $subQ->where('nom', 'like', '%' . $this->search . '%')
-                               ->orWhere('prenom', 'like', '%' . $this->search . '%');
-                      });
+                    $q->where('titre', 'like', '%'.$this->search.'%')
+                        ->orWhere('commentaire', 'like', '%'.$this->search.'%')
+                        ->orWhereHas('rendezVous.contact', function ($subQ) {
+                            $subQ->where('nom', 'like', '%'.$this->search.'%')
+                                ->orWhere('prenom', 'like', '%'.$this->search.'%');
+                        });
                 });
             })
             ->when($this->sharingFilter !== '', function ($query) {

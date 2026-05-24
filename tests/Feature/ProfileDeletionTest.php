@@ -132,6 +132,6 @@ class ProfileDeletionTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertHeader('content-type', 'application/json');
-        $response->assertHeader('content-disposition', 'attachment; filename=procontact-data-export-' . now()->format('Y-m-d') . '.json');
+        $response->assertHeader('content-disposition', 'attachment; filename=procontact-data-export-'.now()->format('Y-m-d').'.json');
     }
 }

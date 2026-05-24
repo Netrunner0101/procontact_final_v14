@@ -80,55 +80,16 @@
                                     @enderror
                                 </div>
 
-                                <!-- Numéro de rue -->
-                                <div>
-                                    <label for="numero_rue" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Number') }}</label>
-                                    <input type="text" id="numero_rue" name="numero_rue" value="{{ old('numero_rue', $user->numero_rue) }}" 
-                                           class="form-input @error('numero_rue') border-red-500 @enderror">
-                                    @error('numero_rue')
-                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                            </div>
 
-                                <!-- Rue -->
-                                <div class="md:col-span-2">
-                                    <label for="rue" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Street') }}</label>
-                                    <input type="text" id="rue" name="rue" value="{{ old('rue', $user->rue) }}" 
-                                           class="form-input @error('rue') border-red-500 @enderror">
-                                    @error('rue')
-                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- Ville -->
-                                <div>
-                                    <label for="ville" class="block text-sm font-medium text-gray-700 mb-2">{{ __('City') }}</label>
-                                    <input type="text" id="ville" name="ville" value="{{ old('ville', $user->ville) }}" 
-                                           class="form-input @error('ville') border-red-500 @enderror">
-                                    @error('ville')
-                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- Code postal -->
-                                <div>
-                                    <label for="code_postal" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Postal Code') }}</label>
-                                    <input type="text" id="code_postal" name="code_postal" value="{{ old('code_postal', $user->code_postal) }}" 
-                                           class="form-input @error('code_postal') border-red-500 @enderror">
-                                    @error('code_postal')
-                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <!-- Pays -->
-                                <div class="md:col-span-2">
-                                    <label for="pays" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Country') }}</label>
-                                    <input type="text" id="pays" name="pays" value="{{ old('pays', $user->pays) }}" 
-                                           class="form-input @error('pays') border-red-500 @enderror">
-                                    @error('pays')
-                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                            <div class="mt-8">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                                    <i class="fas fa-map-marker-alt mr-2"></i>{{ __('Addresses') }}
+                                </h3>
+                                @include('partials.adresse-repeater', [
+                                    'adresses' => $user->adresses,
+                                    'paysList' => $paysList,
+                                ])
                             </div>
 
                             <div class="mt-6">

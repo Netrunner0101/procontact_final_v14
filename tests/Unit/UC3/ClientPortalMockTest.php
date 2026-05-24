@@ -2,10 +2,8 @@
 
 namespace Tests\Unit\UC3;
 
-use App\Exceptions\InvalidTokenException;
 use App\Models\Activite;
 use App\Models\Contact;
-use App\Models\Note;
 use App\Models\RendezVous;
 use App\Models\Role;
 use App\Models\Status;
@@ -24,8 +22,11 @@ class ClientPortalMockTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected Contact $contact;
+
     protected Role $adminRole;
+
     protected Role $clientRole;
 
     protected function setUp(): void
@@ -47,6 +48,7 @@ class ClientPortalMockTest extends TestCase
 
     /**
      * M3.1 — Le controller délègue la validation du token au PortalTokenService
+     *
      * @test
      */
     public function portal_token_service_validates_correctly(): void
@@ -59,6 +61,7 @@ class ClientPortalMockTest extends TestCase
 
     /**
      * M3.2 — Liste des RDVs chargée depuis le ClientPortalService
+     *
      * @test
      */
     public function client_portal_service_loads_appointments(): void
@@ -89,6 +92,7 @@ class ClientPortalMockTest extends TestCase
 
     /**
      * M3.3 — createFromClient() appelé une fois au POST
+     *
      * @test
      */
     public function note_service_creates_client_note(): void
@@ -121,6 +125,7 @@ class ClientPortalMockTest extends TestCase
 
     /**
      * M3.4 — Aucun appel à createFromClient() si message vide (validation bloque)
+     *
      * @test
      */
     public function note_service_rejects_empty_message(): void
@@ -154,6 +159,7 @@ class ClientPortalMockTest extends TestCase
 
     /**
      * M3.5 — Notification envoyée (test structure - vérifie que le service fonctionne)
+     *
      * @test
      */
     public function portal_token_generation_works(): void
@@ -168,6 +174,7 @@ class ClientPortalMockTest extends TestCase
 
     /**
      * M3.6 — Token validé correctement (performance test)
+     *
      * @test
      */
     public function portal_token_validation_is_fast(): void

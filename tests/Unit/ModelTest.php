@@ -2,16 +2,16 @@
 
 namespace Tests\Unit;
 
-use App\Models\User;
-use App\Models\Contact;
-use App\Models\RendezVous;
 use App\Models\Activite;
-use App\Models\Status;
+use App\Models\Contact;
 use App\Models\Note;
 use App\Models\Rappel;
+use App\Models\RendezVous;
+use App\Models\Status;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use Carbon\Carbon;
 
 class ModelTest extends TestCase
 {
@@ -19,14 +19,14 @@ class ModelTest extends TestCase
 
     public function test_user_model_has_correct_fillable_attributes()
     {
-        $user = new User();
-        
+        $user = new User;
+
         $expectedFillable = [
-            'nom', 'prenom', 'email', 'password', 'telephone', 
+            'nom', 'prenom', 'email', 'password', 'telephone',
             'adresse', 'ville', 'code_postal', 'pays', 'role',
-            'admin_user_id', 'google_id', 'apple_id', 'provider', 'avatar'
+            'admin_user_id', 'google_id', 'apple_id', 'provider', 'avatar',
         ];
-        
+
         $this->assertEquals($expectedFillable, $user->getFillable());
     }
 
@@ -34,7 +34,7 @@ class ModelTest extends TestCase
     {
         $user = User::factory()->create();
         $status = Status::factory()->create();
-        
+
         $contact = Contact::factory()->create([
             'user_id' => $user->id,
             'status_id' => $status->id,
@@ -53,7 +53,7 @@ class ModelTest extends TestCase
             'status_id' => $status->id,
         ]);
         $activite = Activite::factory()->create(['user_id' => $user->id]);
-        
+
         $appointment = RendezVous::factory()->create([
             'user_id' => $user->id,
             'contact_id' => $contact->id,
@@ -71,7 +71,7 @@ class ModelTest extends TestCase
 
         $this->assertTrue($admin->isAdmin());
         $this->assertFalse($admin->isClient());
-        
+
         $this->assertTrue($client->isClient());
         $this->assertFalse($client->isAdmin());
     }
@@ -80,7 +80,7 @@ class ModelTest extends TestCase
     {
         $user = User::factory()->create();
         $status = Status::factory()->create();
-        
+
         $contact = Contact::factory()->create([
             'user_id' => $user->id,
             'status_id' => $status->id,
@@ -94,7 +94,7 @@ class ModelTest extends TestCase
     {
         $user = User::factory()->create();
         $status = Status::factory()->create();
-        
+
         $contact = Contact::factory()->create([
             'user_id' => $user->id,
             'status_id' => $status->id,
@@ -113,7 +113,7 @@ class ModelTest extends TestCase
             'status_id' => $status->id,
         ]);
         $activite = Activite::factory()->create(['user_id' => $user->id]);
-        
+
         $appointment = RendezVous::factory()->create([
             'user_id' => $user->id,
             'contact_id' => $contact->id,
@@ -132,7 +132,7 @@ class ModelTest extends TestCase
             'status_id' => $status->id,
         ]);
         $activite = Activite::factory()->create(['user_id' => $user->id]);
-        
+
         $appointment = RendezVous::factory()->create([
             'user_id' => $user->id,
             'contact_id' => $contact->id,
@@ -142,7 +142,7 @@ class ModelTest extends TestCase
         $this->assertEquals($user->id, $appointment->user->id);
         $this->assertEquals($contact->id, $appointment->contact->id);
         $this->assertEquals($activite->id, $appointment->activite->id);
-        
+
         $this->assertInstanceOf(User::class, $appointment->user);
         $this->assertInstanceOf(Contact::class, $appointment->contact);
         $this->assertInstanceOf(Activite::class, $appointment->activite);
@@ -157,7 +157,7 @@ class ModelTest extends TestCase
             'status_id' => $status->id,
         ]);
         $activite = Activite::factory()->create(['user_id' => $user->id]);
-        
+
         $appointment = RendezVous::factory()->create([
             'user_id' => $user->id,
             'contact_id' => $contact->id,
@@ -182,7 +182,7 @@ class ModelTest extends TestCase
             'status_id' => $status->id,
         ]);
         $activite = Activite::factory()->create(['user_id' => $user->id]);
-        
+
         $appointment = RendezVous::factory()->create([
             'user_id' => $user->id,
             'contact_id' => $contact->id,
@@ -216,7 +216,7 @@ class ModelTest extends TestCase
             'status_id' => $status->id,
         ]);
         $activite = Activite::factory()->create(['user_id' => $user->id]);
-        
+
         $appointment = RendezVous::factory()->create([
             'user_id' => $user->id,
             'contact_id' => $contact->id,
@@ -235,7 +235,7 @@ class ModelTest extends TestCase
             'status_id' => $status->id,
         ]);
         $activite = Activite::factory()->create(['user_id' => $user->id]);
-        
+
         $appointment = RendezVous::factory()->create([
             'user_id' => $user->id,
             'contact_id' => $contact->id,
@@ -249,7 +249,7 @@ class ModelTest extends TestCase
 
         $this->assertEquals($user->id, $note->user->id);
         $this->assertEquals($appointment->id, $note->rendezVous->id);
-        
+
         $this->assertInstanceOf(User::class, $note->user);
         $this->assertInstanceOf(RendezVous::class, $note->rendezVous);
     }
@@ -263,7 +263,7 @@ class ModelTest extends TestCase
             'status_id' => $status->id,
         ]);
         $activite = Activite::factory()->create(['user_id' => $user->id]);
-        
+
         $appointment = RendezVous::factory()->create([
             'user_id' => $user->id,
             'contact_id' => $contact->id,
@@ -277,7 +277,7 @@ class ModelTest extends TestCase
 
         $this->assertEquals($user->id, $reminder->user->id);
         $this->assertEquals($appointment->id, $reminder->rendezVous->id);
-        
+
         $this->assertInstanceOf(User::class, $reminder->user);
         $this->assertInstanceOf(RendezVous::class, $reminder->rendezVous);
     }
@@ -291,7 +291,7 @@ class ModelTest extends TestCase
             'status_id' => $status->id,
         ]);
         $activite = Activite::factory()->create(['user_id' => $user->id]);
-        
+
         $appointment = RendezVous::factory()->create([
             'user_id' => $user->id,
             'contact_id' => $contact->id,
@@ -315,7 +315,7 @@ class ModelTest extends TestCase
     {
         $user = User::factory()->create();
         $status = Status::factory()->create();
-        
+
         $contact = Contact::factory()->create([
             'user_id' => $user->id,
             'status_id' => $status->id,
