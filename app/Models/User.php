@@ -17,6 +17,27 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * Polymorphic morph children don't get cascaded by SQL foreign keys, so we
+     * delete them explicitly on Eloquent's deleting event. This enforces the
+     * UML composition (User ◆── Adresse) at runtime.
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (self $user): void {
+            // The user's own addresses.
+            $user->adresses()->delete();
+
+            // The SQL cascade will delete the user's contacts, but it does not
+            // fire Eloquent events on those contacts, so their addresses would
+            // be orphaned. Clean them up first.
+            Adresse::query()
+                ->where('addressable_type', Contact::class)
+                ->whereIn('addressable_id', $user->contacts()->select('id'))
+                ->delete();
+        });
+    }
+
+    /**
      * Always eager-load the role relationship to avoid N+1 on isAdmin()/isClient().
      */
     protected $with = ['role'];

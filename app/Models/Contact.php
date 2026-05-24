@@ -14,6 +14,18 @@ class Contact extends Model
 {
     use HasFactory;
 
+    /**
+     * Polymorphic morph children don't get cascaded by SQL foreign keys, so we
+     * delete the contact's addresses explicitly when the contact itself is
+     * deleted. This enforces the UML composition (Contact ◆── Adresse).
+     */
+    protected static function booted(): void
+    {
+        static::deleting(function (self $contact): void {
+            $contact->adresses()->delete();
+        });
+    }
+
     protected $fillable = [
         'user_id',
         'nom',

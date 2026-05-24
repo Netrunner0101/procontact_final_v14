@@ -113,16 +113,36 @@ class AdressesTest extends TestCase
     {
         $contact = Contact::factory()->create();
         $contact->adresses()->create(['ville' => 'X', 'is_principale' => true]);
+        $contact->adresses()->create(['ville' => 'Y']);
 
         $contactId = $contact->id;
         $contact->delete();
 
-        // Polymorphic relations don't cascade automatically; the addresses remain
-        // orphaned unless cleaned up. This documents that behavior so the team
-        // adds an explicit deletion in HardDelete flows if/when needed.
         $orphans = Adresse::where('addressable_type', Contact::class)
             ->where('addressable_id', $contactId)
             ->count();
-        $this->assertGreaterThanOrEqual(0, $orphans);
+
+        $this->assertSame(0, $orphans, 'Contact deletion must cascade to its addresses.');
+    }
+
+    public function test_deleting_user_cascades_to_user_and_contact_addresses(): void
+    {
+        $user = User::factory()->create();
+        $user->adresses()->create(['ville' => 'UserCity', 'is_principale' => true]);
+
+        $contact = Contact::factory()->create(['user_id' => $user->id]);
+        $contact->adresses()->create(['ville' => 'ContactCity', 'is_principale' => true]);
+
+        $userId = $user->id;
+        $contactId = $contact->id;
+        $user->delete();
+
+        $userAddressesLeft = Adresse::where('addressable_type', User::class)
+            ->where('addressable_id', $userId)->count();
+        $contactAddressesLeft = Adresse::where('addressable_type', Contact::class)
+            ->where('addressable_id', $contactId)->count();
+
+        $this->assertSame(0, $userAddressesLeft, "User's own addresses must be deleted.");
+        $this->assertSame(0, $contactAddressesLeft, "Cascaded contacts' addresses must also be deleted.");
     }
 }
