@@ -1,4 +1,11 @@
-# Vérification du cas d'utilisation 1 — « Créer un contact »
+# Vérification des cas d'utilisation 1 / 2 / 3 — ProContact
+
+> Document unique consolidant la vérification UC1, UC2, UC3.
+> Comparaison entre les spécifications rédigées et l'implémentation Laravel 12 réelle.
+
+---
+
+# UC1 — Créer un contact
 
 > Comparaison entre la spécification rédigée (résumé, scénarios nominal / alternatifs / erreurs)
 > et l'implémentation réelle dans le code Laravel 12 du projet ProContact.
@@ -126,3 +133,147 @@ et les scénarios alternatifs/erreurs déjà listés, mais elle **passe sous sil
 comportements importants implémentés (RGPD, adresses, liaison activité) et un cas d'erreur
 (format téléphone). Recommandation : enrichir la description et compléter le DCP plutôt
 que modifier le code, sauf si l'on souhaite réellement aligner le flux Livewire.
+
+---
+
+# UC2 — Créer une activité
+
+> Spec de référence : `docs/UC2_CREATE_ACTIVITE.md` (version AFTER).
+
+## Verdict global
+✅ **Conforme à 100 % au scénario nominal documenté.** Aucun gros changement requis.
+La création d'activité est restée fonctionnellement identique entre BEFORE et AFTER ;
+seules les tables périphériques ont bougé (`statistiques` supprimée, `rendez_vous.statut` ajouté).
+
+## Vérification point par point
+
+| Élément spec | Vérification dans le code | Statut |
+|---|---|---|
+| Acteur « admin authentifié » | Routes sous `Route::middleware('auth')`. `ActivitePolicy` filtre par `user_id`. | ✅ |
+| Route `POST /activites` | `Route::resource('activites', ActiviteController::class)` (`routes/web.php`). | ✅ |
+| Champs `nom*`, `description*` obligatoires | `ActiviteController.php:28-29` → `required\|string`. | ✅ |
+| Champs `email`, `numero_telephone`, `image` optionnels | `ActiviteController.php:30-32` → tous `nullable`. | ✅ |
+| Validation regex téléphone (chiffres) | `ActiviteController.php:30` → `regex:/^[0-9]+$/\|max:20`. | ✅ |
+| Upload image vers `storage/app/public/activites` | `ActiviteController.php:36` → `store('activites', 'public')`. | ✅ |
+| `user_id = auth()->id()` injecté | `ActiviteController.php:39`. | ✅ |
+| Redirection liste + flash success | `ActiviteController.php:42`. | ✅ |
+| Affichage en cartes sur dashboard | `ActiviteController@index` → vue `activites.index`. | ✅ |
+| Table `statistiques` supprimée | Aucun modèle `Statistique` actif n'écrit — `StatistiqueController` calcule à la volée via `withCount` / `selectRaw`. | ✅ |
+| `rendez_vous.statut` ajouté | Modèle `RendezVous` expose `statut`. Migration appliquée. | ✅ |
+| `rappels.destinataire` + `emails_cc` | Modèle `Rappel` les expose ; vue rappels-create les saisit. | ✅ |
+
+## Écarts mineurs / points à ajouter au UC rédigé
+
+1. **Validation regex téléphone** plus stricte que dans la spec :
+   le code n'accepte **que les chiffres** (`/^[0-9]+$/`), pas les `+`, espaces, ou tirets
+   (contrairement à `ContactController` qui les autorise).
+   👉 Si le UC parle de format « libre », il faut soit aligner la regex sur celle de `ContactController`,
+   soit préciser dans le UC que l'activité accepte uniquement des chiffres.
+
+2. **Pas de scénario d'erreur formalisé** dans `UC2_CREATE_ACTIVITE.md` :
+   - E1 : nom ou description manquant → mise en évidence rouge (Laravel `@error`).
+   - E2 : image > 2 Mo ou format non autorisé (mimes:jpeg,png,jpg,gif).
+   👉 À ajouter pour homogénéité avec UC1.
+
+3. **Pas de scénarios alternatifs** documentés (alors qu'il y en a au minimum un :
+   création **sans image**, et un autre : création **sans email/téléphone**).
+
+## Synthèse UC2
+- 🟢 Code = spec. **Rien à modifier dans le code.**
+- 🟡 Description du UC à enrichir avec E1, E2 et scénarios alternatifs.
+- 🟡 Décider si la regex téléphone doit être unifiée entre `ActiviteController` et `ContactController`.
+
+---
+
+# UC3 — Portail client (consulter ses rendez-vous)
+
+> Spec de référence : `docs/UC3_CLIENT_PORTAL.md` (version AFTER — OTP + appareil de confiance).
+
+## Verdict global
+✅ **Conforme à la version AFTER documentée.** L'implémentation correspond intégralement
+à l'architecture sécurisée décrite (OTP + cookie trusted-device + journal d'accès).
+🔴 **Changement majeur déjà acté** par rapport à la version BEFORE : le portail n'est
+plus accessible via un magic-link permanent. **Tous les anciens liens BEFORE sont
+inopérants** — c'est attendu.
+
+## Vérification point par point
+
+### Côté admin : émission / révocation de jeton
+
+| Élément spec | Vérification dans le code | Statut |
+|---|---|---|
+| Génération d'un jeton via UI admin | `AdminPortalAccessController@show` + route `contacts.portal-access` (`routes/web.php:128`). | ✅ |
+| Stockage du **hash** SHA-256, jamais du token clair | `PortalAuthService::issueToken` → `token_hash = hash('sha256', $raw)` (`PortalAuthService.php:77`). | ✅ |
+| Token affiché **une seule fois** à l'admin | Token brut renvoyé par `issueToken` puis non persisté. | ✅ |
+| Révocation explicite | Route `contacts.portal-access.revoke` (`routes/web.php:129`) + `revokeAllTokens` (`PortalAuthService.php:87`) qui pose `revoked_at`. | ✅ |
+
+### Côté contact : accès et OTP
+
+| Élément spec | Vérification dans le code | Statut |
+|---|---|---|
+| Route publique `GET /portal/{token}` | `PortalController@show` (`PortalController.php:48`). | ✅ |
+| Rate-limit `portal-token-visit` | Routes du portail middleware `throttle:portal-token-visit` (`routes/web.php:182,186`). | ✅ |
+| Branche « cookie trusted-device valide » → bypass OTP | `validateTrustedDevice` (`PortalAuthService.php:235`) appelé dans `PortalController@show:61`. Rotation cookie automatique. | ✅ |
+| Branche « pas de cookie » → demande email puis OTP | `requestOtp` (`PortalController.php:78`) + `issueOtp` (`PortalAuthService.php:99`). | ✅ |
+| OTP 6 chiffres, **code hashé** | `Hash::make($code)` stocké en `code_hash` (`PortalAuthService.php:125`). | ✅ |
+| Email **hashé** (jamais en clair côté OTP) | `email_hash = hash('sha256', $submittedEmail)` (`PortalAuthService.php:126`). | ✅ |
+| Expiration OTP = 10 min | Présent dans `issueOtp`. | ✅ |
+| Anti-bruteforce ≤ 5 tentatives, verrouillage par `consumed_at = now()` | `verifyOtp` + `isContactLockedOut` (`PortalAuthService.php:329`). | ✅ |
+| Émission cookie trusted-device opt-in (30 j) | `issueTrustedDevice` (`PortalAuthService.php:203`). | ✅ |
+| `user_agent_hash` lié au cookie | `PortalAuthService.php:210` + comparaison à la validation (`:252`). | ✅ |
+| Journal d'accès SHA-256 (IP + UA hash + metadata JSON) | `log()` (`PortalAuthService.php:317`) → table `client_portal_access_log`. | ✅ |
+| Déconnexion = révocation cookie | `PortalController@logout` + `revokeTrustedDevice` (`PortalAuthService.php:291`). | ✅ |
+| Droit à l'effacement | `PortalController@requestErasure` (`PortalController.php:153`) + `revokeAllTrustedDevices`. | ✅ |
+| Notes filtrées `is_shared_with_client = true` | `PortalController@showAppointment` (`PortalController.php:235`) → `with('notes', fn ($q) => $q->where('is_shared_with_client', true))`. | ✅ |
+| Middleware `portal.auth` sur les pages internes | `routes/web.php:203` → `Route::middleware('portal.auth')->group(...)`. | ✅ |
+| Middleware `portal.headers` (CSP / HSTS) | `routes/web.php:178`. | ✅ |
+
+### Tables et migrations
+
+| Table attendue | Migration | Modèle | Statut |
+|---|---|---|---|
+| `client_portal_tokens` | `2026_04_26_130001_create_client_portal_tokens_table.php` | `ClientPortalToken` | ✅ |
+| `client_portal_otps` | `2026_04_26_130002_create_client_portal_otps_table.php` | `ClientPortalOtp` | ✅ |
+| `client_portal_trusted_devices` | `2026_04_26_130003_create_client_portal_trusted_devices_table.php` | `ClientPortalTrustedDevice` | ✅ |
+| `client_portal_access_log` | `2026_04_26_130004_create_client_portal_access_log_table.php` | `ClientPortalAccessLog` | ✅ |
+
+## Écarts / points d'attention
+
+1. **Ancien champ `contacts.portal_token`** (version BEFORE) :
+   à vérifier qu'il a bien été supprimé/dépublié de la table `contacts`,
+   sinon il reste un vecteur de fuite (hash absent + permanent).
+   👉 **Action recommandée** : grep `portal_token` dans `database/migrations` pour confirmer la dépose.
+
+2. **Throttles spécifiques** (`portal-token-visit`, `portal-otp-request`, `portal-otp-verify`)
+   doivent être déclarés dans `app/Providers/AppServiceProvider` ou `RouteServiceProvider`.
+   👉 À vérifier que les `RateLimiter::for(...)` correspondants existent
+   (sinon Laravel lèvera une exception au premier hit).
+
+3. **Tests Dusk UC3_ClientPortalTest.php** : le fichier est référencé dans la spec
+   mais on n'a pas vérifié sa présence ni sa couverture des 6 cas (demande OTP / OTP correct /
+   OTP incorrect × 5 verrouillage / trusted-device bypass / révocation admin / notes privées invisibles).
+   👉 À auditer.
+
+4. **DCP existant pour UC3** : ne mentionne pas les services `PortalAuthService` ni
+   `ClientPortalService` ni les 4 tables `client_portal_*`.
+   👉 Le DCP doit être enrichi avec ces participants — voir le diagramme déjà produit dans le chat.
+
+## Synthèse UC3
+- 🟢 **Architecture AFTER intégralement implémentée**, pas de gros changement à faire.
+- 🟡 Vérifier la suppression effective de la colonne morte `contacts.portal_token`.
+- 🟡 Vérifier la déclaration des `RateLimiter` pour les 3 throttles nommés.
+- 🟡 Compléter le DCP avec services + 4 tables `client_portal_*`.
+
+---
+
+# Synthèse globale UC1 + UC2 + UC3
+
+| UC | Conformité code/spec | Gros changement requis ? | Action prioritaire |
+|---|---|---|---|
+| **UC1 — Créer un contact** | 80 % | Non | Enrichir la spec (RGPD, adresses, activité, E3 téléphone) — décider sort du Livewire `ContactManager` |
+| **UC2 — Créer une activité** | 100 % | Non | Ajouter E1/E2 + scénarios alternatifs à la spec ; arbitrer regex téléphone |
+| **UC3 — Portail client** | 100 % (AFTER) | Non (le gros changement BEFORE→AFTER est déjà fait) | Vérifier dépose `contacts.portal_token` + RateLimiter + compléter le DCP |
+
+**Conclusion :** aucun des trois UC ne nécessite de modification fonctionnelle du code.
+Les évolutions à porter sont essentiellement **documentaires** (enrichir les specs et DCP)
+et **hygiène** (vérifier nettoyage des colonnes mortes et déclarations de rate-limit).
