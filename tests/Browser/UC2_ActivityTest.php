@@ -4,9 +4,9 @@ namespace Tests\Browser;
 
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class UC2_ActivityTest extends DuskTestCase
 {
@@ -29,7 +29,7 @@ class UC2_ActivityTest extends DuskTestCase
     /**
      * Nominal scenario: create an activity with nom and description.
      */
-    public function testCreateActivityNominal(): void
+    public function test_create_activity_nominal(): void
     {
         $user = $this->createAdminUser();
 
@@ -49,7 +49,7 @@ class UC2_ActivityTest extends DuskTestCase
     /**
      * Validation: submitting an empty form shows required-field errors.
      */
-    public function testCreateActivityValidation(): void
+    public function test_create_activity_validation(): void
     {
         $user = $this->createAdminUser();
 

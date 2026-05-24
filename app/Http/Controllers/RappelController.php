@@ -12,12 +12,12 @@ class RappelController extends Controller
     public function index()
     {
         $rappels = Rappel::with(['rendezVous.contact', 'rendezVous.activite'])
-            ->whereHas('rendezVous', function($query) {
+            ->whereHas('rendezVous', function ($query) {
                 $query->where('user_id', Auth::id());
             })
             ->orderBy('date_rappel', 'asc')
             ->paginate(15);
-        
+
         return view('rappels.index', compact('rappels'));
     }
 
@@ -25,17 +25,17 @@ class RappelController extends Controller
     {
         $rendezVousId = $request->get('rendez_vous_id');
         $rendezVous = null;
-        
+
         if ($rendezVousId) {
             $rendezVous = RendezVous::where('user_id', Auth::id())
                 ->findOrFail($rendezVousId);
         }
-        
+
         $userRendezVous = RendezVous::where('user_id', Auth::id())
             ->with(['contact', 'activite'])
             ->orderBy('date_debut', 'desc')
             ->get();
-            
+
         return view('rappels.create', compact('rendezVous', 'userRendezVous'));
     }
 
@@ -69,8 +69,9 @@ class RappelController extends Controller
         if ($rappel->rendezVous->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         $rappel->load(['rendezVous.contact', 'rendezVous.activite']);
+
         return view('rappels.show', compact('rappel'));
     }
 
@@ -80,12 +81,12 @@ class RappelController extends Controller
         if ($rappel->rendezVous->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         $userRendezVous = RendezVous::where('user_id', Auth::id())
             ->with(['contact', 'activite'])
             ->orderBy('date_debut', 'desc')
             ->get();
-            
+
         return view('rappels.edit', compact('rappel', 'userRendezVous'));
     }
 
@@ -160,10 +161,10 @@ class RappelController extends Controller
         if ($rappel->rendezVous->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         $rendezVous = $rappel->rendezVous;
         $rappel->delete();
-        
+
         return redirect()->route('rendez-vous.show', $rendezVous)
             ->with('success', __('Reminder deleted successfully'));
     }

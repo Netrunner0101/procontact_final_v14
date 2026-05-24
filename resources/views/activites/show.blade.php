@@ -324,7 +324,7 @@
                                         <p class="font-medium truncate" style="color: #1b1c1a;">
                                             {{ $contact->prenom }} {{ $contact->nom }}
                                         </p>
-                                        <p class="text-xs truncate" style="color: #75786c;">{{ $contact->ville ?? __('City not specified') }}</p>
+                                        <p class="text-xs truncate" style="color: #75786c;">{{ $contact->adressePrincipale?->ville ?? __('City not specified') }}</p>
                                     </div>
                                     <div class="flex items-center gap-2 flex-shrink-0">
                                         <a href="{{ route('contacts.show', $contact) }}"

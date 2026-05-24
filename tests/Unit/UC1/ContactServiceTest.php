@@ -4,7 +4,6 @@ namespace Tests\Unit\UC1;
 
 use App\Models\Contact;
 use App\Models\Email;
-use App\Models\NumeroTelephone;
 use App\Models\Role;
 use App\Models\Status;
 use App\Models\User;
@@ -24,7 +23,9 @@ class ContactServiceTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected ContactService $service;
+
     protected Status $status;
 
     protected function setUp(): void
@@ -39,6 +40,7 @@ class ContactServiceTest extends TestCase
 
     /**
      * U1.1 — Données valides (nom, prénom, email, tél) → contact persisté en DB
+     *
      * @test
      */
     public function it_creates_a_contact_with_valid_data(): void
@@ -64,6 +66,7 @@ class ContactServiceTest extends TestCase
 
     /**
      * U1.2 — Email en double (déjà existant pour cet utilisateur) → ValidationException
+     *
      * @test
      */
     public function it_rejects_duplicate_email_for_same_user(): void
@@ -89,6 +92,7 @@ class ContactServiceTest extends TestCase
 
     /**
      * U1.3 — Champ `nom` vide → rejeter avec message d'erreur
+     *
      * @test
      */
     public function it_rejects_empty_nom(): void
@@ -104,6 +108,7 @@ class ContactServiceTest extends TestCase
 
     /**
      * U1.4 — Champ `prenom` vide → rejeter avec message d'erreur
+     *
      * @test
      */
     public function it_rejects_empty_prenom(): void
@@ -119,6 +124,7 @@ class ContactServiceTest extends TestCase
 
     /**
      * U1.5 — Email au format invalide → erreur de format
+     *
      * @test
      */
     public function it_rejects_invalid_email_format(): void
@@ -134,6 +140,7 @@ class ContactServiceTest extends TestCase
 
     /**
      * U1.6 — Numéro de téléphone invalide (lettres) → validation format
+     *
      * @test
      */
     public function it_rejects_invalid_phone_number(): void
@@ -150,6 +157,7 @@ class ContactServiceTest extends TestCase
 
     /**
      * U1.7 — Ajout d'un 2e numéro de téléphone (A1)
+     *
      * @test
      */
     public function it_adds_a_second_phone_number(): void
@@ -169,6 +177,7 @@ class ContactServiceTest extends TestCase
 
     /**
      * U1.8 — Ajout d'un 2e email (A1)
+     *
      * @test
      */
     public function it_adds_a_second_email(): void
@@ -188,6 +197,7 @@ class ContactServiceTest extends TestCase
 
     /**
      * U1.9 — Tous champs obligatoires manquants → retourne les champs en erreur
+     *
      * @test
      */
     public function it_rejects_all_missing_required_fields(): void
@@ -205,6 +215,7 @@ class ContactServiceTest extends TestCase
 
     /**
      * U1.10 — findByUser retourne uniquement les contacts de l'user connecté
+     *
      * @test
      */
     public function it_returns_only_contacts_for_the_user(): void
@@ -218,6 +229,6 @@ class ContactServiceTest extends TestCase
         $contacts = $this->service->findByUser($this->user);
 
         $this->assertCount(2, $contacts);
-        $contacts->each(fn($c) => $this->assertEquals($this->user->id, $c->user_id));
+        $contacts->each(fn ($c) => $this->assertEquals($this->user->id, $c->user_id));
     }
 }

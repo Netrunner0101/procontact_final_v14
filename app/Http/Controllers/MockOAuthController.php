@@ -17,16 +17,16 @@ class MockOAuthController extends Controller
     {
         // Create or find a test user
         $email = $request->input('email', 'test@gmail.com');
-        
+
         $user = User::where('email', $email)->first();
-        
-        if (!$user) {
+
+        if (! $user) {
             // Create a new user with Google-like data
             $user = User::create([
                 'nom' => 'Test',
                 'prenom' => 'User',
                 'email' => $email,
-                'google_id' => 'mock_google_id_' . Str::random(10),
+                'google_id' => 'mock_google_id_'.Str::random(10),
                 'provider' => 'google',
                 'avatar' => 'https://via.placeholder.com/150/4285F4/FFFFFF?text=G',
                 'password' => Hash::make(Str::random(16)),
@@ -35,18 +35,18 @@ class MockOAuthController extends Controller
         } else {
             // Update existing user with Google info
             $user->update([
-                'google_id' => 'mock_google_id_' . Str::random(10),
+                'google_id' => 'mock_google_id_'.Str::random(10),
                 'provider' => 'google',
                 'avatar' => 'https://via.placeholder.com/150/4285F4/FFFFFF?text=G',
             ]);
         }
-        
+
         // Log the user in
         Auth::login($user);
-        
+
         return redirect()->route('dashboard')->with('success', __('Successfully logged in with Google (test mode)!'));
     }
-    
+
     /**
      * Show mock OAuth selection page
      */

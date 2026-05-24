@@ -285,44 +285,10 @@
                     </div>
                 </div>
                 <div class="block-body space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="form-group md:col-span-2">
-                            <label for="rue" class="form-label">{{ __('Street') }}</label>
-                            <input type="text" id="rue" name="rue" value="{{ old('rue') }}"
-                                   class="form-input"
-                                   placeholder="{{ __('Enter the street') }}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="numero" class="form-label">{{ __('Number') }}</label>
-                            <input type="text" id="numero" name="numero" value="{{ old('numero') }}"
-                                   class="form-input"
-                                   placeholder="{{ __('Enter the number') }}">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="form-group">
-                            <label for="ville" class="form-label">{{ __('City') }}</label>
-                            <input type="text" id="ville" name="ville" value="{{ old('ville') }}"
-                                   class="form-input"
-                                   placeholder="{{ __('Enter the city') }}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="code_postal" class="form-label">{{ __('Postal Code') }}</label>
-                            <input type="text" id="code_postal" name="code_postal" value="{{ old('code_postal') }}"
-                                   class="form-input"
-                                   placeholder="{{ __('Enter the postal code') }}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="pays" class="form-label">{{ __('Country') }}</label>
-                            <input type="text" id="pays" name="pays" value="{{ old('pays', 'France') }}"
-                                   class="form-input"
-                                   placeholder="{{ __('Enter the country') }}">
-                        </div>
-                    </div>
+                    @include('partials.adresse-repeater', [
+                        'adresses' => [],
+                        'paysList' => $paysList,
+                    ])
                 </div>
             </div>
 

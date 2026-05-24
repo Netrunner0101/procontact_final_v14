@@ -2,15 +2,15 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Contact;
-use App\Models\Status;
-use App\Models\RendezVous;
-use App\Models\Activite;
-use App\Models\Role;
-use App\Livewire\ContactManager;
 use App\Livewire\AppointmentManager;
+use App\Livewire\ContactManager;
 use App\Livewire\Dashboard;
+use App\Models\Activite;
+use App\Models\Contact;
+use App\Models\RendezVous;
+use App\Models\Role;
+use App\Models\Status;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
@@ -20,6 +20,7 @@ class LivewireComponentTest extends TestCase
     use RefreshDatabase;
 
     protected $user;
+
     protected $status;
 
     protected function setUp(): void
@@ -30,11 +31,11 @@ class LivewireComponentTest extends TestCase
         Role::firstOrCreate(['nom' => Role::CLIENT], ['description' => 'Client']);
 
         $this->user = User::factory()->create([
-            'role_id' => $adminRole->id
+            'role_id' => $adminRole->id,
         ]);
 
         $this->status = Status::factory()->create([
-            'status_client' => 'Prospect'
+            'status_client' => 'Prospect',
         ]);
     }
 

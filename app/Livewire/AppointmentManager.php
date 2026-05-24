@@ -2,42 +2,59 @@
 
 namespace App\Livewire;
 
+use App\Jobs\SendAppointmentEmail;
+use App\Models\Activite;
+use App\Models\Contact;
+use App\Models\RendezVous;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\RendezVous;
-use App\Models\Contact;
-use App\Models\Activite;
-use App\Jobs\SendAppointmentEmail;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
 
 class AppointmentManager extends Component
 {
     use WithPagination;
 
     public $search = '';
+
     public $contactFilter = '';
+
     public $activiteFilter = '';
+
     public $dateFilter = '';
+
     public $sortBy = 'date_debut';
+
     public $sortDirection = 'desc';
+
     public $viewMode = 'list'; // list, calendar
 
     public $showCreateModal = false;
+
     public $showEditModal = false;
+
     public $showDeleteModal = false;
+
     public $selectedAppointment = null;
+
     public $contactsList = [];
+
     public $activitesList = [];
 
     // Form fields
     public $contact_id = '';
+
     public $activite_id = '';
+
     public $date_debut = '';
+
     public $date_fin = '';
+
     public $heure_debut = '';
+
     public $heure_fin = '';
+
     public $titre = '';
+
     public $description = '';
 
     protected $rules = [
@@ -227,8 +244,8 @@ class AppointmentManager extends Component
             ->where('user_id', Auth::id())
             ->when($this->search, function ($query) {
                 $query->whereHas('contact', function ($q) {
-                    $q->where('nom', 'like', '%' . $this->search . '%')
-                      ->orWhere('prenom', 'like', '%' . $this->search . '%');
+                    $q->where('nom', 'like', '%'.$this->search.'%')
+                        ->orWhere('prenom', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->contactFilter, function ($query) {
@@ -253,7 +270,7 @@ class AppointmentManager extends Component
                         break;
                     case 'this_month':
                         $query->whereMonth('date_debut', now()->month)
-                              ->whereYear('date_debut', now()->year);
+                            ->whereYear('date_debut', now()->year);
                         break;
                 }
             })

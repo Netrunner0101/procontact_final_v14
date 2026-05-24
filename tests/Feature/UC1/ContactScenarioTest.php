@@ -23,6 +23,7 @@ class ContactScenarioTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Status $status;
 
     protected function setUp(): void
@@ -36,6 +37,7 @@ class ContactScenarioTest extends TestCase
 
     /**
      * S1.1 — Nominal : Création complète et redirection vers la liste avec message de succès
+     *
      * @test
      */
     public function nominal_creation_redirects_to_list_with_success(): void
@@ -60,6 +62,7 @@ class ContactScenarioTest extends TestCase
 
     /**
      * S1.2 — A1 : Ajout dynamique de plusieurs téléphones/emails
+     *
      * @test
      */
     public function creation_with_multiple_phones_and_emails(): void
@@ -82,6 +85,7 @@ class ContactScenarioTest extends TestCase
 
     /**
      * S1.3 — A2 : Annuler la création → retour liste sans données en DB
+     *
      * @test
      */
     public function cancel_creation_returns_to_list_without_data(): void
@@ -100,6 +104,7 @@ class ContactScenarioTest extends TestCase
 
     /**
      * S1.4 — E1 : Champs obligatoires manquants → messages de validation affichés
+     *
      * @test
      */
     public function missing_required_fields_show_validation_errors(): void
@@ -112,6 +117,7 @@ class ContactScenarioTest extends TestCase
 
     /**
      * S1.5 — E2 : Email invalide → message d'erreur
+     *
      * @test
      */
     public function invalid_email_shows_validation_error(): void

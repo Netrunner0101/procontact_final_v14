@@ -36,6 +36,7 @@ class SocialAuthController extends Controller
                 ]);
 
                 Auth::login($user);
+
                 return redirect()->route('dashboard')->with('success', __('Signed in with Google.'));
             }
 
@@ -51,6 +52,7 @@ class SocialAuthController extends Controller
                 ]);
 
                 Auth::login($existingUser);
+
                 return redirect()->route('dashboard')->with('success', __('Google account linked. Welcome back!'));
             }
 
@@ -106,6 +108,7 @@ class SocialAuthController extends Controller
 
             if ($user) {
                 Auth::login($user);
+
                 return redirect()->route('dashboard')->with('success', __('Signed in with Apple.'));
             }
 
@@ -120,6 +123,7 @@ class SocialAuthController extends Controller
                 ]);
 
                 Auth::login($existingUser);
+
                 return redirect()->route('dashboard')->with('success', __('Apple account linked. Welcome back!'));
             }
 
@@ -161,7 +165,7 @@ class SocialAuthController extends Controller
     {
         $user = Auth::user();
         $provider = $request->input('provider');
-        
+
         if ($provider === 'google') {
             $user->update([
                 'google_id' => null,
@@ -174,7 +178,7 @@ class SocialAuthController extends Controller
                 'provider' => $user->google_id ? 'google' : null,
             ]);
         }
-        
+
         return back()->with('success', __(':provider account unlinked successfully.', ['provider' => ucfirst($provider)]));
     }
 }

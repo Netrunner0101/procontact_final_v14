@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Events\ActiviteCreated;
 use App\Models\Activite;
 use App\Models\User;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -32,7 +31,7 @@ class ActiviteService
 
         if ($exists) {
             throw ValidationException::withMessages([
-                'nom' => ["Une activité avec ce nom existe déjà."],
+                'nom' => ['Une activité avec ce nom existe déjà.'],
             ]);
         }
 

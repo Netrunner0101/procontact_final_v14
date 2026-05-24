@@ -15,14 +15,14 @@ class ClientMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!auth()->check()) {
+        if (! auth()->check()) {
             return redirect()->route('login');
         }
-        
-        if (!auth()->user()->isClient()) {
+
+        if (! auth()->user()->isClient()) {
             return redirect()->route('dashboard');
         }
-        
+
         return $next($request);
     }
 }

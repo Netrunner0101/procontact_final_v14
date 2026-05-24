@@ -2,17 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Contact;
 use App\Models\Activite;
-use App\Models\RendezVous;
-use App\Models\Rappel;
+use App\Models\Contact;
 use App\Models\Note;
-use App\Models\Statistique;
-use Illuminate\Http\Request;
+use App\Models\Rappel;
+use App\Models\RendezVous;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class StatistiqueController extends Controller
 {
@@ -79,11 +76,11 @@ class StatistiqueController extends Controller
 
             // Upcoming vs Past Appointments - 1 query with conditional counts
             $appointmentStats = RendezVous::where('user_id', $userId)
-                ->selectRaw("
+                ->selectRaw('
                     count(*) filter (where date_debut >= ?) as upcoming,
                     count(*) filter (where date_debut < ?) as past,
                     count(*) filter (where date_debut::date = ?) as today
-                ", [Carbon::today(), Carbon::today(), Carbon::today()])
+                ', [Carbon::today(), Carbon::today(), Carbon::today()])
                 ->first();
 
             $appointmentStatsArray = [
@@ -108,7 +105,7 @@ class StatistiqueController extends Controller
 
         return view('statistiques.index', $data);
     }
-    
+
     public function activite(Activite $activite)
     {
         if ($activite->user_id !== Auth::id()) {
@@ -166,11 +163,11 @@ class StatistiqueController extends Controller
 
             // Appointment status - 1 query with conditional counts
             $apptStats = $activite->rendezVous()
-                ->selectRaw("
+                ->selectRaw('
                     count(*) filter (where date_debut >= ?) as upcoming,
                     count(*) filter (where date_debut < ?) as past,
                     count(*) filter (where date_debut::date = ?) as today
-                ", [Carbon::today(), Carbon::today(), Carbon::today()])
+                ', [Carbon::today(), Carbon::today(), Carbon::today()])
                 ->first();
 
             $appointmentStatus = [
@@ -184,57 +181,57 @@ class StatistiqueController extends Controller
 
         return view('statistiques.activite', array_merge(['activite' => $activite], $data));
     }
-    
+
     public function exportGlobal()
     {
         $userId = Auth::id();
-        
+
         // Prepare data for export
-        $contacts = Contact::where('user_id', $userId)->with(['emails', 'numeroTelephones'])->get();
+        $contacts = Contact::where('user_id', $userId)->with(['emails', 'numeroTelephones', 'adressePrincipale'])->get();
         $activites = Activite::where('user_id', $userId)->withCount(['contacts', 'rendezVous', 'notes'])->get();
         $rendezVous = RendezVous::where('user_id', $userId)->with(['contact', 'activite'])->get();
         $notes = Note::where('user_id', $userId)->with(['contact', 'activite', 'rendezVous'])->get();
-        
+
         return $this->generateExcelReport([
             'contacts' => $contacts,
             'activites' => $activites,
             'rendez_vous' => $rendezVous,
-            'notes' => $notes
-        ], 'rapport_global_' . date('Y-m-d'));
+            'notes' => $notes,
+        ], 'rapport_global_'.date('Y-m-d'));
     }
-    
+
     public function exportActivite(Activite $activite)
     {
         // Verify ownership
         if ($activite->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         // Prepare activity-specific data
-        $contacts = $activite->contacts()->with(['emails', 'numeroTelephones'])->get();
+        $contacts = $activite->contacts()->with(['emails', 'numeroTelephones', 'adressePrincipale'])->get();
         $rendezVous = $activite->rendezVous()->with('contact')->get();
         $notes = $activite->notes()->with(['contact', 'rendezVous'])->get();
-        
+
         return $this->generateExcelReport([
             'activite' => $activite,
             'contacts' => $contacts,
             'rendez_vous' => $rendezVous,
-            'notes' => $notes
-        ], 'rapport_' . \Illuminate\Support\Str::slug($activite->nom) . '_' . date('Y-m-d'));
+            'notes' => $notes,
+        ], 'rapport_'.\Illuminate\Support\Str::slug($activite->nom).'_'.date('Y-m-d'));
     }
-    
+
     private function generateExcelReport($data, $filename)
     {
         // Create CSV content (simplified Excel export)
         $output = fopen('php://temp', 'r+');
-        
+
         // Add BOM for UTF-8
-        fputs($output, "\xEF\xBB\xBF");
-        
+        fwrite($output, "\xEF\xBB\xBF");
+
         // Global report
-        if (isset($data['contacts']) && !isset($data['activite'])) {
+        if (isset($data['contacts']) && ! isset($data['activite'])) {
             // Summary sheet
-            fputcsv($output, ['RAPPORT GLOBAL - ' . date('d/m/Y H:i')], ';');
+            fputcsv($output, ['RAPPORT GLOBAL - '.date('d/m/Y H:i')], ';');
             fputcsv($output, [], ';');
             fputcsv($output, ['RÉSUMÉ'], ';');
             fputcsv($output, ['Total Contacts', count($data['contacts'])], ';');
@@ -242,7 +239,7 @@ class StatistiqueController extends Controller
             fputcsv($output, ['Total Rendez-vous', count($data['rendez_vous'])], ';');
             fputcsv($output, ['Total Notes', count($data['notes'])], ';');
             fputcsv($output, [], ';');
-            
+
             // Contacts
             fputcsv($output, ['CONTACTS'], ';');
             fputcsv($output, ['Nom', 'Prénom', 'Email', 'Téléphone', 'Ville', 'Date création'], ';');
@@ -252,12 +249,12 @@ class StatistiqueController extends Controller
                     $contact->prenom,
                     $contact->emails->first()->email ?? '',
                     $contact->numeroTelephones->first()->numero_telephone ?? '',
-                    $contact->ville ?? '',
-                    $contact->created_at->format('d/m/Y')
+                    $contact->adressePrincipale?->ville ?? '',
+                    $contact->created_at->format('d/m/Y'),
                 ], ';');
             }
             fputcsv($output, [], ';');
-            
+
             // Activities
             fputcsv($output, ['ACTIVITÉS'], ';');
             fputcsv($output, ['Nom', 'Description', 'Contacts', 'Rendez-vous', 'Notes', 'Date création'], ';');
@@ -268,23 +265,23 @@ class StatistiqueController extends Controller
                     $activite->contacts_count,
                     $activite->rendez_vous_count,
                     $activite->notes_count,
-                    $activite->created_at->format('d/m/Y')
+                    $activite->created_at->format('d/m/Y'),
                 ], ';');
             }
         } else {
             // Activity-specific report
             $activite = $data['activite'];
-            fputcsv($output, ['RAPPORT ACTIVITÉ - ' . $activite->nom], ';');
-            fputcsv($output, ['Généré le ' . date('d/m/Y H:i')], ';');
+            fputcsv($output, ['RAPPORT ACTIVITÉ - '.$activite->nom], ';');
+            fputcsv($output, ['Généré le '.date('d/m/Y H:i')], ';');
             fputcsv($output, [], ';');
-            
+
             // Activity info
             fputcsv($output, ['INFORMATIONS ACTIVITÉ'], ';');
             fputcsv($output, ['Nom', $activite->nom], ';');
             fputcsv($output, ['Description', $activite->description ?? ''], ';');
             fputcsv($output, ['Date création', $activite->created_at->format('d/m/Y')], ';');
             fputcsv($output, [], ';');
-            
+
             // Contacts for this activity
             fputcsv($output, ['CONTACTS ASSOCIÉS'], ';');
             fputcsv($output, ['Nom', 'Prénom', 'Email', 'Téléphone', 'Ville'], ';');
@@ -294,32 +291,32 @@ class StatistiqueController extends Controller
                     $contact->prenom,
                     $contact->emails->first()->email ?? '',
                     $contact->numeroTelephones->first()->numero_telephone ?? '',
-                    $contact->ville ?? ''
+                    $contact->adressePrincipale?->ville ?? '',
                 ], ';');
             }
             fputcsv($output, [], ';');
-            
+
             // Appointments for this activity
             fputcsv($output, ['RENDEZ-VOUS'], ';');
             fputcsv($output, ['Titre', 'Contact', 'Date', 'Heure début', 'Heure fin', 'Description'], ';');
             foreach ($data['rendez_vous'] as $rdv) {
                 fputcsv($output, [
                     $rdv->titre,
-                    $rdv->contact->prenom . ' ' . $rdv->contact->nom,
+                    $rdv->contact->prenom.' '.$rdv->contact->nom,
                     $rdv->date_debut->format('d/m/Y'),
                     $rdv->heure_debut->format('H:i'),
                     $rdv->heure_fin->format('H:i'),
-                    $rdv->description ?? ''
+                    $rdv->description ?? '',
                 ], ';');
             }
         }
-        
+
         rewind($output);
         $csv = stream_get_contents($output);
         fclose($output);
-        
+
         return response($csv)
             ->header('Content-Type', 'text/csv; charset=UTF-8')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '.csv"');
+            ->header('Content-Disposition', 'attachment; filename="'.$filename.'.csv"');
     }
 }

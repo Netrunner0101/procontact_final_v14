@@ -35,13 +35,13 @@ class PortalAuthenticated
             return response()->view('portal.error', [], 403);
         }
 
-        $sessionKey = 'portal_auth_' . substr(hash('sha256', $token), 0, 32);
+        $sessionKey = 'portal_auth_'.substr(hash('sha256', $token), 0, 32);
         $rotatedCookie = null;
 
-        if (!$request->session()->get($sessionKey)) {
+        if (! $request->session()->get($sessionKey)) {
             $rotatedCookie = $this->authService->validateTrustedDevice($contact, $request);
 
-            if (!$rotatedCookie) {
+            if (! $rotatedCookie) {
                 return redirect()->route('portal.login', ['token' => $token]);
             }
 

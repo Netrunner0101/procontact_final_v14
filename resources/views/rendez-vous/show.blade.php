@@ -152,10 +152,10 @@
                                 <p class="text-sm text-gray-900">{{ $rendezVous->contact->numeroTelephones->first()->numero_telephone }}</p>
                             </div>
                         @endif
-                        @if($rendezVous->contact->ville)
+                        @if($rendezVous->contact->adressePrincipale?->ville)
                             <div>
                                 <label class="text-xs text-gray-500">{{ __('City') }}</label>
-                                <p class="text-sm text-gray-900">{{ $rendezVous->contact->ville }}</p>
+                                <p class="text-sm text-gray-900">{{ $rendezVous->contact->adressePrincipale->ville }}</p>
                             </div>
                         @endif
                         <div class="pt-2">

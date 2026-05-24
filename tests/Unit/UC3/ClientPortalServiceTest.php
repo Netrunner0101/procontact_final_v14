@@ -28,8 +28,11 @@ class ClientPortalServiceTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected Contact $contact;
+
     protected Status $status;
+
     protected Role $adminRole;
 
     protected function setUp(): void
@@ -51,6 +54,7 @@ class ClientPortalServiceTest extends TestCase
 
     /**
      * U3.1 — Token valide → retourne le Contact
+     *
      * @test
      */
     public function it_returns_contact_for_valid_token(): void
@@ -63,6 +67,7 @@ class ClientPortalServiceTest extends TestCase
 
     /**
      * U3.2 — Token inexistant → lève InvalidTokenException
+     *
      * @test
      */
     public function it_throws_for_invalid_token(): void
@@ -74,6 +79,7 @@ class ClientPortalServiceTest extends TestCase
 
     /**
      * U3.3 — Contact associé au token supprimé → lève InvalidTokenException
+     *
      * @test
      */
     public function it_throws_when_contact_is_deleted(): void
@@ -87,6 +93,7 @@ class ClientPortalServiceTest extends TestCase
 
     /**
      * U3.4 — Retourne les RDVs du contact
+     *
      * @test
      */
     public function it_returns_appointments_for_contact(): void
@@ -118,6 +125,7 @@ class ClientPortalServiceTest extends TestCase
 
     /**
      * U3.5 — Aucun RDV → retourne collection vide (pas d'erreur 500)
+     *
      * @test
      */
     public function it_returns_empty_collection_when_no_appointments(): void
@@ -131,6 +139,7 @@ class ClientPortalServiceTest extends TestCase
 
     /**
      * U3.6 — Note avec flag true → incluse dans les notes partagées
+     *
      * @test
      */
     public function it_includes_shared_notes(): void
@@ -171,6 +180,7 @@ class ClientPortalServiceTest extends TestCase
 
     /**
      * U3.7 — Note avec flag false → exclue des notes partagées
+     *
      * @test
      */
     public function it_excludes_private_notes_from_client_view(): void
@@ -223,6 +233,7 @@ class ClientPortalServiceTest extends TestCase
 
     /**
      * U3.8 — Message client valide → note créée avec is_shared_with_client = false
+     *
      * @test
      */
     public function it_creates_client_note_as_private(): void
@@ -257,6 +268,7 @@ class ClientPortalServiceTest extends TestCase
 
     /**
      * U3.9 — Message client vide → ValidationException
+     *
      * @test
      */
     public function it_rejects_empty_client_message(): void
@@ -285,6 +297,7 @@ class ClientPortalServiceTest extends TestCase
 
     /**
      * U3.10 — Token révoqué → InvalidTokenException
+     *
      * @test
      */
     public function it_throws_for_revoked_token(): void

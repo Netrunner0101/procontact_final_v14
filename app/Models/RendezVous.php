@@ -14,11 +14,11 @@ class RendezVous extends Model
     protected $table = 'rendez_vous';
 
     public const STATUTS = [
-        'scheduled'  => 'Scheduled',
-        'confirmed'  => 'Confirmed',
-        'completed'  => 'Completed',
-        'cancelled'  => 'Cancelled',
-        'no_show'    => 'No-show',
+        'scheduled' => 'Scheduled',
+        'confirmed' => 'Confirmed',
+        'completed' => 'Completed',
+        'cancelled' => 'Cancelled',
+        'no_show' => 'No-show',
     ];
 
     protected $fillable = [
@@ -95,8 +95,9 @@ class RendezVous extends Model
     public function getDateHeureAttribute()
     {
         if ($this->date_debut && $this->heure_debut) {
-            return $this->date_debut->format('Y-m-d') . ' ' . $this->heure_debut->format('H:i:s');
+            return $this->date_debut->format('Y-m-d').' '.$this->heure_debut->format('H:i:s');
         }
+
         return null;
     }
 
@@ -106,8 +107,9 @@ class RendezVous extends Model
     public function getFormattedDateTimeAttribute()
     {
         if ($this->date_debut && $this->heure_debut) {
-            return \Carbon\Carbon::parse($this->date_debut->format('Y-m-d') . ' ' . $this->heure_debut->format('H:i:s'));
+            return \Carbon\Carbon::parse($this->date_debut->format('Y-m-d').' '.$this->heure_debut->format('H:i:s'));
         }
+
         return null;
     }
 }

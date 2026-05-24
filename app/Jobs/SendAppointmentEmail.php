@@ -18,6 +18,7 @@ class SendAppointmentEmail implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $backoff = 30;
 
     public function __construct(
@@ -31,21 +32,22 @@ class SendAppointmentEmail implements ShouldQueue
         $contact = $this->rendezVous->contact()->with('emails')->first();
 
         // Generate portal token if not exists
-        if (!$contact->portal_token) {
+        if (! $contact->portal_token) {
             $tokenService->generate($contact);
             $contact->refresh();
         }
 
         $email = $this->recipientEmail ?? $contact->emails->first()?->email;
 
-        if (!$email) {
+        if (! $email) {
             Log::warning("No email address found for contact #{$contact->id} on appointment #{$this->rendezVous->id}");
+
             return;
         }
 
         $mail = Mail::to($email);
 
-        if (!empty($this->ccEmails)) {
+        if (! empty($this->ccEmails)) {
             $mail->cc($this->ccEmails);
         }
 

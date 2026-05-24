@@ -2,42 +2,45 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Models\Activite;
 use App\Models\Contact;
 use App\Models\RendezVous;
-use App\Models\Activite;
 use App\Models\Status;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use Carbon\Carbon;
 
 class AppointmentManagementTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
     protected $user;
+
     protected $contact;
+
     protected $activite;
+
     protected $status;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create([
-            'role_id' => 1
+            'role_id' => 1,
         ]);
-        
+
         $this->status = Status::factory()->create([
-            'status_client' => 'Prospect'
+            'status_client' => 'Prospect',
         ]);
-        
+
         $this->contact = Contact::factory()->create([
             'user_id' => $this->user->id,
             'status_id' => $this->status->id,
         ]);
-        
+
         $this->activite = Activite::factory()->create([
             'user_id' => $this->user->id,
         ]);
@@ -71,7 +74,7 @@ class AppointmentManagementTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->post('/rendez-vous', $appointmentData);
-        
+
         $response->assertRedirect('/rendez-vous');
         $this->assertDatabaseHas('rendez_vous', [
             'titre' => 'Consultation médicale',
@@ -84,9 +87,9 @@ class AppointmentManagementTest extends TestCase
     public function test_appointment_creation_requires_required_fields()
     {
         $response = $this->actingAs($this->user)->post('/rendez-vous', []);
-        
+
         $response->assertSessionHasErrors([
-            'titre', 'date_heure', 'contact_id', 'activite_id'
+            'titre', 'date_heure', 'contact_id', 'activite_id',
         ]);
     }
 
@@ -137,7 +140,7 @@ class AppointmentManagementTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)->put("/rendez-vous/{$appointment->id}", $updateData);
-        
+
         $response->assertRedirect("/rendez-vous/{$appointment->id}");
         $this->assertDatabaseHas('rendez_vous', [
             'id' => $appointment->id,
@@ -155,7 +158,7 @@ class AppointmentManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)->delete("/rendez-vous/{$appointment->id}");
-        
+
         $response->assertRedirect('/rendez-vous');
         $this->assertDatabaseMissing('rendez_vous', ['id' => $appointment->id]);
     }
@@ -170,7 +173,7 @@ class AppointmentManagementTest extends TestCase
         $otherActivite = Activite::factory()->create([
             'user_id' => $otherUser->id,
         ]);
-        
+
         $appointment = RendezVous::factory()->create([
             'user_id' => $otherUser->id,
             'contact_id' => $otherContact->id,
@@ -208,7 +211,7 @@ class AppointmentManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)->patch("/rendez-vous/{$appointment->id}/status", [
-            'statut' => 'confirme'
+            'statut' => 'confirme',
         ]);
 
         $response->assertRedirect();
@@ -228,14 +231,14 @@ class AppointmentManagementTest extends TestCase
         $otherActivite = Activite::factory()->create([
             'user_id' => $otherUser->id,
         ]);
-        
+
         // Create appointments for current user
         RendezVous::factory()->count(3)->create([
             'user_id' => $this->user->id,
             'contact_id' => $this->contact->id,
             'activite_id' => $this->activite->id,
         ]);
-        
+
         // Create appointments for other user
         RendezVous::factory()->count(2)->create([
             'user_id' => $otherUser->id,
@@ -245,7 +248,7 @@ class AppointmentManagementTest extends TestCase
 
         $response = $this->actingAs($this->user)->get('/rendez-vous');
         $response->assertStatus(200);
-        
+
         // Should only see own appointments (3)
         $appointments = $response->viewData('rendezVous');
         $this->assertCount(3, $appointments);

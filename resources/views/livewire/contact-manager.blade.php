@@ -100,10 +100,10 @@
                         </p>
                     @endif
 
-                    @if($contact->ville)
+                    @if($contact->adressePrincipale?->ville)
                         <p class="contact-detail">
                             <i class="fas fa-map-marker-alt"></i>
-                            {{ $contact->ville }}
+                            {{ $contact->adressePrincipale->ville }}
                         </p>
                     @endif
 
@@ -181,36 +181,6 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="rue" class="form-label">{{ __('Street') }}</label>
-                            <input type="text" id="rue" wire:model="rue" class="form-input">
-                            @error('rue') <span class="error-message">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="numero" class="form-label">{{ __('Number') }}</label>
-                            <input type="text" id="numero" wire:model="numero" class="form-input">
-                            @error('numero') <span class="error-message">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="ville" class="form-label">{{ __('City') }}</label>
-                            <input type="text" id="ville" wire:model="ville" class="form-input">
-                            @error('ville') <span class="error-message">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="code_postal" class="form-label">{{ __('Postal Code') }}</label>
-                            <input type="text" id="code_postal" wire:model="code_postal" class="form-input">
-                            @error('code_postal') <span class="error-message">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="pays" class="form-label">{{ __('Country') }}</label>
-                            <input type="text" id="pays" wire:model="pays" class="form-input">
-                            @error('pays') <span class="error-message">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div class="form-group">
                             <label for="status_id" class="form-label">{{ __('Status') }} *</label>
                             <select id="status_id" wire:model="status_id" class="form-select" required>
                                 <option value="">{{ __('Select a status') }}</option>
@@ -221,6 +191,67 @@
                             @error('status_id') <span class="error-message">{{ $message }}</span> @enderror
                         </div>
 
+                    </div>
+
+                    <div class="mt-6">
+                        <h3 class="text-base font-semibold mb-3">
+                            <i class="fas fa-map-marker-alt mr-2"></i>{{ __('Addresses') }}
+                        </h3>
+
+                        <div class="space-y-3">
+                            @foreach($adresses as $index => $adresse)
+                                <div class="border rounded-lg p-3 bg-gray-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="inline-flex items-center text-sm">
+                                            <input type="radio" name="adresse_principale_radio_lw"
+                                                   class="mr-2"
+                                                   wire:click="setPrincipale({{ $index }})"
+                                                   @checked($adresse['is_principale'] ?? false)>
+                                            {{ ($adresse['is_principale'] ?? false) ? __('Primary address') : __('Set as primary') }}
+                                        </label>
+                                        @if(count($adresses) > 1)
+                                            <button type="button" wire:click="removeAdresse({{ $index }})"
+                                                    class="text-red-600 hover:text-red-800 text-sm">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        @endif
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        <div class="md:col-span-2">
+                                            <label class="form-label text-xs">{{ __('Street') }}</label>
+                                            <input type="text" wire:model.defer="adresses.{{ $index }}.rue" class="form-input">
+                                        </div>
+                                        <div>
+                                            <label class="form-label text-xs">{{ __('Number') }}</label>
+                                            <input type="text" wire:model.defer="adresses.{{ $index }}.numero_rue" class="form-input">
+                                        </div>
+                                        <div>
+                                            <label class="form-label text-xs">{{ __('Postal Code') }}</label>
+                                            <input type="text" wire:model.defer="adresses.{{ $index }}.code_postal" class="form-input">
+                                        </div>
+                                        <div>
+                                            <label class="form-label text-xs">{{ __('City') }}</label>
+                                            <input type="text" wire:model.defer="adresses.{{ $index }}.ville" class="form-input">
+                                        </div>
+                                        <div>
+                                            <label class="form-label text-xs">{{ __('Country') }}</label>
+                                            <select wire:model.defer="adresses.{{ $index }}.pays_code" class="form-input">
+                                                <option value="">{{ __('Select a country') }}</option>
+                                                @foreach($paysList as $pays)
+                                                    <option value="{{ $pays->code }}">{{ $pays->nom }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <button type="button" wire:click="addAdresse"
+                                class="mt-3 inline-flex items-center px-3 py-2 border border-dashed border-gray-400 rounded text-sm text-gray-700 hover:bg-gray-50">
+                            <i class="fas fa-plus mr-2"></i>{{ __('Add an address') }}
+                        </button>
                     </div>
 
                     <div class="modal-actions">

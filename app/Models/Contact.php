@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class Contact extends Model
 {
@@ -16,11 +18,6 @@ class Contact extends Model
         'user_id',
         'nom',
         'prenom',
-        'rue',
-        'numero',
-        'ville',
-        'code_postal',
-        'pays',
         'state_client',
         'status_id',
         'portal_token',
@@ -53,6 +50,22 @@ class Contact extends Model
         return $this->gdpr_consent_requested_at !== null
             && $this->gdpr_consent_signed_at === null
             && $this->gdpr_consent_declined_at === null;
+    }
+
+    /**
+     * Addresses linked to this contact (polymorphic).
+     */
+    public function adresses(): MorphMany
+    {
+        return $this->morphMany(Adresse::class, 'addressable');
+    }
+
+    /**
+     * Convenience accessor for the contact's primary address.
+     */
+    public function adressePrincipale(): MorphOne
+    {
+        return $this->morphOne(Adresse::class, 'addressable')->where('is_principale', true);
     }
 
     /**
