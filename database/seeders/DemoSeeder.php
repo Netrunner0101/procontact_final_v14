@@ -66,12 +66,15 @@ class DemoSeeder extends Seeder
             'user_id' => $admin->id,
             'nom' => 'Martin',
             'prenom' => 'Marie',
+            'status_id' => Status::where('status_client', 'Client actif')->first()?->id,
+        ]);
+        $marie->adresses()->create([
             'rue' => 'Rue de la Loi',
-            'numero' => '42',
+            'numero_rue' => '42',
             'ville' => 'Bruxelles',
             'code_postal' => '1000',
-            'pays' => 'Belgique',
-            'status_id' => Status::where('status_client', 'Client actif')->first()?->id,
+            'pays_code' => 'BE',
+            'is_principale' => true,
         ]);
         Email::create(['contact_id' => $marie->id, 'user_id' => $admin->id, 'email' => 'marie.martin@example.com']);
         NumeroTelephone::create(['contact_id' => $marie->id, 'user_id' => $admin->id, 'numero_telephone' => '+32 475 12 34 56']);
@@ -83,12 +86,15 @@ class DemoSeeder extends Seeder
             'user_id' => $admin->id,
             'nom' => 'Lefebvre',
             'prenom' => 'Pierre',
+            'status_id' => Status::where('status_client', 'Prospect')->first()?->id,
+        ]);
+        $pierre->adresses()->create([
             'rue' => 'Avenue Louise',
-            'numero' => '105',
+            'numero_rue' => '105',
             'ville' => 'Bruxelles',
             'code_postal' => '1050',
-            'pays' => 'Belgique',
-            'status_id' => Status::where('status_client', 'Prospect')->first()?->id,
+            'pays_code' => 'BE',
+            'is_principale' => true,
         ]);
         Email::create(['contact_id' => $pierre->id, 'user_id' => $admin->id, 'email' => 'pierre.lefebvre@example.com']);
         Email::create(['contact_id' => $pierre->id, 'user_id' => $admin->id, 'email' => 'p.lefebvre@work.com']);
@@ -102,10 +108,13 @@ class DemoSeeder extends Seeder
             'user_id' => $admin->id,
             'nom' => 'Dubois',
             'prenom' => 'Sophie',
+            'status_id' => Status::where('status_client', 'Lead qualifié')->first()?->id,
+        ]);
+        $sophie->adresses()->create([
             'ville' => 'Liège',
             'code_postal' => '4000',
-            'pays' => 'Belgique',
-            'status_id' => Status::where('status_client', 'Lead qualifié')->first()?->id,
+            'pays_code' => 'BE',
+            'is_principale' => true,
         ]);
         Email::create(['contact_id' => $sophie->id, 'user_id' => $admin->id, 'email' => 'sophie.dubois@example.com']);
         NumeroTelephone::create(['contact_id' => $sophie->id, 'user_id' => $admin->id, 'numero_telephone' => '+32 477 11 22 33']);
@@ -209,7 +218,7 @@ class DemoSeeder extends Seeder
         ]);
 
         // 8. Generate portal tokens for contacts with appointments
-        $tokenService = new PortalTokenService();
+        $tokenService = new PortalTokenService;
         $tokenService->generate($marie);
         $tokenService->generate($sophie);
 
@@ -223,7 +232,7 @@ class DemoSeeder extends Seeder
         $this->command->info('Admin login: admin@procontact.test / password');
         $this->command->info('');
         $this->command->info('Portal links (magic-link):');
-        $this->command->info('  Marie Martin: /portal/' . $marie->portal_token);
-        $this->command->info('  Sophie Dubois: /portal/' . $sophie->portal_token);
+        $this->command->info('  Marie Martin: /portal/'.$marie->portal_token);
+        $this->command->info('  Sophie Dubois: /portal/'.$sophie->portal_token);
     }
 }

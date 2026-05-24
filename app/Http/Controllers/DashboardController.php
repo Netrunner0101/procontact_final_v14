@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Contact;
 use App\Models\Activite;
-use App\Models\RendezVous;
-use App\Models\Rappel;
+use App\Models\Contact;
 use App\Models\Note;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Rappel;
+use App\Models\RendezVous;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -46,7 +45,8 @@ class DashboardController extends Controller
             ->get();
 
         // Recent contacts
-        $recentContacts = Contact::where('user_id', $userId)
+        $recentContacts = Contact::with('adressePrincipale')
+            ->where('user_id', $userId)
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();

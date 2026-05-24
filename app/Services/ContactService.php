@@ -20,11 +20,13 @@ class ContactService
             'email.*' => 'required|email|max:255',
             'telephone' => 'nullable|array',
             'telephone.*' => 'nullable|string|regex:/^[\+0-9\s\-\(\)]+$/',
-            'rue' => 'nullable|string|max:255',
-            'numero' => 'nullable|string|max:50',
-            'ville' => 'nullable|string|max:255',
-            'code_postal' => 'nullable|string|max:20',
-            'pays' => 'nullable|string|max:255',
+            'adresses' => 'nullable|array',
+            'adresses.*.rue' => 'nullable|string|max:255',
+            'adresses.*.numero_rue' => 'nullable|string|max:20',
+            'adresses.*.ville' => 'nullable|string|max:255',
+            'adresses.*.code_postal' => 'nullable|string|max:20',
+            'adresses.*.pays_code' => 'nullable|string|size:2|exists:pays,code',
+            'adresses.*.is_principale' => 'nullable|boolean',
             'status_id' => 'nullable|exists:statuses,id',
         ]);
 
@@ -36,7 +38,7 @@ class ContactService
         if (isset($data['email'])) {
             foreach ($data['email'] as $email) {
                 $exists = Contact::where('user_id', $user->id)
-                    ->whereHas('emails', fn($q) => $q->where('email', $email))
+                    ->whereHas('emails', fn ($q) => $q->where('email', $email))
                     ->exists();
                 if ($exists) {
                     throw ValidationException::withMessages([
@@ -51,11 +53,6 @@ class ContactService
                 'user_id' => $user->id,
                 'nom' => $data['nom'],
                 'prenom' => $data['prenom'],
-                'rue' => $data['rue'] ?? null,
-                'numero' => $data['numero'] ?? null,
-                'ville' => $data['ville'] ?? null,
-                'code_postal' => $data['code_postal'] ?? null,
-                'pays' => $data['pays'] ?? null,
                 'status_id' => $data['status_id'] ?? null,
             ]);
 
@@ -73,10 +70,20 @@ class ContactService
                 }
             }
 
+            $this->syncAdresses($contact, $data['adresses'] ?? []);
+
             event(new ContactCreated($contact));
 
             return $contact;
         });
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $adresses
+     */
+    public function syncAdresses(Contact $contact, array $adresses): void
+    {
+        app(AdresseSyncer::class)->sync($contact, $adresses);
     }
 
     public function addPhone(Contact $contact, string $phone): void

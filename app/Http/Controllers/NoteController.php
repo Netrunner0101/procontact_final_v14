@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Note;
-use App\Models\Contact;
 use App\Models\Activite;
+use App\Models\Contact;
+use App\Models\Note;
 use App\Models\RendezVous;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +17,7 @@ class NoteController extends Controller
             ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->paginate(15);
-        
+
         return view('notes.index', compact('notes'));
     }
 
@@ -26,30 +26,30 @@ class NoteController extends Controller
         $contactId = $request->get('contact_id');
         $activiteId = $request->get('activite_id');
         $rendezVousId = $request->get('rendez_vous_id');
-        
+
         $contact = null;
         $activite = null;
         $rendezVous = null;
-        
+
         if ($contactId) {
             $contact = Contact::where('user_id', Auth::id())->findOrFail($contactId);
         }
-        
+
         if ($activiteId) {
             $activite = Activite::where('user_id', Auth::id())->findOrFail($activiteId);
         }
-        
+
         if ($rendezVousId) {
             $rendezVous = RendezVous::where('user_id', Auth::id())->findOrFail($rendezVousId);
         }
-        
+
         $userContacts = Contact::where('user_id', Auth::id())->orderBy('nom')->get();
         $userActivites = Activite::where('user_id', Auth::id())->orderBy('nom')->get();
         $userRendezVous = RendezVous::where('user_id', Auth::id())
             ->with(['contact', 'activite'])
             ->orderBy('date_debut', 'desc')
             ->get();
-            
+
         return view('notes.create', compact(
             'contact', 'activite', 'rendezVous',
             'userContacts', 'userActivites', 'userRendezVous'
@@ -73,15 +73,15 @@ class NoteController extends Controller
         $validated['date_create'] = now();
         $validated['date_update'] = now();
 
-        if (!empty($validated['contact_id'])) {
+        if (! empty($validated['contact_id'])) {
             \App\Models\Contact::where('user_id', Auth::id())->findOrFail($validated['contact_id']);
         }
 
-        if (!empty($validated['activite_id'])) {
+        if (! empty($validated['activite_id'])) {
             Activite::where('user_id', Auth::id())->findOrFail($validated['activite_id']);
         }
 
-        if (!empty($validated['rendez_vous_id'])) {
+        if (! empty($validated['rendez_vous_id'])) {
             RendezVous::where('user_id', Auth::id())->findOrFail($validated['rendez_vous_id']);
         }
 
@@ -97,8 +97,9 @@ class NoteController extends Controller
         if ($note->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         $note->load(['contact', 'activite', 'rendezVous']);
+
         return view('notes.show', compact('note'));
     }
 
@@ -108,14 +109,14 @@ class NoteController extends Controller
         if ($note->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         $userContacts = Contact::where('user_id', Auth::id())->orderBy('nom')->get();
         $userActivites = Activite::where('user_id', Auth::id())->orderBy('nom')->get();
         $userRendezVous = RendezVous::where('user_id', Auth::id())
             ->with(['contact', 'activite'])
             ->orderBy('date_debut', 'desc')
             ->get();
-            
+
         return view('notes.edit', compact('note', 'userContacts', 'userActivites', 'userRendezVous'));
     }
 
@@ -125,7 +126,7 @@ class NoteController extends Controller
         if ($note->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         $validated = $request->validate([
             'titre' => 'required|string|max:255',
             'commentaire' => 'required|string',
@@ -139,15 +140,15 @@ class NoteController extends Controller
         $validated['is_shared_with_client'] = $request->boolean('is_shared_with_client');
         $validated['date_update'] = now();
 
-        if (!empty($validated['contact_id'])) {
+        if (! empty($validated['contact_id'])) {
             \App\Models\Contact::where('user_id', Auth::id())->findOrFail($validated['contact_id']);
         }
 
-        if (!empty($validated['activite_id'])) {
+        if (! empty($validated['activite_id'])) {
             Activite::where('user_id', Auth::id())->findOrFail($validated['activite_id']);
         }
 
-        if (!empty($validated['rendez_vous_id'])) {
+        if (! empty($validated['rendez_vous_id'])) {
             RendezVous::where('user_id', Auth::id())->findOrFail($validated['rendez_vous_id']);
         }
 
@@ -163,9 +164,9 @@ class NoteController extends Controller
         if ($note->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         $note->delete();
-        
+
         return redirect()->route('notes.index')
             ->with('success', __('Note deleted successfully'));
     }

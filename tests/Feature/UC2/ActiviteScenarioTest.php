@@ -6,7 +6,6 @@ use App\Models\Activite;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -34,6 +33,7 @@ class ActiviteScenarioTest extends TestCase
 
     /**
      * S2.1 — Nominal : Création + confirmation + redirection vers index avec message succès
+     *
      * @test
      */
     public function nominal_creation_redirects_with_success(): void
@@ -56,6 +56,7 @@ class ActiviteScenarioTest extends TestCase
 
     /**
      * S2.2 — Nominal : Après création, l'activité est visible dans l'index
+     *
      * @test
      */
     public function created_activity_appears_in_index(): void
@@ -73,6 +74,7 @@ class ActiviteScenarioTest extends TestCase
 
     /**
      * S2.3 — E1 : Champs obligatoires manquants → erreurs de validation
+     *
      * @test
      */
     public function missing_required_fields_show_errors(): void
@@ -84,6 +86,7 @@ class ActiviteScenarioTest extends TestCase
 
     /**
      * S2.4 — Annuler la création → retour index sans nouvelles données
+     *
      * @test
      */
     public function cancel_creation_returns_to_index_without_data(): void

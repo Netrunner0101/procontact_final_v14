@@ -42,13 +42,27 @@
                     @endif
                 </dd>
             </div>
-            @if($contact->rue)
-            <div>
-                <dt class="font-semibold text-gray-600">{{ __('Address') }}</dt>
-                <dd>{{ $contact->rue }} {{ $contact->numero }}, {{ $contact->code_postal }} {{ $contact->ville }}, {{ $contact->pays }}</dd>
-            </div>
-            @endif
         </dl>
+
+        @if($contact->adresses->count())
+        <div class="mt-4">
+            <h3 class="font-semibold text-gray-600">{{ __('Addresses') }}</h3>
+            <ul class="space-y-2 mt-2">
+                @foreach($contact->adresses as $adresse)
+                    <li class="border rounded-lg p-3 bg-gray-50">
+                        @if($adresse->is_principale)
+                            <span class="inline-block text-xs font-semibold text-green-700 bg-green-100 px-2 py-0.5 rounded mb-1">{{ __('Primary address') }}</span>
+                        @endif
+                        <div class="text-sm text-gray-800">
+                            {{ trim(($adresse->rue ?? '').' '.($adresse->numero_rue ?? '')) }}@if(($adresse->rue || $adresse->numero_rue) && ($adresse->ville || $adresse->code_postal)),@endif
+                            {{ trim(($adresse->code_postal ?? '').' '.($adresse->ville ?? '')) }}@if(($adresse->ville || $adresse->code_postal) && $adresse->pays),@endif
+                            {{ $adresse->pays?->nom }}
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
 
         @if($contact->emails->count())
         <div class="mt-4">

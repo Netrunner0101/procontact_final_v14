@@ -36,7 +36,7 @@ class PortalController extends Controller
 
     private function sessionKey(string $token): string
     {
-        return 'portal_auth_' . substr(hash('sha256', $token), 0, 32);
+        return 'portal_auth_'.substr(hash('sha256', $token), 0, 32);
     }
 
     /**
@@ -48,7 +48,7 @@ class PortalController extends Controller
     public function show(Request $request, string $token)
     {
         $contact = $this->resolveContact($token);
-        if (!$contact) {
+        if (! $contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -61,6 +61,7 @@ class PortalController extends Controller
         $rotated = $this->authService->validateTrustedDevice($contact, $request);
         if ($rotated) {
             $request->session()->put($this->sessionKey($token), true);
+
             return $this->dashboard($request, $token, $contact)->withCookie($rotated);
         }
 
@@ -77,7 +78,7 @@ class PortalController extends Controller
     public function requestOtp(Request $request, string $token)
     {
         $contact = $this->resolveContact($token);
-        if (!$contact) {
+        if (! $contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -101,7 +102,7 @@ class PortalController extends Controller
     public function verifyOtp(Request $request, string $token)
     {
         $contact = $this->resolveContact($token);
-        if (!$contact) {
+        if (! $contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -112,7 +113,7 @@ class PortalController extends Controller
 
         $ok = $this->authService->verifyOtp($contact, $data['email'], $data['code'], $request);
 
-        if (!$ok) {
+        if (! $ok) {
             return back()
                 ->withInput(['email' => $data['email']])
                 ->withErrors(['code' => __('Invalid or expired code. Please try again.')])
@@ -152,7 +153,7 @@ class PortalController extends Controller
     public function requestErasure(Request $request, string $token)
     {
         $contact = $this->resolveContact($token);
-        if (!$contact) {
+        if (! $contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -177,7 +178,7 @@ class PortalController extends Controller
         $now = Carbon::now();
 
         $upcoming = $appointments
-            ->filter(fn($a) => $a->date_debut && $a->date_debut->copy()->setTimeFromTimeString(
+            ->filter(fn ($a) => $a->date_debut && $a->date_debut->copy()->setTimeFromTimeString(
                 $a->heure_debut ? $a->heure_debut->format('H:i:s') : '00:00:00'
             )->gte($now))
             ->sortBy('date_debut')
@@ -185,7 +186,7 @@ class PortalController extends Controller
             ->values();
 
         $past = $appointments
-            ->filter(fn($a) => !$upcoming->contains('id', $a->id))
+            ->filter(fn ($a) => ! $upcoming->contains('id', $a->id))
             ->sortByDesc('date_debut')
             ->values();
 
@@ -211,7 +212,7 @@ class PortalController extends Controller
      */
     public function login(Request $request, string $token)
     {
-        if (!$this->resolveContact($token)) {
+        if (! $this->resolveContact($token)) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -225,7 +226,7 @@ class PortalController extends Controller
     public function showAppointment(Request $request, string $token, int $appointmentId)
     {
         $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
-        if (!$contact) {
+        if (! $contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -254,7 +255,7 @@ class PortalController extends Controller
     public function storeNote(Request $request, string $token, int $appointmentId)
     {
         $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
-        if (!$contact) {
+        if (! $contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -271,7 +272,7 @@ class PortalController extends Controller
             'user_id' => $appointment->user_id,
             'rendez_vous_id' => $appointment->id,
             'contact_id' => $contact->id,
-            'titre' => $data['titre'] ?: __('Client note — :name', ['name' => trim($contact->prenom . ' ' . $contact->nom)]),
+            'titre' => $data['titre'] ?: __('Client note — :name', ['name' => trim($contact->prenom.' '.$contact->nom)]),
             'commentaire' => $data['commentaire'],
             'is_shared_with_client' => true,
             'date_create' => now(),
@@ -286,7 +287,7 @@ class PortalController extends Controller
     public function updateNote(Request $request, string $token, int $noteId)
     {
         $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
-        if (!$contact) {
+        if (! $contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -299,7 +300,7 @@ class PortalController extends Controller
 
         $note = Note::where('id', $noteId)
             ->where('contact_id', $contact->id)
-            ->whereHas('rendezVous', fn($q) => $q->where('contact_id', $contact->id))
+            ->whereHas('rendezVous', fn ($q) => $q->where('contact_id', $contact->id))
             ->firstOrFail();
 
         $note->update([
@@ -316,13 +317,13 @@ class PortalController extends Controller
     public function deleteNote(Request $request, string $token, int $noteId)
     {
         $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
-        if (!$contact) {
+        if (! $contact) {
             return response()->view('portal.error', [], 403);
         }
 
         $note = Note::where('id', $noteId)
             ->where('contact_id', $contact->id)
-            ->whereHas('rendezVous', fn($q) => $q->where('contact_id', $contact->id))
+            ->whereHas('rendezVous', fn ($q) => $q->where('contact_id', $contact->id))
             ->firstOrFail();
 
         $appointmentId = $note->rendez_vous_id;
@@ -336,7 +337,7 @@ class PortalController extends Controller
     public function templates(Request $request, string $token)
     {
         $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
-        if (!$contact) {
+        if (! $contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -354,7 +355,7 @@ class PortalController extends Controller
     public function storeTemplate(Request $request, string $token)
     {
         $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
-        if (!$contact) {
+        if (! $contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -381,7 +382,7 @@ class PortalController extends Controller
     public function updateTemplate(Request $request, string $token, int $templateId)
     {
         $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
-        if (!$contact) {
+        if (! $contact) {
             return response()->view('portal.error', [], 403);
         }
 
@@ -407,7 +408,7 @@ class PortalController extends Controller
     public function deleteTemplate(Request $request, string $token, int $templateId)
     {
         $contact = $request->attributes->get('portal_contact') ?: $this->resolveContact($token);
-        if (!$contact) {
+        if (! $contact) {
             return response()->view('portal.error', [], 403);
         }
 

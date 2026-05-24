@@ -6,6 +6,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -29,11 +31,6 @@ class User extends Authenticatable
         'prenom',
         'email',
         'telephone',
-        'rue',
-        'numero_rue',
-        'ville',
-        'code_postal',
-        'pays',
         'password',
         'last_login_at',
         'password_reset_token',
@@ -94,6 +91,22 @@ class User extends Authenticatable
     public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class);
+    }
+
+    /**
+     * Addresses linked to this user (polymorphic).
+     */
+    public function adresses(): MorphMany
+    {
+        return $this->morphMany(Adresse::class, 'addressable');
+    }
+
+    /**
+     * Convenience accessor for the user's primary address.
+     */
+    public function adressePrincipale(): MorphOne
+    {
+        return $this->morphOne(Adresse::class, 'addressable')->where('is_principale', true);
     }
 
     /**

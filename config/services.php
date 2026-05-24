@@ -38,13 +38,13 @@ return [
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect' => env('APP_URL') . '/auth/google/callback',
+        'redirect' => env('APP_URL').'/auth/google/callback',
     ],
 
     'apple' => [
         'client_id' => env('APPLE_CLIENT_ID'),
         'client_secret' => env('APPLE_CLIENT_SECRET'),
-        'redirect' => env('APP_URL') . '/auth/apple/callback',
+        'redirect' => env('APP_URL').'/auth/apple/callback',
     ],
 
 ];

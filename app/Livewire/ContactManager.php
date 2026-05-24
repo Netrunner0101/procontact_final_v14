@@ -2,46 +2,63 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\Contact;
+use App\Models\Pays;
 use App\Models\Status;
+use App\Services\AdresseSyncer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class ContactManager extends Component
 {
     use WithPagination;
 
     public $search = '';
+
     public $statusFilter = '';
+
     public $clientStatusFilter = ''; // Contact/Client auto-status filter
+
     public $sortBy = 'created_at';
+
     public $sortDirection = 'desc';
+
     public $showCreateModal = false;
+
     public $showEditModal = false;
+
     public $showDeleteModal = false;
+
     public $selectedContact = null;
 
     // Form fields
     public $nom = '';
+
     public $prenom = '';
-    public $rue = '';
-    public $numero = '';
-    public $ville = '';
-    public $code_postal = '';
-    public $pays = 'France';
+
     public $status_id = '';
+
+    /**
+     * Repeater of addresses for the create/edit form.
+     * Each item: ['rue','numero_rue','code_postal','ville','pays_code','is_principale'].
+     *
+     * @var array<int, array<string, mixed>>
+     */
+    public array $adresses = [];
 
     protected $rules = [
         'nom' => 'required|string|max:255',
         'prenom' => 'required|string|max:255',
-        'rue' => 'nullable|string|max:255',
-        'numero' => 'nullable|string|max:50',
-        'ville' => 'nullable|string|max:100',
-        'code_postal' => 'nullable|string|max:10',
-        'pays' => 'nullable|string|max:100',
         'status_id' => 'nullable|exists:statuses,id',
+        'adresses' => 'array',
+        'adresses.*.rue' => 'nullable|string|max:255',
+        'adresses.*.numero_rue' => 'nullable|string|max:20',
+        'adresses.*.code_postal' => 'nullable|string|max:20',
+        'adresses.*.ville' => 'nullable|string|max:255',
+        'adresses.*.pays_code' => 'nullable|string|size:2|exists:pays,code',
+        'adresses.*.is_principale' => 'boolean',
     ];
 
     public function mount()
@@ -103,27 +120,58 @@ class ContactManager extends Component
         $this->resetForm();
     }
 
-    public function createContact()
+    public function addAdresse(): void
+    {
+        $this->adresses[] = [
+            'rue' => '',
+            'numero_rue' => '',
+            'code_postal' => '',
+            'ville' => '',
+            'pays_code' => '',
+            'is_principale' => empty($this->adresses),
+        ];
+    }
+
+    public function removeAdresse(int $index): void
+    {
+        if (! isset($this->adresses[$index])) {
+            return;
+        }
+
+        $wasPrincipal = (bool) ($this->adresses[$index]['is_principale'] ?? false);
+        array_splice($this->adresses, $index, 1);
+        $this->adresses = array_values($this->adresses);
+
+        if ($wasPrincipal && ! empty($this->adresses)) {
+            $this->adresses[0]['is_principale'] = true;
+        }
+    }
+
+    public function setPrincipale(int $index): void
+    {
+        foreach ($this->adresses as $i => $_) {
+            $this->adresses[$i]['is_principale'] = ($i === $index);
+        }
+    }
+
+    public function createContact(): void
     {
         $this->validate();
 
-        Contact::create([
+        $contact = Contact::create([
             'nom' => $this->nom,
             'prenom' => $this->prenom,
-            'rue' => $this->rue,
-            'numero' => $this->numero,
-            'ville' => $this->ville,
-            'code_postal' => $this->code_postal,
-            'pays' => $this->pays,
             'status_id' => $this->status_id ?: null,
             'user_id' => Auth::id(),
         ]);
+
+        app(AdresseSyncer::class)->sync($contact, $this->adresses);
 
         $this->closeModals();
         session()->flash('success', __('Contact created successfully!'));
     }
 
-    public function updateContact()
+    public function updateContact(): void
     {
         $this->validate();
 
@@ -135,13 +183,10 @@ class ContactManager extends Component
         $this->selectedContact->update([
             'nom' => $this->nom,
             'prenom' => $this->prenom,
-            'rue' => $this->rue,
-            'numero' => $this->numero,
-            'ville' => $this->ville,
-            'code_postal' => $this->code_postal,
-            'pays' => $this->pays,
             'status_id' => $this->status_id ?: null,
         ]);
+
+        app(AdresseSyncer::class)->sync($this->selectedContact, $this->adresses);
 
         $this->closeModals();
         session()->flash('success', __('Contact updated successfully!'));
@@ -154,45 +199,46 @@ class ContactManager extends Component
         session()->flash('success', __('Contact deleted successfully!'));
     }
 
-    private function resetForm()
+    private function resetForm(): void
     {
         $this->nom = '';
         $this->prenom = '';
-        $this->rue = '';
-        $this->numero = '';
-        $this->ville = '';
-        $this->code_postal = '';
-        $this->pays = 'France';
         $this->status_id = '';
+        $this->adresses = [];
     }
 
-    private function fillForm($contact)
+    private function fillForm($contact): void
     {
         $this->nom = $contact->nom;
         $this->prenom = $contact->prenom;
-        $this->rue = $contact->rue;
-        $this->numero = $contact->numero;
-        $this->ville = $contact->ville;
-        $this->code_postal = $contact->code_postal;
-        $this->pays = $contact->pays;
         $this->status_id = $contact->status_id;
+
+        $this->adresses = $contact->adresses()->orderByDesc('is_principale')->get()
+            ->map(fn ($a) => [
+                'rue' => $a->rue ?? '',
+                'numero_rue' => $a->numero_rue ?? '',
+                'code_postal' => $a->code_postal ?? '',
+                'ville' => $a->ville ?? '',
+                'pays_code' => $a->pays_code ?? '',
+                'is_principale' => (bool) $a->is_principale,
+            ])->toArray();
     }
 
     public function render()
     {
-        $contacts = Contact::with(['status', 'emails', 'numeroTelephones'])
+        $contacts = Contact::with(['status', 'emails', 'numeroTelephones', 'adressePrincipale'])
             ->withCount('rendezVous')
             ->where('user_id', Auth::id())
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('nom', 'like', '%' . $this->search . '%')
-                      ->orWhere('prenom', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('emails', function ($eq) {
-                          $eq->where('email', 'like', '%' . $this->search . '%');
-                      })
-                      ->orWhereHas('numeroTelephones', function ($pq) {
-                          $pq->where('numero_telephone', 'like', '%' . $this->search . '%');
-                      });
+                    $q->where('nom', 'like', '%'.$this->search.'%')
+                        ->orWhere('prenom', 'like', '%'.$this->search.'%')
+                        ->orWhereHas('emails', function ($eq) {
+                            $eq->where('email', 'like', '%'.$this->search.'%');
+                        })
+                        ->orWhereHas('numeroTelephones', function ($pq) {
+                            $pq->where('numero_telephone', 'like', '%'.$this->search.'%');
+                        });
                 });
             })
             ->when($this->statusFilter, function ($query) {
@@ -209,10 +255,12 @@ class ContactManager extends Component
             ->paginate(10);
 
         $statuses = Cache::remember('statuses', 3600, fn () => Status::all());
+        $paysList = Cache::remember('pays_list', 3600, fn () => Pays::orderBy('nom')->get());
 
         return view('livewire.contact-manager', [
             'contacts' => $contacts,
             'statuses' => $statuses,
+            'paysList' => $paysList,
         ]);
     }
 }

@@ -10,7 +10,5 @@ class ContactCreated
 {
     use Dispatchable, SerializesModels;
 
-    public function __construct(public Contact $contact)
-    {
-    }
+    public function __construct(public Contact $contact) {}
 }

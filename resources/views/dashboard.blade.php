@@ -199,7 +199,7 @@
                             <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                                 <div>
                                     <h3 class="font-medium text-gray-900">{{ $contact->prenom }} {{ $contact->nom }}</h3>
-                                    <p class="text-sm text-gray-600">{{ $contact->ville ?? __('City not specified') }}</p>
+                                    <p class="text-sm text-gray-600">{{ $contact->adressePrincipale?->ville ?? __('City not specified') }}</p>
                                 </div>
                                 <div class="text-right">
                                     <p class="text-sm text-gray-500">{{ $contact->created_at->format('d/m/Y') }}</p>

@@ -8,9 +8,9 @@ use App\Models\RendezVous;
 use App\Models\Role;
 use App\Models\Status;
 use App\Models\User;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 
 class UC3_ClientPortalTest extends DuskTestCase
 {
@@ -63,12 +63,12 @@ class UC3_ClientPortalTest extends DuskTestCase
     /**
      * A valid portal token shows the appointment list.
      */
-    public function testPortalAccessWithValidToken(): void
+    public function test_portal_access_with_valid_token(): void
     {
         $fixtures = $this->createPortalFixtures();
 
         $this->browse(function (Browser $browser) use ($fixtures) {
-            $browser->visit('/portal/' . $fixtures['token'])
+            $browser->visit('/portal/'.$fixtures['token'])
                 ->assertSee('Bonjour Sophie Martin')
                 ->assertSee('Séance découverte')
                 ->assertSee('Coaching individuel');
@@ -78,13 +78,13 @@ class UC3_ClientPortalTest extends DuskTestCase
     /**
      * Viewing an appointment detail page shows title, dates, and activity.
      */
-    public function testPortalViewAppointmentDetails(): void
+    public function test_portal_view_appointment_details(): void
     {
         $fixtures = $this->createPortalFixtures();
         $appointmentId = $fixtures['appointment']->id;
 
         $this->browse(function (Browser $browser) use ($fixtures, $appointmentId) {
-            $browser->visit('/portal/' . $fixtures['token'] . '/appointment/' . $appointmentId)
+            $browser->visit('/portal/'.$fixtures['token'].'/appointment/'.$appointmentId)
                 ->assertSee('Séance découverte')
                 ->assertSee('Coaching individuel')
                 ->assertSee('Date de début')
@@ -96,11 +96,11 @@ class UC3_ClientPortalTest extends DuskTestCase
     /**
      * Submitting a message via the portal form shows a success message.
      */
-    public function testPortalLeaveMessage(): void
+    public function test_portal_leave_message(): void
     {
         $fixtures = $this->createPortalFixtures();
         $appointmentId = $fixtures['appointment']->id;
-        $url = '/portal/' . $fixtures['token'] . '/appointment/' . $appointmentId;
+        $url = '/portal/'.$fixtures['token'].'/appointment/'.$appointmentId;
 
         $this->browse(function (Browser $browser) use ($url) {
             $browser->visit($url)
@@ -115,11 +115,11 @@ class UC3_ClientPortalTest extends DuskTestCase
     /**
      * Submitting an empty message shows a validation error.
      */
-    public function testPortalEmptyMessage(): void
+    public function test_portal_empty_message(): void
     {
         $fixtures = $this->createPortalFixtures();
         $appointmentId = $fixtures['appointment']->id;
-        $url = '/portal/' . $fixtures['token'] . '/appointment/' . $appointmentId;
+        $url = '/portal/'.$fixtures['token'].'/appointment/'.$appointmentId;
 
         $this->browse(function (Browser $browser) use ($url) {
             $browser->visit($url)
@@ -135,7 +135,7 @@ class UC3_ClientPortalTest extends DuskTestCase
     /**
      * An invalid token shows the error page.
      */
-    public function testPortalInvalidToken(): void
+    public function test_portal_invalid_token(): void
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/portal/invalidtoken')

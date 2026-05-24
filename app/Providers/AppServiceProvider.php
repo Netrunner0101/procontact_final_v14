@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Adresse;
+use App\Observers\AdresseObserver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -25,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Catch N+1 query issues in development
-        Model::preventLazyLoading(!app()->isProduction());
+        Model::preventLazyLoading(! app()->isProduction());
 
         $replyToAddress = config('mail.reply_to.address');
         if (! empty($replyToAddress)) {
@@ -33,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->configurePortalRateLimiters();
+
+        Adresse::observe(AdresseObserver::class);
     }
 
     private function configurePortalRateLimiters(): void

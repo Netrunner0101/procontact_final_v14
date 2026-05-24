@@ -50,7 +50,7 @@ class ActiviteController extends Controller
             'rendezVous' => fn ($q) => $q->with('contact')
                 ->orderBy('date_debut', 'desc')
                 ->orderBy('heure_debut', 'desc'),
-            'contacts',
+            'contacts.adressePrincipale',
             'notes',
         ]);
 

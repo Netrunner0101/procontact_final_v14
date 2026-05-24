@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
+use App\Models\Activite;
+use App\Models\Contact;
 use App\Models\RendezVous;
 use App\Models\User;
-use App\Models\Contact;
-use App\Models\Activite;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class RendezVousFactory extends Factory

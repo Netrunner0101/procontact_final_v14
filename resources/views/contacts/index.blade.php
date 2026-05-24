@@ -45,7 +45,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{ $contact->ville ?? '-' }}</div>
+                                <div class="text-sm text-gray-900">{{ $contact->adressePrincipale?->ville ?? '-' }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($contact->rendez_vous_count > 0)
