@@ -131,15 +131,20 @@ class RendezVousController extends Controller
         }
 
         try {
-            SendAppointmentEmail::dispatch($rendezVous, $validated['recipient_email'], $ccEmails);
+            // dispatchSync so the user sees the real outcome of sending. With
+            // dispatch() the job sits in the queue and the UI reports success
+            // even when no queue worker is running or the mailer fails.
+            SendAppointmentEmail::dispatchSync($rendezVous, $validated['recipient_email'], $ccEmails);
         } catch (\Throwable $e) {
-            Log::error('Failed to dispatch appointment email', [
+            Log::error('Failed to send appointment email', [
                 'rendez_vous_id' => $rendezVous->id,
+                'recipient' => $validated['recipient_email'],
+                'cc' => $ccEmails,
                 'error' => $e->getMessage(),
             ]);
 
             return redirect()->route('rendez-vous.show', $rendezVous)
-                ->with('error', __('The email could not be sent. Please try again.'));
+                ->with('error', __('The email could not be sent. Please try again.').' ('.$e->getMessage().')');
         }
 
         return redirect()->route('rendez-vous.show', $rendezVous)
