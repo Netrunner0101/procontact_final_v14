@@ -53,6 +53,8 @@ class RappelController extends Controller
         $rendezVous = RendezVous::where('user_id', Auth::id())
             ->findOrFail($validated['rendez_vous_id']);
 
+        $this->ensureReminderBeforeAppointment($validated['date_rappel'], $rendezVous);
+
         Rappel::create([
             ...$validated,
             'user_id' => Auth::id(),
@@ -109,6 +111,8 @@ class RappelController extends Controller
         $rendezVous = RendezVous::where('user_id', Auth::id())
             ->findOrFail($validated['rendez_vous_id']);
 
+        $this->ensureReminderBeforeAppointment($validated['date_rappel'], $rendezVous);
+
         $rappel->update([
             ...$validated,
             'emails_cc' => $this->normalizeCcEmails($validated['emails_cc'] ?? null),
@@ -116,6 +120,16 @@ class RappelController extends Controller
 
         return redirect()->route('rappels.show', $rappel)
             ->with('success', __('Reminder updated successfully'));
+    }
+
+    private function ensureReminderBeforeAppointment(string $dateRappel, RendezVous $rendezVous): void
+    {
+        $appointment = $rendezVous->formatted_date_time;
+        if ($appointment && \Carbon\Carbon::parse($dateRappel)->gte($appointment)) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'date_rappel' => __('The reminder must be scheduled before the appointment.'),
+            ]);
+        }
     }
 
     /**

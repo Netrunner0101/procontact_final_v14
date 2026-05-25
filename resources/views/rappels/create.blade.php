@@ -37,10 +37,39 @@
 
                 <!-- Reminder Date and Time -->
                 <div class="mb-6">
-                    <label for="date_rappel" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Reminder date and time') }} *</label>
-                    <input type="datetime-local" id="date_rappel" name="date_rappel"
-                           value="{{ old('date_rappel') }}" required
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 @error('date_rappel') border-red-500 @enderror">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Reminder date and time') }} *</label>
+                    @php
+                        [$oldDate, $oldHour, $oldMin] = ['', '', ''];
+                        if (old('date_rappel')) {
+                            $parts = preg_split('/[T ]/', old('date_rappel'));
+                            $oldDate = $parts[0] ?? '';
+                            if (! empty($parts[1])) {
+                                [$oldHour, $oldMin] = array_pad(explode(':', $parts[1]), 2, '');
+                            }
+                        }
+                    @endphp
+                    <input type="hidden" id="date_rappel" name="date_rappel" value="{{ old('date_rappel') }}" required>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <input type="date" id="rappel_date_part"
+                               value="{{ $oldDate }}"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 @error('date_rappel') border-red-500 @enderror">
+                        <select id="rappel_hour_part"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 @error('date_rappel') border-red-500 @enderror">
+                            <option value="">{{ __('Hour') }}</option>
+                            @for ($h = 0; $h < 24; $h++)
+                                @php $hh = str_pad($h, 2, '0', STR_PAD_LEFT); @endphp
+                                <option value="{{ $hh }}" {{ $oldHour === $hh ? 'selected' : '' }}>{{ $hh }} h</option>
+                            @endfor
+                        </select>
+                        <select id="rappel_minute_part"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 @error('date_rappel') border-red-500 @enderror">
+                            <option value="">{{ __('Minute') }}</option>
+                            @for ($m = 0; $m < 60; $m += 5)
+                                @php $mm = str_pad($m, 2, '0', STR_PAD_LEFT); @endphp
+                                <option value="{{ $mm }}" {{ $oldMin === $mm ? 'selected' : '' }}>{{ $mm }}</option>
+                            @endfor
+                        </select>
+                    </div>
                     @error('date_rappel')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -138,68 +167,109 @@
 document.addEventListener('DOMContentLoaded', function() {
     const rendezVousSelect = document.getElementById('rendez_vous_id');
     const dateRappelInput = document.getElementById('date_rappel');
+    const datePart = document.getElementById('rappel_date_part');
+    const hourPart = document.getElementById('rappel_hour_part');
+    const minutePart = document.getElementById('rappel_minute_part');
     const frequenceSelect = document.getElementById('frequence');
     const appointmentPreview = document.getElementById('appointmentPreview');
     const previewContent = document.getElementById('previewContent');
     const quickReminderButtons = document.querySelectorAll('.quick-reminder');
 
-    // Set minimum datetime to now
-    const now = new Date();
-    const minDateTime = now.toISOString().slice(0, 16);
-    dateRappelInput.setAttribute('min', minDateTime);
+    const pad = (n) => String(n).padStart(2, '0');
+    const fmtLocalDate = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
 
-    // Show appointment preview when selection changes
+    // Round minutes down to nearest 5 so it always matches a <select> option.
+    const roundToStep = (m) => Math.floor(m / 5) * 5;
+
+    const setPartsFromDate = (d) => {
+        datePart.value = fmtLocalDate(d);
+        hourPart.value = pad(d.getHours());
+        const m = roundToStep(d.getMinutes());
+        minutePart.value = pad(m);
+        composeHidden();
+    };
+
+    const composeHidden = () => {
+        if (datePart.value && hourPart.value !== '' && minutePart.value !== '') {
+            dateRappelInput.value = datePart.value + 'T' + hourPart.value + ':' + minutePart.value;
+        } else {
+            dateRappelInput.value = '';
+        }
+        dateRappelInput.setCustomValidity('');
+    };
+
+    [datePart, hourPart, minutePart].forEach(el => el.addEventListener('change', composeHidden));
+
+    // Set minimum date to today (local).
+    datePart.setAttribute('min', fmtLocalDate(new Date()));
+
+    const getSelectedAppointmentDateTime = () => {
+        const opt = rendezVousSelect.options[rendezVousSelect.selectedIndex];
+        if (!opt || !opt.value) return null;
+        const d = opt.dataset.date, t = opt.dataset.time;
+        if (!d || !t) return null;
+        return new Date(d + 'T' + t);
+    };
+
+    const syncBoundsToAppointment = () => {
+        const appt = getSelectedAppointmentDateTime();
+        if (!appt) { datePart.removeAttribute('max'); return; }
+        datePart.setAttribute('max', fmtLocalDate(appt));
+        if (dateRappelInput.value && new Date(dateRappelInput.value) >= appt) {
+            datePart.value = ''; hourPart.value = ''; minutePart.value = '';
+            composeHidden();
+        }
+    };
+
     rendezVousSelect.addEventListener('change', function() {
         if (this.value) {
-            const selectedOption = this.options[this.selectedIndex];
-            const appointmentText = selectedOption.textContent;
-            previewContent.textContent = appointmentText;
+            previewContent.textContent = this.options[this.selectedIndex].textContent;
             appointmentPreview.classList.remove('hidden');
-
-            // Auto-set frequency to "Une fois" for convenience
-            if (!frequenceSelect.value) {
-                frequenceSelect.value = 'Une fois';
-            }
+            if (!frequenceSelect.value) frequenceSelect.value = 'Une fois';
         } else {
             appointmentPreview.classList.add('hidden');
         }
+        syncBoundsToAppointment();
     });
 
-    // Quick reminder buttons
     quickReminderButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const minutes = parseInt(this.dataset.minutes);
-            const selectedOption = rendezVousSelect.options[rendezVousSelect.selectedIndex];
-
-            if (selectedOption && selectedOption.value) {
-                const appointmentDate = selectedOption.dataset.date;
-                const appointmentTime = selectedOption.dataset.time;
-
-                if (appointmentDate && appointmentTime) {
-                    const appointmentDateTime = new Date(appointmentDate + 'T' + appointmentTime);
-                    const reminderDateTime = new Date(appointmentDateTime.getTime() - (minutes * 60000));
-
-                    // Check if reminder time is in the future
-                    if (reminderDateTime > now) {
-                        const reminderString = reminderDateTime.toISOString().slice(0, 16);
-                        dateRappelInput.value = reminderString;
-
-                        // Highlight the selected button temporarily
-                        this.classList.add('bg-yellow-200');
-                        setTimeout(() => {
-                            this.classList.remove('bg-yellow-200');
-                        }, 1000);
-                    } else {
-                        alert('{{ __('The reminder would be in the past. Please select a future appointment or adjust the time manually.') }}');
-                    }
-                }
-            } else {
+            const appt = getSelectedAppointmentDateTime();
+            if (!appt) {
                 alert('{{ __('Please select an appointment first.') }}');
+                return;
             }
+            const minutes = parseInt(this.dataset.minutes, 10);
+            const reminder = new Date(appt.getTime() - (minutes * 60000));
+            if (reminder <= new Date()) {
+                alert('{{ __('The reminder would be in the past. Please select a future appointment or adjust the time manually.') }}');
+                return;
+            }
+            setPartsFromDate(reminder);
+            quickReminderButtons.forEach(b => b.classList.remove('ring-2', 'ring-yellow-500', 'bg-yellow-100'));
+            this.classList.add('ring-2', 'ring-yellow-500', 'bg-yellow-100');
         });
     });
 
-    // Trigger preview if appointment is pre-selected
+    dateRappelInput.form.addEventListener('submit', function(e) {
+        composeHidden();
+        if (!dateRappelInput.value) {
+            e.preventDefault();
+            datePart.setCustomValidity('{{ __('Reminder date and time') }}');
+            datePart.reportValidity();
+            return;
+        }
+        const appt = getSelectedAppointmentDateTime();
+        if (appt && new Date(dateRappelInput.value) >= appt) {
+            e.preventDefault();
+            datePart.setCustomValidity('{{ __('The reminder must be scheduled before the appointment.') }}');
+            datePart.reportValidity();
+        } else {
+            datePart.setCustomValidity('');
+        }
+    });
+    [datePart, hourPart, minutePart].forEach(el => el.addEventListener('input', () => datePart.setCustomValidity('')));
+
     if (rendezVousSelect.value) {
         rendezVousSelect.dispatchEvent(new Event('change'));
     }
