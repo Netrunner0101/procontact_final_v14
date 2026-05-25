@@ -70,7 +70,7 @@ class ContactController extends Controller
             $contact->emails()->create(['email' => $email, 'user_id' => Auth::id()]);
         }
 
-        $this->sendContactConsentRequest($contact, $validated['emails'][0]);
+        $consentMailSent = $this->sendContactConsentRequest($contact, $validated['emails'][0]);
 
         // Save phone numbers
         foreach ($validated['phones'] as $phone) {
@@ -87,10 +87,23 @@ class ContactController extends Controller
             }
             $activite->contacts()->syncWithoutDetaching([$contact->id]);
 
-            return redirect()->route('activites.show', $activite)->with('success', __('Contact created and linked to the activity successfully'));
+            $response = redirect()->route('activites.show', $activite)
+                ->with('success', __('Contact created and linked to the activity successfully'));
+
+            if (! $consentMailSent) {
+                $response->with('warning', __('Contact saved, but the GDPR consent email could not be sent. Check mail configuration.'));
+            }
+
+            return $response;
         }
 
-        return redirect()->route('contacts.index')->with('success', __('Contact created successfully'));
+        $response = redirect()->route('contacts.index')->with('success', __('Contact created successfully'));
+
+        if (! $consentMailSent) {
+            $response->with('warning', __('Contact saved, but the GDPR consent email could not be sent. Check mail configuration.'));
+        }
+
+        return $response;
     }
 
     public function show(Contact $contact)
@@ -163,8 +176,9 @@ class ContactController extends Controller
         $contact->loadMissing('emails');
         $primaryEmail = $contact->emails->first()->email ?? null;
 
+        $deletionMailSent = null;
         if ($primaryEmail) {
-            $this->sendContactDeletionNotification($contact, $primaryEmail);
+            $deletionMailSent = $this->sendContactDeletionNotification($contact, $primaryEmail);
         }
 
         $contactHash = hash('sha256', $contact->id.'|'.($primaryEmail ?? ''));
@@ -177,10 +191,16 @@ class ContactController extends Controller
 
         $contact->delete();
 
-        return redirect()->route('contacts.index')->with('success', __('Contact deleted successfully'));
+        $response = redirect()->route('contacts.index')->with('success', __('Contact deleted successfully'));
+
+        if ($deletionMailSent === false) {
+            $response->with('warning', __('Contact deleted, but the notification email could not be sent. Check mail configuration.'));
+        }
+
+        return $response;
     }
 
-    private function sendContactConsentRequest(Contact $contact, string $email): void
+    private function sendContactConsentRequest(Contact $contact, string $email): bool
     {
         try {
             Mail::to($email)->send(new ContactConsentRequestMail($contact, Auth::user()));
@@ -192,17 +212,33 @@ class ContactController extends Controller
                 'version' => config('app.rgpd_version', '2026-05'),
                 'sent_at' => now()->toIso8601String(),
             ]);
+
+            return true;
         } catch (\Exception $e) {
-            Log::error('Failed to send contact consent request: '.$e->getMessage());
+            Log::error('Failed to send contact consent request', [
+                'contact_id' => $contact->id,
+                'contact_email' => $email,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
         }
     }
 
-    private function sendContactDeletionNotification(Contact $contact, string $email): void
+    private function sendContactDeletionNotification(Contact $contact, string $email): bool
     {
         try {
             Mail::to($email)->send(new ContactDeletionNotificationMail($contact, Auth::user(), $email));
+
+            return true;
         } catch (\Exception $e) {
-            Log::error('Failed to send contact deletion notification: '.$e->getMessage());
+            Log::error('Failed to send contact deletion notification', [
+                'contact_id' => $contact->id,
+                'contact_email' => $email,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
         }
     }
 }
