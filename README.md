@@ -53,7 +53,6 @@ php artisan serve    # http://localhost:8000
 
 - **Domaine en français** : modèles, tables et URLs utilisent les termes métier français (`Activite`, `RendezVous`, `Rappel`, `NumeroTelephone`, etc.).
 - **Multi-tenant par `user_id`** : chaque ressource appartient à un utilisateur, filtrage systématique dans les controllers et policies.
-- **Branches `claude/*`** : utilisées pour les PR générées via Claude Code.
 - **Workflow git** : développement sur `dev`, fusion vers `main` pour les releases.
 
 ## Licence

@@ -21,10 +21,16 @@ class ModelTest extends TestCase
     {
         $user = new User;
 
+        // Phone numbers and addresses are no longer columns on `users`; they
+        // live in `numero_telephones` (0..n) and `adresses` (polymorphic).
         $expectedFillable = [
-            'nom', 'prenom', 'email', 'password', 'telephone',
-            'adresse', 'ville', 'code_postal', 'pays', 'role',
-            'admin_user_id', 'google_id', 'apple_id', 'provider', 'avatar',
+            'nom', 'prenom', 'email', 'password',
+            'last_login_at', 'password_reset_token', 'password_reset_expires',
+            'email_verification_token', 'email_verification_expires',
+            'email_verification_sent_at', 'email_verified_at',
+            'terms_accepted_at', 'terms_accepted_version',
+            'google_id', 'apple_id', 'provider', 'avatar',
+            'role_id', 'contact_id',
         ];
 
         $this->assertEquals($expectedFillable, $user->getFillable());

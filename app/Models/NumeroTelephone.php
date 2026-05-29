@@ -25,4 +25,12 @@ class NumeroTelephone extends Model
     {
         return $this->belongsTo(Contact::class);
     }
+
+    /**
+     * Get the user that owns the phone number (when not attached to a contact).
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

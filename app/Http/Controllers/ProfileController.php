@@ -38,7 +38,8 @@ class ProfileController extends Controller
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
-            'telephone' => 'nullable|string|max:20',
+            'phones' => 'nullable|array',
+            'phones.*' => ['nullable', 'regex:/^[0-9+\s()-]+$/', 'max:20'],
             'adresses' => 'nullable|array',
             'adresses.*.rue' => 'nullable|string|max:255',
             'adresses.*.numero_rue' => 'nullable|string|max:20',
@@ -48,7 +49,16 @@ class ProfileController extends Controller
             'adresses.*.is_principale' => 'nullable|boolean',
         ]);
 
-        $user->update($request->only(['nom', 'prenom', 'email', 'telephone']));
+        $user->update($request->only(['nom', 'prenom', 'email']));
+
+        // Sync the user's own phone numbers (0..n): replace the existing set.
+        $user->numeroTelephones()->delete();
+        foreach ($validated['phones'] ?? [] as $phone) {
+            $phone = trim((string) $phone);
+            if ($phone !== '') {
+                $user->numeroTelephones()->create(['numero_telephone' => $phone]);
+            }
+        }
 
         app(\App\Services\AdresseSyncer::class)->sync($user, $validated['adresses'] ?? []);
 
@@ -89,9 +99,10 @@ class ProfileController extends Controller
             'exported_at' => now()->toIso8601String(),
             'gdpr_notice' => __('This file contains all personal data we hold about you. You may request deletion of this data at any time from your profile.'),
             'profile' => $user->only([
-                'id', 'nom', 'prenom', 'email', 'telephone',
+                'id', 'nom', 'prenom', 'email',
                 'provider', 'created_at', 'last_login_at',
             ]),
+            'telephones' => $user->numeroTelephones()->pluck('numero_telephone')->toArray(),
             'adresses' => $user->adresses()->with('pays')->get()->toArray(),
             'contacts' => $user->contacts()->with(['emails', 'numeroTelephones', 'adresses.pays'])->get()->toArray(),
             'activites' => $user->activites()->get()->toArray(),

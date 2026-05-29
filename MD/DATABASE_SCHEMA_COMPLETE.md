@@ -34,7 +34,6 @@ L'application permet &agrave; un **admin** (entrepreneur/ind&eacute;pendant) de 
 | nom                 |          | nom            |
 | prenom              |  N --- 1 | description    |
 | email (unique)      |----------+================+
-| telephone           |
 | rue, numero_rue     |
 | ville, code_postal  |
 | pays                |
@@ -122,7 +121,7 @@ L'application permet &agrave; un **admin** (entrepreneur/ind&eacute;pendant) de 
 ```
 roles (id, nom, description, created_at, updated_at)
 
-users (id, #role_id, nom, prenom, email, telephone, rue, numero_rue, ville,
+users (id, #role_id, nom, prenom, email, rue, numero_rue, ville,
        code_postal, pays, password, remember_token, email_verified_at,
        last_login_at, password_reset_token, password_reset_expires,
        google_id, apple_id, provider, avatar, #admin_user_id, #contact_id,
@@ -180,7 +179,6 @@ statistiques (id, #activite_id, #rendez_vous_id, #contact_id,
 | nom | varchar | NOT NULL | Nom de famille |
 | prenom | varchar | NOT NULL | Pr&eacute;nom |
 | email | varchar | UNIQUE, NOT NULL | Adresse email |
-| telephone | varchar | NULL | T&eacute;l&eacute;phone |
 | rue | varchar | NULL | Rue |
 | numero_rue | varchar | NULL | Num&eacute;ro de rue |
 | ville | varchar | NULL | Ville |
@@ -301,12 +299,12 @@ statistiques (id, #activite_id, #rendez_vous_id, #contact_id,
 | created_at | timestamp | | Horodatage cr&eacute;ation |
 | updated_at | timestamp | | Horodatage modification |
 
-### 11. `numero_telephones` - T&eacute;l&eacute;phones des contacts
+### 11. `numero_telephones` - T&eacute;l&eacute;phones des contacts et utilisateurs
 | Colonne | Type | Contraintes | Description |
 |---|---|---|---|
 | id | bigint | PK, auto-increment | Identifiant |
-| user_id | bigint | FK &rarr; users.id (ajout&eacute; post-cr&eacute;ation) | Propri&eacute;taire |
-| contact_id | bigint | FK &rarr; contacts.id, NOT NULL, ON DELETE CASCADE | Contact li&eacute; |
+| user_id | bigint | FK &rarr; users.id, NULL, ON DELETE CASCADE | Propri&eacute;taire (utilisateur ou tenant) |
+| contact_id | bigint | FK &rarr; contacts.id, NULL, ON DELETE CASCADE | Contact li&eacute; (NULL = num&eacute;ro propre de l'utilisateur) |
 | numero_telephone | varchar | NOT NULL | Num&eacute;ro de t&eacute;l&eacute;phone |
 | created_at | timestamp | | Horodatage cr&eacute;ation |
 | updated_at | timestamp | | Horodatage modification |
@@ -385,6 +383,7 @@ statistiques (id, #activite_id, #rendez_vous_id, #contact_id,
 | rappels | rendez_vous_id | rendez_vous | CASCADE |
 | emails | contact_id | contacts | CASCADE |
 | numero_telephones | contact_id | contacts | CASCADE |
+| numero_telephones | user_id | users | CASCADE |
 | statistiques | activite_id | activites | CASCADE |
 | statistiques | rendez_vous_id | rendez_vous | CASCADE |
 | statistiques | contact_id | contacts | CASCADE |

@@ -39,7 +39,6 @@ entity "UTILISATEUR" as user #DAEEF3 {
     nom : VARCHAR(255)
     prenom : VARCHAR(255)
     email : VARCHAR(255) <<UNIQUE>>
-    telephone : VARCHAR(255)
     rue : VARCHAR(255)
     numero_rue : VARCHAR(255)
     ville : VARCHAR(255)
@@ -146,6 +145,7 @@ user }o--|| contact : "lier (contact_id)\n(0,1) / (0,N)"
 status ||--o{ contact : "avoir\n(0,1) / (0,N)"
 contact ||--o{ email : "posseder\n(1,1) / (0,N)"
 contact ||--o{ tel : "posseder\n(1,1) / (0,N)"
+user ||--o{ tel : "posseder\n(0,1) / (0,N)"
 contact ||--o{ rdv : "participer\n(0,N) / (1,1)"
 activite ||--o{ rdv : "concerner\n(0,N) / (1,1)"
 contact ||--o{ pivot : "(0,N)"
