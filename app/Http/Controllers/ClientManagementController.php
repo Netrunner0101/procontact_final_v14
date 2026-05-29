@@ -74,7 +74,6 @@ class ClientManagementController extends Controller
             'prenom' => $validated['prenom'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
-            'telephone' => $validated['telephone'] ?? null,
             'role_id' => $clientRole->id,
         ]);
 
@@ -82,6 +81,10 @@ class ClientManagementController extends Controller
         $client->admin_user_id = Auth::id();
         $client->contact_id = $contactId;
         $client->save();
+
+        if (! empty($validated['telephone'])) {
+            $client->numeroTelephones()->create(['numero_telephone' => $validated['telephone']]);
+        }
 
         return redirect()->route('admin.clients.index')
             ->with('success', __('Client created successfully.'));
@@ -156,7 +159,6 @@ class ClientManagementController extends Controller
             'nom' => $validated['nom'],
             'prenom' => $validated['prenom'],
             'email' => $validated['email'],
-            'telephone' => $validated['telephone'],
         ];
 
         if ($validated['password']) {
@@ -165,6 +167,14 @@ class ClientManagementController extends Controller
 
         $client->update($updateData);
         $client->save();
+
+        // Sync the client's phone number when the field is submitted.
+        if ($request->has('telephone')) {
+            $client->numeroTelephones()->delete();
+            if (! empty($validated['telephone'])) {
+                $client->numeroTelephones()->create(['numero_telephone' => $validated['telephone']]);
+            }
+        }
 
         return redirect()->route('admin.clients.show', $client)
             ->with('success', __('Client updated successfully.'));

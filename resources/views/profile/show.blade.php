@@ -35,10 +35,10 @@
                         </h2>
                     </div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('profile.update') }}">
+                        <form id="profileForm" method="POST" action="{{ route('profile.update') }}">
                             @csrf
                             @method('PUT')
-                            
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Nom -->
                                 <div>
@@ -70,16 +70,78 @@
                                     @enderror
                                 </div>
 
-                                <!-- Téléphone -->
-                                <div>
-                                    <label for="telephone" class="block text-sm font-medium text-gray-700 mb-2">{{ __('Phone') }}</label>
-                                    <input type="tel" id="telephone" name="telephone" value="{{ old('telephone', $user->telephone) }}" 
-                                           class="form-input @error('telephone') border-red-500 @enderror">
-                                    @error('telephone')
-                                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                            </div>
 
+                            <!-- Téléphones (0..n) -->
+                            @php
+                                $phonePrefixes = ['+352','+213','+216','+212','+351','+44','+49','+34','+39','+32','+41','+43','+48','+90','+31','+1','+7','+33'];
+                                $oldPhones = old('phones');
+                                if (is_array($oldPhones)) {
+                                    $existingPhones = array_values(array_filter($oldPhones, fn ($p) => trim((string) $p) !== ''));
+                                } else {
+                                    $existingPhones = $user->numeroTelephones->pluck('numero_telephone')->all();
+                                }
+                            @endphp
+                            <div class="mt-8">
+                                <div class="flex items-center justify-between gap-3 mb-4">
+                                    <h3 class="text-lg font-semibold text-gray-900">
+                                        <i class="fas fa-phone mr-2"></i>{{ __('Phone numbers') }}
+                                    </h3>
+                                    <button type="button" id="addPhone" class="btn btn-secondary text-xs px-3 py-2 flex-shrink-0">
+                                        <i class="fas fa-plus mr-1"></i>{{ __('Add Phone') }}
+                                    </button>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-3">{{ __('Add one or more phone numbers with country prefix') }}</p>
+                                <div id="phoneContainer" class="space-y-3">
+                                    @forelse($existingPhones as $fullPhone)
+                                        @php
+                                            $detectedPrefix = '+33';
+                                            $phoneNumber = $fullPhone;
+                                            foreach ($phonePrefixes as $p) {
+                                                if (str_starts_with($fullPhone, $p)) {
+                                                    $detectedPrefix = $p;
+                                                    $phoneNumber = trim(substr($fullPhone, strlen($p)));
+                                                    break;
+                                                }
+                                            }
+                                        @endphp
+                                        <div class="phone-field flex gap-3 items-start">
+                                            <select class="phone-prefix form-select" style="width: 140px; flex-shrink: 0;">
+                                                @foreach($phonePrefixes as $p)
+                                                    <option value="{{ $p }}" @selected($p === $detectedPrefix)>{{ $p }}</option>
+                                                @endforeach
+                                            </select>
+                                            <input type="tel" class="phone-number form-input flex-1"
+                                                   value="{{ $phoneNumber }}"
+                                                   pattern="[0-9\s()-]+"
+                                                   title="{{ __('Only digits, spaces, dashes and parentheses allowed') }}"
+                                                   placeholder="6 12 34 56 78">
+                                            <input type="hidden" name="phones[]" class="phone-combined">
+                                            <button type="button" class="remove-phone btn btn-secondary px-3 py-2 text-red-600">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    @empty
+                                        <div class="phone-field flex gap-3 items-start">
+                                            <select class="phone-prefix form-select" style="width: 140px; flex-shrink: 0;">
+                                                @foreach($phonePrefixes as $p)
+                                                    <option value="{{ $p }}" @selected($p === '+33')>{{ $p }}</option>
+                                                @endforeach
+                                            </select>
+                                            <input type="tel" class="phone-number form-input flex-1"
+                                                   pattern="[0-9\s()-]+"
+                                                   title="{{ __('Only digits, spaces, dashes and parentheses allowed') }}"
+                                                   placeholder="6 12 34 56 78">
+                                            <input type="hidden" name="phones[]" class="phone-combined">
+                                            <button type="button" class="remove-phone btn btn-secondary px-3 py-2 text-red-600" style="display: none;">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    @endforelse
+                                </div>
+                                @error('phones.*')
+                                    <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div class="mt-8">
@@ -364,4 +426,70 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const phonePrefixOptions = `
+        @foreach($phonePrefixes as $p)<option value="{{ $p }}">{{ $p }}</option>@endforeach
+    `;
+
+    const profileForm = document.getElementById('profileForm');
+
+    // Combine prefix + number into phones[] before submit; leave empty rows blank
+    // so the controller skips them (0 phone numbers is allowed).
+    profileForm.addEventListener('submit', function() {
+        document.querySelectorAll('#phoneContainer .phone-field').forEach(function(field) {
+            const prefix = field.querySelector('.phone-prefix').value;
+            const number = field.querySelector('.phone-number').value.trim();
+            field.querySelector('.phone-combined').value = number === '' ? '' : prefix + ' ' + number;
+        });
+    });
+
+    // Add a new phone row
+    document.getElementById('addPhone').addEventListener('click', function() {
+        const container = document.getElementById('phoneContainer');
+        const newField = document.createElement('div');
+        newField.className = 'phone-field flex gap-3 items-start';
+        newField.innerHTML = `
+            <select class="phone-prefix form-select" style="width: 140px; flex-shrink: 0;">
+                ${phonePrefixOptions}
+            </select>
+            <input type="tel" class="phone-number form-input flex-1"
+                   pattern="[0-9\\s()-]+"
+                   title="{{ __('Only digits, spaces, dashes and parentheses allowed') }}"
+                   placeholder="6 12 34 56 78">
+            <input type="hidden" name="phones[]" class="phone-combined">
+            <button type="button" class="remove-phone btn btn-secondary px-3 py-2 text-red-600">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+        container.appendChild(newField);
+        updateRemoveButtons();
+    });
+
+    // Remove a phone row
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.remove-phone')) {
+            e.target.closest('.phone-field').remove();
+            updateRemoveButtons();
+        }
+    });
+
+    // A user may have 0 phone numbers: keep the remove button available even
+    // when a single row remains.
+    function updateRemoveButtons() {
+        document.querySelectorAll('#phoneContainer .remove-phone').forEach(function(btn) {
+            btn.style.display = 'inline-flex';
+        });
+    }
+    updateRemoveButtons();
+
+    // Real-time filtering on the number input only
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('phone-number')) {
+            e.target.value = e.target.value.replace(/[^0-9\s()-]/g, '');
+        }
+    });
+});
+</script>
 @endsection

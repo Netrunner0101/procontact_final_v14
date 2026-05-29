@@ -30,7 +30,6 @@ class User extends Authenticatable
         'nom',
         'prenom',
         'email',
-        'telephone',
         'password',
         'last_login_at',
         'password_reset_token',
@@ -107,6 +106,18 @@ class User extends Authenticatable
     public function adressePrincipale(): MorphOne
     {
         return $this->morphOne(Adresse::class, 'addressable')->where('is_principale', true);
+    }
+
+    /**
+     * Get the phone numbers owned directly by this user.
+     *
+     * Contact phone numbers also carry the admin's `user_id` for tenant
+     * scoping, so we restrict to rows with no `contact_id` to return only
+     * the user's own numbers.
+     */
+    public function numeroTelephones(): HasMany
+    {
+        return $this->hasMany(NumeroTelephone::class)->whereNull('contact_id');
     }
 
     /**
