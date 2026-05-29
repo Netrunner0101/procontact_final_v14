@@ -234,7 +234,7 @@
                         <div class="phone-field flex gap-3 items-start">
                             <select name="phone_pays[]" class="phone-prefix form-select" style="width: 160px; flex-shrink: 0;">
                                 @foreach($paysList as $pays)
-                                    <option value="{{ $pays->code }}" @selected(old('phone_pays.0', 'BE') === $pays->code)>{{ $pays->indicatif }} {{ $pays->code }}</option>
+                                    <option value="{{ $pays->code }}" @selected(old('phone_pays.0', 'BE') === $pays->code)>{{ $pays->indicatif }} {{ $pays->nom }}</option>
                                 @endforeach
                             </select>
                             <input type="tel" name="phones[]" class="phone-number form-input flex-1 @error('phones.0') border-red-500 @enderror"
@@ -305,7 +305,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const phonePrefixOptions = `
         @foreach($paysList as $pays)
-        <option value="{{ $pays->code }}">{{ $pays->indicatif }} {{ $pays->code }}</option>
+        <option value="{{ $pays->code }}" @selected($pays->code === 'BE')>{{ $pays->indicatif }} {{ $pays->nom }}</option>
         @endforeach
     `;
 

@@ -101,7 +101,7 @@
                             <div class="phone-field flex gap-3 items-start">
                                 <select name="phone_pays[]" class="phone-prefix form-select" style="width: 160px; flex-shrink: 0;">
                                     @foreach($paysList as $pays)
-                                        <option value="{{ $pays->code }}" @selected($selectedCode === $pays->code)>{{ $pays->indicatif }} {{ $pays->code }}</option>
+                                        <option value="{{ $pays->code }}" @selected($selectedCode === $pays->code)>{{ $pays->indicatif }} {{ $pays->nom }}</option>
                                     @endforeach
                                 </select>
                                 <input type="tel" name="phones[]" class="phone-number flex-1 px-3 py-2 rounded-lg @error('phones.' . $index) border-2 border-red-500 @enderror"
@@ -118,7 +118,7 @@
                             <div class="phone-field flex gap-3 items-start">
                                 <select name="phone_pays[]" class="phone-prefix form-select" style="width: 160px; flex-shrink: 0;">
                                     @foreach($paysList as $pays)
-                                        <option value="{{ $pays->code }}" @selected($pays->code === 'BE')>{{ $pays->indicatif }} {{ $pays->code }}</option>
+                                        <option value="{{ $pays->code }}" @selected($pays->code === 'BE')>{{ $pays->indicatif }} {{ $pays->nom }}</option>
                                     @endforeach
                                 </select>
                                 <input type="tel" name="phones[]" class="phone-number flex-1 px-3 py-2 rounded-lg" value="" required
@@ -164,7 +164,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const phonePrefixOptions = `
         @foreach($paysList as $pays)
-        <option value="{{ $pays->code }}">{{ $pays->indicatif }} {{ $pays->code }}</option>
+        <option value="{{ $pays->code }}" @selected($pays->code === 'BE')>{{ $pays->indicatif }} {{ $pays->nom }}</option>
         @endforeach
     `;
 
