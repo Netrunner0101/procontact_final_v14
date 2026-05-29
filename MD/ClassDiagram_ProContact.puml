@@ -47,7 +47,6 @@ class User <<Model>> #DAEEF3 {
     - nom : string
     - prenom : string
     - email : string
-    - telephone : string
     - rue : string
     - numero_rue : string
     - ville : string
@@ -68,6 +67,7 @@ class User <<Model>> #DAEEF3 {
     + contacts() : HasMany<Contact>
     + activites() : HasMany<Activite>
     + rendezVous() : HasMany<RendezVous>
+    + numeroTelephones() : HasMany<NumeroTelephone>
     + admin() : BelongsTo<User>
     + clients() : HasMany<User>
     __methodes__
@@ -118,10 +118,12 @@ class Email <<Model>> #E8DAEF {
 
 class NumeroTelephone <<Model>> #E8DAEF {
     - id : int
+    - user_id : int
     - contact_id : int
     - numero_telephone : string
     __relations__
     + contact() : BelongsTo<Contact>
+    + user() : BelongsTo<User>
 }
 
 ' ============================================
@@ -218,6 +220,7 @@ Status "1" --o "0..*" Contact : status_id >
 
 Contact "1" --o "0..*" Email : contact_id >
 Contact "1" --o "0..*" NumeroTelephone : contact_id >
+User "1" --o "0..*" NumeroTelephone : user_id >
 Contact "0..*" -- "0..*" Activite : contact_activite
 
 Contact "1" --o "0..*" RendezVous : contact_id >

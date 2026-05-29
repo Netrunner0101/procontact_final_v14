@@ -143,7 +143,6 @@ class AuthController extends Controller
             'nom' => $validated['nom'],
             'prenom' => $validated['prenom'],
             'email' => $validated['email'],
-            'telephone' => $validated['telephone'] ?? null,
             'password' => $validated['password'],
             'role_id' => $adminRole->id,
             'email_verified_at' => null,
@@ -153,6 +152,10 @@ class AuthController extends Controller
             'terms_accepted_at' => Carbon::now(),
             'terms_accepted_version' => $rgpdVersion,
         ]);
+
+        if (! empty($validated['telephone'])) {
+            $user->numeroTelephones()->create(['numero_telephone' => $validated['telephone']]);
+        }
 
         $this->recordGdprConsent($user, true, $request, $rgpdVersion);
         $this->sendVerificationEmail($user, $token);
@@ -197,7 +200,6 @@ class AuthController extends Controller
             'nom' => $validated['nom'],
             'prenom' => $validated['prenom'],
             'email' => $pending['email'],
-            'telephone' => $validated['telephone'] ?? null,
             'password' => Str::random(32),
             'provider' => $pending['provider'],
             'avatar' => $pending['avatar'] ?? null,
@@ -216,6 +218,10 @@ class AuthController extends Controller
         }
 
         $user = User::create($userData);
+
+        if (! empty($validated['telephone'])) {
+            $user->numeroTelephones()->create(['numero_telephone' => $validated['telephone']]);
+        }
 
         $this->recordGdprConsent($user, true, $request, $rgpdVersion);
         $this->sendRgpdConsentEmail($user, true, $rgpdVersion);
