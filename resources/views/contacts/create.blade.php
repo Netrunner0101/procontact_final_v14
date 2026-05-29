@@ -232,33 +232,17 @@
                 <div class="block-body">
                     <div id="phoneContainer" class="space-y-3">
                         <div class="phone-field flex gap-3 items-start">
-                            <select class="phone-prefix form-select" style="width: 140px; flex-shrink: 0;">
-                                <option value="+33">+33 FR</option>
-                                <option value="+1">+1 US/CA</option>
-                                <option value="+44">+44 UK</option>
-                                <option value="+49">+49 DE</option>
-                                <option value="+34">+34 ES</option>
-                                <option value="+39">+39 IT</option>
-                                <option value="+32">+32 BE</option>
-                                <option value="+41">+41 CH</option>
-                                <option value="+352">+352 LU</option>
-                                <option value="+212">+212 MA</option>
-                                <option value="+216">+216 TN</option>
-                                <option value="+213">+213 DZ</option>
-                                <option value="+351">+351 PT</option>
-                                <option value="+31">+31 NL</option>
-                                <option value="+43">+43 AT</option>
-                                <option value="+48">+48 PL</option>
-                                <option value="+90">+90 TR</option>
-                                <option value="+7">+7 RU</option>
+                            <select name="phone_pays[]" class="phone-prefix form-select" style="width: 160px; flex-shrink: 0;">
+                                @foreach($paysList as $pays)
+                                    <option value="{{ $pays->code }}" @selected(old('phone_pays.0', 'BE') === $pays->code)>{{ $pays->indicatif }} {{ $pays->code }}</option>
+                                @endforeach
                             </select>
-                            <input type="tel" class="phone-number form-input flex-1 @error('phones.0') border-red-500 @enderror"
-                                   value="{{ old('phones.0') ? preg_replace('/^\+\d+\s*/', '', old('phones.0')) : '' }}"
+                            <input type="tel" name="phones[]" class="phone-number form-input flex-1 @error('phones.0') border-red-500 @enderror"
+                                   value="{{ old('phones.0') }}"
                                    required
                                    pattern="[0-9\s()-]+"
                                    title="{{ __('Only digits, spaces, dashes and parentheses allowed') }}"
                                    placeholder="6 12 34 56 78">
-                            <input type="hidden" name="phones[]" class="phone-combined">
                             <button type="button" class="remove-phone btn btn-secondary px-3 py-2 text-red-600" style="display: none;">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -320,34 +304,10 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const phonePrefixOptions = `
-        <option value="+33">+33 FR</option>
-        <option value="+1">+1 US/CA</option>
-        <option value="+44">+44 UK</option>
-        <option value="+49">+49 DE</option>
-        <option value="+34">+34 ES</option>
-        <option value="+39">+39 IT</option>
-        <option value="+32">+32 BE</option>
-        <option value="+41">+41 CH</option>
-        <option value="+352">+352 LU</option>
-        <option value="+212">+212 MA</option>
-        <option value="+216">+216 TN</option>
-        <option value="+213">+213 DZ</option>
-        <option value="+351">+351 PT</option>
-        <option value="+31">+31 NL</option>
-        <option value="+43">+43 AT</option>
-        <option value="+48">+48 PL</option>
-        <option value="+90">+90 TR</option>
-        <option value="+7">+7 RU</option>
+        @foreach($paysList as $pays)
+        <option value="{{ $pays->code }}">{{ $pays->indicatif }} {{ $pays->code }}</option>
+        @endforeach
     `;
-
-    // Combine phone prefix + number before form submit
-    document.getElementById('contactForm').addEventListener('submit', function() {
-        document.querySelectorAll('.phone-field').forEach(function(field) {
-            const prefix = field.querySelector('.phone-prefix').value;
-            const number = field.querySelector('.phone-number').value.trim();
-            field.querySelector('.phone-combined').value = prefix + ' ' + number;
-        });
-    });
 
     // Email management
     document.getElementById('addEmail').addEventListener('click', function() {
@@ -372,14 +332,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const newField = document.createElement('div');
         newField.className = 'phone-field flex gap-3 items-start';
         newField.innerHTML = `
-            <select class="phone-prefix form-select" style="width: 140px; flex-shrink: 0;">
+            <select name="phone_pays[]" class="phone-prefix form-select" style="width: 160px; flex-shrink: 0;">
                 ${phonePrefixOptions}
             </select>
-            <input type="tel" class="phone-number form-input flex-1" required
+            <input type="tel" name="phones[]" class="phone-number form-input flex-1" required
                    pattern="[0-9\\s()-]+"
                    title="{{ __('Only digits, spaces, dashes and parentheses allowed') }}"
                    placeholder="6 12 34 56 78">
-            <input type="hidden" name="phones[]" class="phone-combined">
             <button type="button" class="remove-phone btn btn-secondary px-3 py-2 text-red-600">
                 <i class="fas fa-trash"></i>
             </button>

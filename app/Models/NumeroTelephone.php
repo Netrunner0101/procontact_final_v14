@@ -16,6 +16,7 @@ class NumeroTelephone extends Model
         'user_id',
         'contact_id',
         'numero_telephone',
+        'pays_code',
     ];
 
     /**
@@ -24,6 +25,29 @@ class NumeroTelephone extends Model
     public function contact(): BelongsTo
     {
         return $this->belongsTo(Contact::class);
+    }
+
+    /**
+     * Country providing the phone prefix (indicatif) for this number.
+     */
+    public function pays(): BelongsTo
+    {
+        return $this->belongsTo(Pays::class, 'pays_code', 'code');
+    }
+
+    /**
+     * Full international number = indicatif + national number.
+     *
+     * Falls back to the stored value when no country is set (legacy rows that
+     * may already embed the prefix inside `numero_telephone`).
+     */
+    public function getFullNumberAttribute(): string
+    {
+        if ($this->pays_code && $this->pays) {
+            return trim($this->pays->indicatif.' '.$this->numero_telephone);
+        }
+
+        return (string) $this->numero_telephone;
     }
 
     /**

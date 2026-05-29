@@ -149,7 +149,7 @@
                         @if($rendezVous->contact->numeroTelephones && $rendezVous->contact->numeroTelephones->count() > 0)
                             <div>
                                 <label class="text-xs text-gray-500">{{ __('Phone') }}</label>
-                                <p class="text-sm text-gray-900">{{ $rendezVous->contact->numeroTelephones->first()->numero_telephone }}</p>
+                                <p class="text-sm text-gray-900">{{ $rendezVous->contact->numeroTelephones->first()->full_number }}</p>
                             </div>
                         @endif
                         @if($rendezVous->contact->adressePrincipale?->ville)

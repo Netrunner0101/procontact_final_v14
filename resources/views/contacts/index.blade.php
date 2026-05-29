@@ -46,7 +46,7 @@
                             $adresse = $contact->adressePrincipale;
                             $rue = trim(($adresse?->numero_rue ? $adresse->numero_rue.' ' : '').($adresse?->rue ?? ''));
                             $localite = trim(($adresse?->code_postal ? $adresse->code_postal.' ' : '').($adresse?->ville ?? ''));
-                            $phone = $contact->numeroTelephones->first()?->numero_telephone;
+                            $phone = $contact->numeroTelephones->first()?->full_number;
                             $email = $contact->emails->first()?->email;
                         @endphp
                         <tr class="hover:bg-gray-50">
