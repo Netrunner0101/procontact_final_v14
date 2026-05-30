@@ -96,7 +96,7 @@
                     @if($contact->numeroTelephones->isNotEmpty())
                         <p class="contact-detail">
                             <i class="fas fa-phone"></i>
-                            <a href="tel:{{ $contact->numeroTelephones->first()->numero_telephone }}">{{ $contact->numeroTelephones->first()->numero_telephone }}</a>
+                            <a href="tel:{{ $contact->numeroTelephones->first()->full_number }}">{{ $contact->numeroTelephones->first()->full_number }}</a>
                         </p>
                     @endif
 

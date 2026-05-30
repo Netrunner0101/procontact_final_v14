@@ -80,7 +80,7 @@
             <h3 class="font-semibold text-gray-600">{{ __('Phones') }}</h3>
             <ul>
                 @foreach($contact->numeroTelephones as $phone)
-                    <li>{{ $phone->numero_telephone }}</li>
+                    <li>{{ $phone->full_number }}</li>
                 @endforeach
             </ul>
         </div>

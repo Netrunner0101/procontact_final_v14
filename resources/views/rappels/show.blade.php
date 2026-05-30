@@ -140,7 +140,7 @@
                         @if($rappel->rendezVous->contact->numeroTelephones->count() > 0)
                             <div>
                                 <label class="text-xs text-gray-500">{{ __('Phone') }}</label>
-                                <p class="text-sm text-gray-900">{{ $rappel->rendezVous->contact->numeroTelephones->first()->numero_telephone }}</p>
+                                <p class="text-sm text-gray-900">{{ $rappel->rendezVous->contact->numeroTelephones->first()->full_number }}</p>
                             </div>
                         @endif
                         <div class="pt-2">

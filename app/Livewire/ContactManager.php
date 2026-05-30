@@ -226,7 +226,7 @@ class ContactManager extends Component
 
     public function render()
     {
-        $contacts = Contact::with(['status', 'emails', 'numeroTelephones', 'adressePrincipale'])
+        $contacts = Contact::with(['status', 'emails', 'numeroTelephones.pays', 'adressePrincipale'])
             ->withCount('rendezVous')
             ->where('user_id', Auth::id())
             ->when($this->search, function ($query) {

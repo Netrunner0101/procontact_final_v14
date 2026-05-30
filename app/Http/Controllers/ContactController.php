@@ -18,7 +18,7 @@ class ContactController extends Controller
 {
     public function index()
     {
-        $contacts = Contact::with(['emails', 'numeroTelephones', 'adressePrincipale'])
+        $contacts = Contact::with(['emails', 'numeroTelephones.pays', 'adressePrincipale'])
             ->withCount('rendezVous')
             ->where('user_id', Auth::id())
             ->paginate(15);
@@ -44,6 +44,8 @@ class ContactController extends Controller
             'emails.*' => 'required|email|max:255',
             'phones' => 'required|array|min:1',
             'phones.*' => ['required', 'regex:/^[0-9+\s()-]+$/', 'max:20'],
+            'phone_pays' => 'nullable|array',
+            'phone_pays.*' => 'nullable|string|size:2|exists:pays,code',
             'adresses' => 'nullable|array',
             'adresses.*.rue' => 'nullable|string|max:255',
             'adresses.*.numero_rue' => 'nullable|string|max:20',
@@ -72,9 +74,13 @@ class ContactController extends Controller
 
         $consentMailSent = $this->sendContactConsentRequest($contact, $validated['emails'][0]);
 
-        // Save phone numbers
-        foreach ($validated['phones'] as $phone) {
-            $contact->numeroTelephones()->create(['numero_telephone' => $phone, 'user_id' => Auth::id()]);
+        // Save phone numbers (prefix decomposed into pays_code)
+        foreach ($validated['phones'] as $i => $phone) {
+            $contact->numeroTelephones()->create([
+                'numero_telephone' => $phone,
+                'pays_code' => $validated['phone_pays'][$i] ?? null,
+                'user_id' => Auth::id(),
+            ]);
         }
 
         $adresseSyncer->sync($contact, $validated['adresses'] ?? []);
@@ -109,7 +115,7 @@ class ContactController extends Controller
     public function show(Contact $contact)
     {
         $this->authorize('view', $contact);
-        $contact->load(['emails', 'numeroTelephones', 'rendezVous', 'adresses.pays']);
+        $contact->load(['emails', 'numeroTelephones.pays', 'rendezVous', 'adresses.pays']);
         $contact->loadCount('rendezVous');
 
         return view('contacts.show', compact('contact'));
@@ -135,6 +141,8 @@ class ContactController extends Controller
             'emails.*' => 'required|email|max:255',
             'phones' => 'required|array|min:1',
             'phones.*' => ['required', 'regex:/^[0-9+\s()-]+$/', 'max:20'],
+            'phone_pays' => 'nullable|array',
+            'phone_pays.*' => 'nullable|string|size:2|exists:pays,code',
             'adresses' => 'nullable|array',
             'adresses.*.rue' => 'nullable|string|max:255',
             'adresses.*.numero_rue' => 'nullable|string|max:20',
@@ -160,10 +168,14 @@ class ContactController extends Controller
             $contact->emails()->create(['email' => $email, 'user_id' => Auth::id()]);
         }
 
-        // Sync phones: delete old ones and create new
+        // Sync phones: delete old ones and create new (prefix decomposed)
         $contact->numeroTelephones()->delete();
-        foreach ($validated['phones'] as $phone) {
-            $contact->numeroTelephones()->create(['numero_telephone' => $phone, 'user_id' => Auth::id()]);
+        foreach ($validated['phones'] as $i => $phone) {
+            $contact->numeroTelephones()->create([
+                'numero_telephone' => $phone,
+                'pays_code' => $validated['phone_pays'][$i] ?? null,
+                'user_id' => Auth::id(),
+            ]);
         }
 
         return redirect()->route('contacts.show', $contact)->with('success', __('Contact updated successfully'));
