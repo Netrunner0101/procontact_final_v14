@@ -94,8 +94,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Admin routes (protected for admin users only)
-Route::middleware(['auth', 'rgpd.consent', 'admin'])->group(function () {
+// Billing / subscription (admins only, NOT gated by the subscription check
+// itself so users can always reach the page to subscribe or manage billing).
+Route::middleware(['auth', 'rgpd.consent', 'admin'])->prefix('billing')->name('billing.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\BillingController::class, 'index'])->name('index');
+    Route::get('/checkout', [\App\Http\Controllers\BillingController::class, 'checkout'])->name('checkout');
+    Route::get('/portal', [\App\Http\Controllers\BillingController::class, 'portal'])->name('portal');
+    Route::post('/resume', [\App\Http\Controllers\BillingController::class, 'resume'])->name('resume');
+});
+
+// Admin routes (protected for admin users only, and requiring an active
+// subscription / trial when billing enforcement is enabled)
+Route::middleware(['auth', 'rgpd.consent', 'admin', 'subscribed'])->group(function () {
     // Dashboard - now using Livewire
     Route::get('/dashboard', function () {
         return view('dashboard-livewire');

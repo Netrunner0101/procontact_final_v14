@@ -108,6 +108,10 @@
                                             <i class="fas fa-user mr-3" style="color: #75786c;"></i>
                                             {{ __('My Profile') }}
                                         </a>
+                                        <a href="{{ route('billing.index') }}" class="flex items-center px-4 py-2.5 text-sm transition-colors" style="color: #44483e;" onmouseover="this.style.background='#ffdbd1';this.style.color='#341100'" onmouseout="this.style.background='';this.style.color='#44483e'">
+                                            <i class="fas fa-credit-card mr-3" style="color: #75786c;"></i>
+                                            {{ __('Subscription') }}
+                                        </a>
                                         <form method="POST" action="{{ route('logout') }}" class="block">
                                             @csrf
                                             <button type="submit" class="flex items-center w-full text-left px-4 py-2.5 text-sm transition-colors" style="color: #44483e;" onmouseover="this.style.background='#ffdad6';this.style.color='#410002'" onmouseout="this.style.background='';this.style.color='#44483e'">
@@ -201,6 +205,10 @@
                             <a href="{{ route('profile.show') }}" class="mobile-nav-link">
                                 <i class="fas fa-user-cog w-5 text-center"></i>
                                 <span>{{ __('My Profile') }}</span>
+                            </a>
+                            <a href="{{ route('billing.index') }}" class="mobile-nav-link">
+                                <i class="fas fa-credit-card w-5 text-center"></i>
+                                <span>{{ __('Subscription') }}</span>
                             </a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
