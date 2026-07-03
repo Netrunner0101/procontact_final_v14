@@ -590,31 +590,6 @@
     </section>
 
     <!-- ============================================
-         EDITABLE: Final CTA Banner
-         Change: heading, description, CTA buttons, subtext
-         ============================================ -->
-    <section class="py-24 px-8">
-        <div class="max-w-7xl mx-auto rounded-[3rem] p-12 lg:p-24 text-center relative overflow-hidden" style="background: linear-gradient(135deg, #843728, #a24e3d); color: var(--on-primary); box-shadow: var(--shadow-xl);">
-            <!-- Decorative elements -->
-            <div class="absolute top-0 left-0 w-64 h-64 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" style="background: rgba(255,255,255,0.1);"></div>
-            <div class="absolute bottom-0 right-0 w-96 h-96 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl" style="background: rgba(255,255,255,0.05);"></div>
-            <div class="relative z-10 max-w-2xl mx-auto">
-                <!-- EDITABLE: CTA Heading -->
-                <h2 class="text-4xl lg:text-5xl font-extrabold mb-8 tracking-tight" style="font-family: 'Manrope', sans-serif;">{{ __('Ready to stop losing clients?') }}</h2>
-                <!-- EDITABLE: CTA Description -->
-                <p class="text-xl opacity-90 mb-12">{{ __('Join hundreds of Belgian professionals who have reclaimed their time and organized their business with ProContact.') }}</p>
-                <!-- EDITABLE: CTA Buttons -->
-                <div class="flex flex-col sm:flex-row gap-6 justify-center">
-                    <a href="{{ route('register') }}" class="px-10 py-5 rounded-full font-bold text-xl transition-all shadow-xl hover:scale-105" style="background: var(--surface); color: var(--primary);">{{ __('Start your free trial') }}</a>
-                    <a href="#" class="px-10 py-5 rounded-full font-bold text-xl transition-all border-2 border-white hover:bg-white/10" style="color: var(--on-primary);">{{ __('Book a demo') }}</a>
-                </div>
-                <!-- EDITABLE: Subtext -->
-                <p class="mt-8 text-sm opacity-70">{{ __('No credit card required. Cancel anytime.') }}</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================================
          EDITABLE: Footer
          Change: copyright text, links
          ============================================ -->
