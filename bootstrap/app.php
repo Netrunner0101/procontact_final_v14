@@ -21,6 +21,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'portal.auth' => \App\Http\Middleware\PortalAuthenticated::class,
             'portal.headers' => \App\Http\Middleware\PortalSecurityHeaders::class,
             'rgpd.consent' => \App\Http\Middleware\EnsureRgpdConsent::class,
+            'subscribed' => \App\Http\Middleware\EnsureSubscribed::class,
+        ]);
+
+        // Stripe posts webhooks without a CSRF token.
+        $middleware->validateCsrfTokens(except: [
+            'stripe/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
