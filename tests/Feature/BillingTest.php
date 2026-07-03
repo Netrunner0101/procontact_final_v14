@@ -58,4 +58,24 @@ class BillingTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function test_billing_state_helpers_for_a_user_without_a_subscription(): void
+    {
+        $user = $this->admin();
+
+        $this->assertSame('none', $user->billingState());
+        $this->assertFalse($user->onProTrial());
+        $this->assertFalse($user->isPaying());
+        $this->assertSame(0, $user->proTrialDaysLeft());
+    }
+
+    public function test_no_subscription_banner_shown_when_billing_disabled(): void
+    {
+        config(['billing.enforce' => false]);
+
+        $response = $this->actingAs($this->admin())->get('/dashboard');
+
+        $response->assertStatus(200);
+        $response->assertDontSee(__('Manage subscription'), false);
+    }
 }

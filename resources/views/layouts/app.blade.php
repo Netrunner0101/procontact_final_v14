@@ -228,6 +228,8 @@
             </div>
         </nav>
 
+        @include('partials.subscription-banner')
+
         @include('partials.toast')
 
         <!-- Page Content -->

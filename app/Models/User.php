@@ -188,6 +188,64 @@ class User extends Authenticatable
     }
 
     /**
+     * High-level billing state for the "default" subscription.
+     *
+     * Returns one of:
+     *  - 'active'   : paying customer (subscription live, past the trial)
+     *  - 'trialing' : inside the free trial
+     *  - 'grace'    : cancelled but still within the paid period
+     *  - 'none'     : no valid subscription
+     */
+    public function billingState(): string
+    {
+        $subscription = $this->subscription('default');
+
+        if (! $subscription || ! $subscription->valid()) {
+            return 'none';
+        }
+
+        if ($subscription->onGracePeriod()) {
+            return 'grace';
+        }
+
+        if ($subscription->onTrial()) {
+            return 'trialing';
+        }
+
+        return 'active';
+    }
+
+    /**
+     * Whether the user is currently inside their free trial.
+     */
+    public function onProTrial(): bool
+    {
+        return $this->billingState() === 'trialing';
+    }
+
+    /**
+     * Whether the user is a paying customer (active, past the trial).
+     */
+    public function isPaying(): bool
+    {
+        return $this->billingState() === 'active';
+    }
+
+    /**
+     * Number of whole days left in the free trial (0 if not on trial).
+     */
+    public function proTrialDaysLeft(): int
+    {
+        $subscription = $this->subscription('default');
+
+        if (! $subscription || ! $subscription->onTrial() || ! $subscription->trial_ends_at) {
+            return 0;
+        }
+
+        return max(0, (int) ceil(now()->floatDiffInDays($subscription->trial_ends_at)));
+    }
+
+    /**
      * Get appointments visible to this user.
      */
     public function visibleRendezVous()

@@ -12,6 +12,7 @@
     "Independents across Belgium rely on ProContact every day.": "Des indépendants partout en Belgique font confiance à ProContact chaque jour.",
     "Loved by professionals": "Plébiscité par les professionnels",
     "Manage billing": "Gérer la facturation",
+    "Manage subscription": "Gérer l'abonnement",
     "Manage your ProContact Pro subscription.": "Gérez votre abonnement ProContact Pro.",
     "No active subscription": "Aucun abonnement actif",
     "No commitment — cancel anytime.": "Sans engagement — résiliez à tout moment.",
@@ -191,6 +192,7 @@
     "Your access continues until :date.": "Votre accès se poursuit jusqu'au :date.",
     "Your free trial ends on :date, then €19/month.": "Votre essai gratuit se termine le :date, puis 19 €/mois.",
     "Your subscription has been resumed.": "Votre abonnement a été repris.",
+    "Your subscription is cancelled and will end soon.": "Votre abonnement est résilié et se terminera bientôt.",
     "at": "à",
     "Attempt to access data of other users.": "Tenter d’accéder aux données d’autres utilisateurs.",
     "Attempt to disrupt the operation of the Service.": "Tenter de perturber le fonctionnement du Service.",
@@ -1113,6 +1115,7 @@
     "Your templates": "Vos modèles",
     "You were signed out due to inactivity.": "Vous avez été déconnecté pour inactivité.",
     "You will be signed out in <strong><span id=\"idle-timeout-countdown\">:seconds</span></strong> seconds for your security.": "Vous serez déconnecté dans <strong><span id=\"idle-timeout-countdown\">:seconds</span></strong> secondes pour votre sécurité.",
+    "{0}Your free trial ends today.|{1}Free trial: :count day left.|[2,*]Free trial: :count days left.": "{0}Votre essai gratuit se termine aujourd'hui.|{1}Essai gratuit : :count jour restant.|[2,*]Essai gratuit : :count jours restants.",
     "← Back to list": "← Retour à la liste",
     "← Back to login": "← Retour à la connexion"
 }
