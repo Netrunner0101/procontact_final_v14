@@ -471,6 +471,82 @@
     </section>
 
     <!-- ============================================
+         EDITABLE: Testimonials
+         Change: section title, subtitle, testimonial quotes, names, roles, initials
+         ============================================ -->
+    <section id="testimonials" class="py-24 px-6" style="background: var(--surface);">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <!-- EDITABLE: Section Heading -->
+                <h2 class="text-4xl font-bold mb-4 tracking-tight" style="font-family: 'Manrope', sans-serif;">{{ __('Loved by professionals') }}</h2>
+                <p style="color: var(--on-surface-variant);" class="max-w-2xl mx-auto">{{ __('Independents across Belgium rely on ProContact every day.') }}</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- EDITABLE: Testimonial Card 1 -->
+                <div class="p-8 rounded-3xl flex flex-col" style="background: var(--surface-container-low);">
+                    <div class="flex gap-1 mb-6" style="color: var(--tertiary);">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                    </div>
+                    <blockquote class="text-lg leading-relaxed mb-8 flex-1" style="color: var(--on-surface);">
+                        "{{ __('I stopped losing track of follow-ups overnight. ProContact pays for itself with a single recovered client.') }}"
+                    </blockquote>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm" style="background: var(--primary-container); color: var(--on-primary-container);">SL</div>
+                        <div>
+                            <div class="font-bold text-sm" style="color: var(--on-surface);">Sophie Laurent</div>
+                            <div class="text-xs uppercase tracking-tight" style="color: var(--on-surface-variant);">{{ __('Freelance Designer') }}</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- EDITABLE: Testimonial Card 2 -->
+                <div class="p-8 rounded-3xl flex flex-col" style="background: var(--surface-container-low);">
+                    <div class="flex gap-1 mb-6" style="color: var(--tertiary);">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                    </div>
+                    <blockquote class="text-lg leading-relaxed mb-8 flex-1" style="color: var(--on-surface);">
+                        "{{ __('Finally a CRM I actually open. Simple enough for the van, powerful enough for the office.') }}"
+                    </blockquote>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm" style="background: var(--secondary-container); color: var(--on-secondary-container);">MD</div>
+                        <div>
+                            <div class="font-bold text-sm" style="color: var(--on-surface);">Marc Dubois</div>
+                            <div class="text-xs uppercase tracking-tight" style="color: var(--on-surface-variant);">{{ __('Electrician') }}</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- EDITABLE: Testimonial Card 3 -->
+                <div class="p-8 rounded-3xl flex flex-col" style="background: var(--surface-container-low);">
+                    <div class="flex gap-1 mb-6" style="color: var(--tertiary);">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+                    </div>
+                    <blockquote class="text-lg leading-relaxed mb-8 flex-1" style="color: var(--on-surface);">
+                        "{{ __('Setting it up took ten minutes. My evenings are no longer spent on admin.') }}"
+                    </blockquote>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm" style="background: var(--tertiary-container); color: var(--on-tertiary-container);">EV</div>
+                        <div>
+                            <div class="font-bold text-sm" style="color: var(--on-surface);">Emma Vermeulen</div>
+                            <div class="text-xs uppercase tracking-tight" style="color: var(--on-surface-variant);">{{ __('Side Hustler') }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
          EDITABLE: FAQ Section
          Change: section title, questions and answers
          ============================================ -->
@@ -553,10 +629,10 @@
                 </div>
                 <!-- EDITABLE: Footer Links -->
                 <div class="flex flex-wrap gap-8 lg:gap-12 text-sm font-medium uppercase tracking-wide">
-                    <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Privacy Policy') }}</a>
-                    <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Terms of Service') }}</a>
-                    <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Cookie Settings') }}</a>
-                    <a href="#" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Contact Support') }}</a>
+                    <a href="{{ route('legal.privacy') }}" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Privacy Policy') }}</a>
+                    <a href="{{ route('legal.terms') }}" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Terms of Service') }}</a>
+                    <a href="{{ route('legal.cookies') }}" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Cookie Settings') }}</a>
+                    <a href="mailto:support@procontact.be" class="transition-colors hover:opacity-80" style="color: var(--outline);">{{ __('Contact Support') }}</a>
                 </div>
             </div>
             <!-- EDITABLE: Footer Copyright -->
