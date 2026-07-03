@@ -31,7 +31,7 @@ Route::get('/', function () {
         return redirect()->route('dashboard');
     }
 
-    return view('welcome-production');
+    return view('welcome');
 })->name('home');
 
 // OAuth Test Route (for development)
