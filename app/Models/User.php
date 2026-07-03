@@ -10,11 +10,12 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use Billable, HasFactory, Notifiable;
 
     /**
      * Always eager-load the role relationship to avoid N+1 on isAdmin()/isClient().
@@ -73,6 +74,7 @@ class User extends Authenticatable
             'email_verification_expires' => 'datetime',
             'email_verification_sent_at' => 'datetime',
             'terms_accepted_at' => 'datetime',
+            'trial_ends_at' => 'datetime',
         ];
     }
 

@@ -116,7 +116,7 @@
                 <!-- EDITABLE: CTA Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4">
                     <a href="{{ route('register') }}" class="px-8 py-4 rounded-full text-lg font-bold btn-primary shadow-lg flex items-center justify-center gap-2">
-                        {{ __('Try ProContact free for 14 days') }}
+                        {{ __('Try ProContact free for 1 week') }}
                         <span class="material-symbols-outlined">arrow_forward</span>
                     </a>
                     <a href="#how-it-works" class="px-8 py-4 rounded-full text-lg font-bold btn-secondary flex items-center justify-center" style="border: 2px solid var(--outline-variant);">
@@ -411,60 +411,33 @@
          EDITABLE: Pricing Section
          Change: section title, toggle labels, plan names, prices, features, CTA buttons
          ============================================ -->
-    <section id="pricing" class="py-24 px-6" style="background: var(--surface-container-low);" x-data="{ yearly: true }">
+    <section id="pricing" class="py-24 px-6" style="background: var(--surface-container-low);">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
                 <!-- EDITABLE: Section Heading -->
                 <h2 class="text-4xl font-bold mb-4 tracking-tight" style="font-family: 'Manrope', sans-serif;">{{ __('Simple, honest pricing') }}</h2>
-                <!-- EDITABLE: Billing Toggle -->
-                <div class="flex items-center justify-center gap-4 mt-8">
-                    <span class="font-semibold" :class="yearly ? '' : 'opacity-100'" :style="yearly ? 'color: var(--on-surface-variant)' : 'color: var(--on-surface)'">{{ __('Monthly') }}</span>
-                    <button @click="yearly = !yearly" class="w-14 h-7 rounded-full relative p-1 transition-all" :style="yearly ? 'background: rgba(132,55,40,0.2)' : 'background: rgba(132,55,40,0.2)'">
-                        <div class="w-5 h-5 rounded-full transition-all" :class="yearly ? 'ml-auto' : 'ml-0'" style="background: var(--primary);"></div>
-                    </button>
-                    <span class="font-semibold" :style="yearly ? 'color: var(--primary)' : 'color: var(--on-surface-variant)'">
-                        {{ __('Yearly') }}
-                        <span class="text-xs px-2 py-0.5 rounded-full ml-1" style="background: var(--tertiary-container); color: var(--on-tertiary-container);">-20%</span>
-                    </span>
-                </div>
+                <p style="color: var(--on-surface-variant);" class="max-w-2xl mx-auto">{{ __('One plan, everything included. Start with a 1-week free trial.') }}</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <!-- EDITABLE: Plan 1 - Free Trial -->
-                <div class="p-10 rounded-3xl" style="background: var(--surface); border: 1px solid rgba(197,200,185,0.2);">
-                    <!-- EDITABLE: Plan name -->
-                    <h3 class="text-xl font-bold mb-2">{{ __('Free Trial') }}</h3>
+            <div class="max-w-md mx-auto">
+                <!-- EDITABLE: Pro Plan -->
+                <div class="p-10 rounded-3xl relative" style="background: var(--surface-container-lowest); border: 2px solid var(--primary); box-shadow: var(--shadow-xl);">
+                    <!-- EDITABLE: Trial badge -->
+                    <div class="absolute top-0 right-10 -translate-y-1/2 px-4 py-1 rounded-full text-xs font-bold uppercase" style="background: var(--primary); color: var(--on-primary);">{{ __('1-week free trial') }}</div>
+                    <h3 class="text-xl font-bold mb-2">{{ __('Pro Plan') }}</h3>
                     <!-- EDITABLE: Price -->
-                    <div class="text-4xl font-extrabold mb-6" style="font-family: 'Manrope', sans-serif;">€0 <span class="text-sm font-normal" style="color: var(--on-surface-variant);">/ {{ __('14 days') }}</span></div>
+                    <div class="text-4xl font-extrabold mb-6" style="font-family: 'Manrope', sans-serif;">€19 <span class="text-sm font-normal" style="color: var(--on-surface-variant);">/ {{ __('month') }}</span></div>
                     <!-- EDITABLE: Plan description -->
-                    <p class="mb-8" style="color: var(--on-surface-variant);">{{ __('Full access to explore every feature. No credit card required.') }}</p>
-                    <!-- EDITABLE: Plan features -->
+                    <p class="mb-8" style="color: var(--on-surface-variant);">{{ __('Start with a 1-week free trial, then €19/month. Cancel anytime.') }}</p>
                     <ul class="space-y-4 mb-10">
                         <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Unlimited contacts') }}</li>
                         <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Mobile app access') }}</li>
-                        <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Email support') }}</li>
-                    </ul>
-                    <!-- EDITABLE: Plan CTA -->
-                    <a href="{{ route('register') }}" class="block w-full py-4 rounded-full font-bold text-center transition-all" style="border: 2px solid var(--primary); color: var(--primary);">{{ __('Get Started') }}</a>
-                </div>
-                <!-- EDITABLE: Plan 2 - Pro Plan -->
-                <div class="p-10 rounded-3xl relative" style="background: var(--surface-container-lowest); border: 2px solid var(--primary); box-shadow: var(--shadow-xl);">
-                    <!-- EDITABLE: Popular badge -->
-                    <div class="absolute top-0 right-10 -translate-y-1/2 px-4 py-1 rounded-full text-xs font-bold uppercase" style="background: var(--primary); color: var(--on-primary);">{{ __('Most Popular') }}</div>
-                    <h3 class="text-xl font-bold mb-2">{{ __('Pro Plan') }}</h3>
-                    <!-- EDITABLE: Price (changes with toggle) -->
-                    <div class="text-4xl font-extrabold mb-6" style="font-family: 'Manrope', sans-serif;">
-                        <span x-show="!yearly">€19</span>
-                        <span x-show="yearly" x-cloak>€15</span>
-                        <span class="text-sm font-normal" style="color: var(--on-surface-variant);">/ {{ __('month') }}</span>
-                    </div>
-                    <p class="mb-8" style="color: var(--on-surface-variant);">{{ __('The complete toolbox for professionals ready to grow.') }}</p>
-                    <ul class="space-y-4 mb-10">
-                        <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Everything in Trial') }}</li>
                         <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Client portal access') }}</li>
                         <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Advanced reporting & Export') }}</li>
                         <li class="flex items-center gap-3"><span class="material-symbols-outlined" style="color: var(--primary);">check</span> {{ __('Priority human support') }}</li>
                     </ul>
-                    <a href="{{ route('register') }}" class="block w-full py-4 rounded-full font-bold text-center btn-primary shadow-lg transition-all">{{ __('Go Pro') }}</a>
+                    <a href="{{ route('register') }}" class="block w-full py-4 rounded-full font-bold text-center btn-primary shadow-lg transition-all">{{ __('Start your free trial') }}</a>
+                    <!-- EDITABLE: Subtext -->
+                    <p class="mt-4 text-sm text-center" style="color: var(--on-surface-variant);">{{ __('No commitment — cancel anytime.') }}</p>
                 </div>
             </div>
         </div>
@@ -585,31 +558,6 @@
                         {{ __('Yes, ProContact works perfectly as a PWA on your phone, giving you full access on the go.') }}
                     </p>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================================
-         EDITABLE: Final CTA Banner
-         Change: heading, description, CTA buttons, subtext
-         ============================================ -->
-    <section class="py-24 px-8">
-        <div class="max-w-7xl mx-auto rounded-[3rem] p-12 lg:p-24 text-center relative overflow-hidden" style="background: linear-gradient(135deg, #843728, #a24e3d); color: var(--on-primary); box-shadow: var(--shadow-xl);">
-            <!-- Decorative elements -->
-            <div class="absolute top-0 left-0 w-64 h-64 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" style="background: rgba(255,255,255,0.1);"></div>
-            <div class="absolute bottom-0 right-0 w-96 h-96 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl" style="background: rgba(255,255,255,0.05);"></div>
-            <div class="relative z-10 max-w-2xl mx-auto">
-                <!-- EDITABLE: CTA Heading -->
-                <h2 class="text-4xl lg:text-5xl font-extrabold mb-8 tracking-tight" style="font-family: 'Manrope', sans-serif;">{{ __('Ready to stop losing clients?') }}</h2>
-                <!-- EDITABLE: CTA Description -->
-                <p class="text-xl opacity-90 mb-12">{{ __('Join hundreds of Belgian professionals who have reclaimed their time and organized their business with ProContact.') }}</p>
-                <!-- EDITABLE: CTA Buttons -->
-                <div class="flex flex-col sm:flex-row gap-6 justify-center">
-                    <a href="{{ route('register') }}" class="px-10 py-5 rounded-full font-bold text-xl transition-all shadow-xl hover:scale-105" style="background: var(--surface); color: var(--primary);">{{ __('Start your free trial') }}</a>
-                    <a href="#" class="px-10 py-5 rounded-full font-bold text-xl transition-all border-2 border-white hover:bg-white/10" style="color: var(--on-primary);">{{ __('Book a demo') }}</a>
-                </div>
-                <!-- EDITABLE: Subtext -->
-                <p class="mt-8 text-sm opacity-70">{{ __('No credit card required. Cancel anytime.') }}</p>
             </div>
         </div>
     </section>
